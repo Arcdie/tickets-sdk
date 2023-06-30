@@ -1,5 +1,5 @@
-import lightstep from 'lightstep-tracer';
-import { globalTracer, initGlobalTracer } from 'opentracing';
+import lightstep from './lightstep-tracer';
+import { globalTracer, initGlobalTracer } from './opentracing';
 
 const config = {
   access_token: process.env.LIGHTSTEP_TOKEN,

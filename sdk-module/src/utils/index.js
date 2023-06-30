@@ -1,4 +1,4 @@
-import { DOMAIN_DATA, TM_IE, TM_MX, TM_UK } from 'constants/domains';
+import { DOMAIN_DATA, TM_IE, TM_MX, TM_UK } from '../constants/domains';
 
 export const removeUndefinedFields = (obj) => JSON.parse(JSON.stringify(obj));
 

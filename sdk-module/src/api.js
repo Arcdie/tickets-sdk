@@ -3,7 +3,7 @@ import {
   sendReserveRequest,
   sendReserveStatusRequest,
   sendRulesRequest,
-} from 'request';
+} from './request';
 import { createWebSocketClient } from '/websocket';
 import {
   RESERVE_FAILURE,

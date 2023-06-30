@@ -1,12 +1,12 @@
 /* eslint camelcase: ["error", {properties: "never"}] */
-import 'regenerator-runtime/runtime';
-import { v1 } from 'uuid';
+import '../core_modules/regenerator-runtime/runtime';
+import { v1 } from '../core_modules/uuid';
 import {
   getRules,
   pollReserveStatus,
   reserve,
   subscribeToReserveComplete,
-} from 'api';
+} from './api';
 import {
   HEADER_TITLE,
   HIDE_LEFT_PANEL,
@@ -16,21 +16,21 @@ import {
 } from './constants/accounts';
 import { LANGUAGE } from './constants/cookies';
 import { RADIX_DECIMAL } from './constants/math';
-import { DESKTOP, MOBILE } from 'constants/devices';
-import { DESKTOP_MIN_WIDTH } from 'constants/media';
+import { DESKTOP, MOBILE } from './constants/devices';
+import { DESKTOP_MIN_WIDTH } from './constants/media';
 import { RESERVE_PARENT_SPAN } from './constants/spanNames';
 import { SYSTEM_CO2, SYSTEM_RCO } from './constants/system';
 
 import { getCookie } from './cookies';
-import Logger from 'logger';
-import { processReserveRequestMetric } from 'metrics';
+import Logger from './logger';
+import { processReserveRequestMetric } from './metrics';
 import {
   getMatchingRules,
   getSystemFromRules,
   isCO2,
-} from 'rules';
-import Tracer from 'tracer';
-import { tracer } from 'tracer/config';
+} from './rules';
+import Tracer from './tracer';
+import { tracer } from './tracer/config';
 import {
   getCheckoutBaseUrl,
   getCheckoutBaseUrlOverride,
@@ -39,8 +39,8 @@ import {
   getLoginPageBaseUrl,
   getTickets,
   removeUndefinedFields,
-} from 'utils';
-import { deriveChannelId } from 'utils/channelId';
+} from './utils';
+import { deriveChannelId } from './utils/channelId';
 
 const logger = new Logger('src/sdk.js');
 

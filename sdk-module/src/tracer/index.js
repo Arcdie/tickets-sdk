@@ -1,4 +1,4 @@
-import { FORMAT_HTTP_HEADERS } from 'opentracing';
+import { FORMAT_HTTP_HEADERS } from '../opentracing';
 import lightstepTracer from './config';
 
 class Tracer {
