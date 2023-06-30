@@ -1,3 +1,4 @@
+const xhr2 = require('xhr2');
 const crypto = require('crypto');
 
 // require('./browserEnv')({ userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36' });
@@ -16,6 +17,8 @@ self = window;
 self.fetch = fetch;
 self.crypto = crypto;
 window.crypto = crypto;
+
+global.XMLHttpRequest = xhr2;
 
 // console.log(window.navigator.userAgent)
 
