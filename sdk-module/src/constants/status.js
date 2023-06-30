@@ -1,0 +1,3 @@
+export const STATUS_FAILURE = 'FAILURE';
+export const STATUS_SUCCESS = 'SUCCESS';
+export const STATUS_PROCESSING = 'PROCESSING';
