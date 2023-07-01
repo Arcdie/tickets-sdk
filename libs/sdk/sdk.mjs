@@ -17,7 +17,6 @@ import {
 import { LANGUAGE } from './constants/cookies.mjs';
 import { RADIX_DECIMAL } from './constants/math.mjs';
 import { DESKTOP, MOBILE } from './constants/devices.mjs';
-// import { DESKTOP_MIN_WIDTH } from './constants/media.mjs';
 import { RESERVE_PARENT_SPAN } from './constants/spanNames.mjs';
 import { SYSTEM_CO2, SYSTEM_RCO } from './constants/system.mjs';
 

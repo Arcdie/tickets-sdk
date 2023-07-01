@@ -3,6 +3,7 @@
 import fetch from 'isomorphic-fetch';
 import cookies from 'cookies-js';
 import { getCheckoutBaseUrl } from './utils/index.mjs';
+import { getProxyAgent } from '../proxyAgent.mjs';
 
 const LOG_ENDPOINT = `${getCheckoutBaseUrl()}/api/log`;
 
@@ -44,9 +45,12 @@ const sendLog = ({ correlationId, data, logLevel, requestId, requestorId, source
   };
 
   fetch(LOG_ENDPOINT, {
+    agent: getProxyAgent(),
     body: JSON.stringify(logRequest),
-    credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      cookie: document.cookie,
+    },
     method: 'POST',
     mode: 'cors',
   }).catch(() => {

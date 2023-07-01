@@ -17,6 +17,8 @@ import {
   removeUndefinedFields,
 } from './utils/index.mjs';
 
+import { getProxyAgent } from '../proxyAgent.mjs';
+
 const logger = new Logger('src/request.js');
 const API_KEY = 'MISSING_ENV_VAR';
 const BID_COOKIE_NAME = 'BID';
@@ -95,6 +97,7 @@ const sendGraphQLRequest = ({ additionalHeaders = {}, eventId, parentSpanHeaders
   const url = `${getCheckoutBaseUrl()}/graphql`;
 
   return fetch(url, {
+    agent: getProxyAgent(),
     body: JSON.stringify(requestInput),
     headers: {
       ...headers,
@@ -124,7 +127,10 @@ export const sendRegionRequest = (eventId) => {
   const headers = getRequestHeaders({}, eventId, REGION);
   const correlationId = headers['TMPS-Correlation-Id'];
 
-  return fetch(url, { headers: { cookie: document.cookie } })
+  return fetch(url, {
+    agent: getProxyAgent(),
+    headers: { cookie: document.cookie },
+  })
     .then(response => handleResponse({ requestName: REGION, response, url }))
     .catch(err => handleError({ correlationId, err, requestName: REGION, url }));
 };
@@ -134,7 +140,10 @@ export const sendRulesRequest = (eventId) => {
   const headers = getRequestHeaders({}, eventId, RULES);
   const correlationId = headers['TMPS-Correlation-Id'];
 
-  return fetch(url, { headers: { cookie: document.cookie } })
+  return fetch(url, {
+    agent: getProxyAgent(),
+    headers: { cookie: document.cookie },
+  })
   .then(response => handleResponse({ requestName: RULES, response, url }))
   .catch(err => handleError({ correlationId, err, requestName: RULES, url }));
 };
