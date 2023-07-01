@@ -18,7 +18,7 @@ import {
 } from './utils/index.mjs';
 
 const logger = new Logger('src/request.js');
-const { API_KEY } = process.env;
+const API_KEY = 'MISSING_ENV_VAR';
 const BID_COOKIE_NAME = 'BID';
 const SID_COOKIE_NAME = 'SID';
 
@@ -42,6 +42,7 @@ const getRequestHeaders = (headers = {}, eventId, requestName) => removeUndefine
 
 const handleResponse = ({ channelId, correlationId, isLightstepEnabled = true, requestName, response, span, url }) => {
   const { status, statusText } = response;
+
   // order log importance
   const logContent = {
     requestName,
@@ -120,9 +121,9 @@ export const sendRegionRequest = (eventId) => {
   const headers = getRequestHeaders({}, eventId, REGION);
   const correlationId = headers['TMPS-Correlation-Id'];
 
-  return fetch(url, { credentials: 'include' })
-  .then(response => handleResponse({ requestName: REGION, response, url }))
-  .catch(err => handleError({ correlationId, err, requestName: REGION, url }));
+  return fetch(url, { headers: { cookie: document.cookie } })
+    .then(response => handleResponse({ requestName: REGION, response, url }))
+    .catch(err => handleError({ correlationId, err, requestName: REGION, url }));
 };
 
 export const sendRulesRequest = (eventId) => {

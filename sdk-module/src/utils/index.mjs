@@ -46,8 +46,6 @@ export const getDomainData = () => {
     }
   }
 
-  console.log('domainData', domainData);
-
   return domainData || DOMAIN_DATA.default;
 };
 

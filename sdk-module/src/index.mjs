@@ -18,10 +18,10 @@ const init = ({ eventId, smartQueueToken }) => {
     }
 
     return getRegion(eventId)
-    .then(
-      ({ region }) => resolve(new SDK({ eventId, region, smartQueueToken }))
-    )
-    .catch(reject);
+      .then(
+        ({ region }) => resolve(new SDK({ eventId, region, smartQueueToken }))
+      )
+      .catch(reject);
   });
 };
 
