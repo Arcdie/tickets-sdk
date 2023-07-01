@@ -109,8 +109,14 @@ export const subscribeToReserveComplete = (
   }
 ) => {
   return new Promise((resolve, reject) => {
-    const apiKey = region === 'west' ? process.env.SUBSCRIPTION_API_KEY_WEST : process.env.SUBSCRIPTION_API_KEY_EAST;
-    const host = region === 'west' ? process.env.SUBSCRIPTION_API_HOST_WEST : process.env.SUBSCRIPTION_API_HOST_EAST;
+    const SUBSCRIPTION_API_KEY_WEST = 'da2-pbjuejzc5rac3fspc2ozvtouxy';
+    const SUBSCRIPTION_API_KEY_EAST = 'da2-esrv7m4ch5cmhk4tftair7zi74';
+
+    const SUBSCRIPTION_API_HOST_WEST = 'ciziftt2drddxnqhvcpaffgv5y.appsync-api.us-west-2.amazonaws.com';
+    const SUBSCRIPTION_API_HOST_EAST = 'o26jo4blcnf65jyg3hzjxarpwy.appsync-api.us-east-1.amazonaws.com';
+
+    const apiKey = region === 'west' ? SUBSCRIPTION_API_KEY_WEST : SUBSCRIPTION_API_KEY_EAST;
+    const host = region === 'west' ? SUBSCRIPTION_API_HOST_WEST : SUBSCRIPTION_API_HOST_EAST;
 
     let client = null;
     let reserveCompleteReceived = false;
@@ -209,7 +215,9 @@ export const subscribeToReserveComplete = (
         }
       };
 
-      client.onopen = () => client.send(JSON.stringify({ type: 'connection_init' }));
+      client.onopen = () => {
+        client.send(JSON.stringify({ type: 'connection_init' }));
+      };
     } catch (error) {
       handleWebsocketError(error);
     }

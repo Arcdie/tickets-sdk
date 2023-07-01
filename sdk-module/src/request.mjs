@@ -96,7 +96,10 @@ const sendGraphQLRequest = ({ additionalHeaders = {}, eventId, parentSpanHeaders
 
   return fetch(url, {
     body: JSON.stringify(requestInput),
-    headers,
+    headers: {
+      ...headers,
+      cookie: document.cookie,
+    },
     ...getRequestOptions(),
   })
   .then(response => handleResponse({ channelId: requestInput.variables?.reserveInput?.requestContext?.channel, correlationId, requestName, response, span, url }))
@@ -131,7 +134,7 @@ export const sendRulesRequest = (eventId) => {
   const headers = getRequestHeaders({}, eventId, RULES);
   const correlationId = headers['TMPS-Correlation-Id'];
 
-  return fetch(url, { credentials: 'include' })
+  return fetch(url, { headers: { cookie: document.cookie } })
   .then(response => handleResponse({ requestName: RULES, response, url }))
   .catch(err => handleError({ correlationId, err, requestName: RULES, url }));
 };

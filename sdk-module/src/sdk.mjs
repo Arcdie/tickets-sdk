@@ -150,9 +150,7 @@ class CheckoutSDK {
     const { channel: channelInjected, locale: localeInjected } = requestContext || {};
     const { host, search } = window.location;
     const isAppview = getIsAppview();
-
-    const media = window.matchMedia(`(max-width: ${1000 - 1}px)`);
-    const deviceType = media?.matches ? MOBILE : DESKTOP;
+    const deviceType = DESKTOP;
 
     const derivedChannel = deriveChannelId({
       clubSiteId,
@@ -256,7 +254,7 @@ class CheckoutSDK {
         .then((subscriptionResponse) => {
           const { pollingRequired = null } = subscriptionResponse;
 
-          if (pollingRequired) {
+          if (pollingRequired) {            
             pollReserveStatus({
               eventId: this.eventId,
               parentSpanHeaders,

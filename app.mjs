@@ -15,7 +15,9 @@ arr.forEach(e => {
 
 (async () => {
   const sdk = await import('./sdk-module/src/index.mjs');
-  const checkout = await sdk.default.init({ eventId: '00005E66AD4B2014' });
-  // sdk.checkout({ "eventId": "0F005E5CD4FC2F47", "requestorId": "f38ce660-16a0-11ee-a669-d9853f663d51", "requestContext": { "localeInjected": "en-us", "locale": "en-us" }, "tickets": [{ "inventoryDetail": { "type": "Primary" }, "row": "A", "section": "SECA", "ticketTypes": [{ "id": "000000000001", "quantity": 4 }] }] }, { "appview": false, "appviewLN": false, "appviewVersion": 1, "toolspreview": false, "channel": 0, "layout": "", "redirect": true, "source": 2 })
-  console.log('checkout', checkout);
+  const init = await sdk.default.init({ eventId: '00005E66AD4B2014' });
+  console.log('init', init);
+
+  const result = await init.checkout({ "eventId": "0F005E5CD4FC2F47", "requestorId": "f38ce660-16a0-11ee-a669-d9853f663d51", "requestContext": { "localeInjected": "en-us", "locale": "en-us" }, "tickets": [{ "inventoryDetail": { "type": "Primary" }, "row": "A", "section": "SECA", "ticketTypes": [{ "id": "000000000001", "quantity": 4 }] }] }, { "appview": false, "appviewLN": false, "appviewVersion": 1, "toolspreview": false, "channel": 0, "layout": "", "redirect": true, "source": 2 });
+  console.log('result', result);
 })();
