@@ -1,3 +1,5 @@
+import WebSocket from 'ws';
+
 export const createWebSocketClient = ({
   apiKey,
   host,
@@ -10,5 +12,9 @@ export const createWebSocketClient = ({
 
   const url = `wss://${realtimeHost}/graphql?header=${headers}&payload=e30=`;
 
-  return new WebSocket(url, 'graphql-ws');
+  return new WebSocket(
+    url,
+    'graphql-ws',
+    { agent: window.proxyAgent }
+  );
 }

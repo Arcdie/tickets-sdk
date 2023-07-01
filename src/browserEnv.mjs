@@ -13,13 +13,12 @@ class Window {
     const resources = new ResourceLoader({ proxy, strictSSL, userAgent });
 
     return (new JSDOM('', Object.assign(jsdomConfig, {
-      url,
       resources,
     }))).window;
   }
 };
 
-const protectedproperties = (() => Object
+const protectedProperties = (() => Object
   .getOwnPropertyNames(new Window(defaultJsdomConfig))
   .filter(prop => typeof global[prop] !== 'undefined')
 )();
@@ -29,10 +28,13 @@ const browserEnv = function () {
   const properties = args.filter(arg => Array.isArray(arg))[0];
   const userJsdomConfig = args.filter(arg => !Array.isArray(arg))[0];
 
-  const window = new Window(Object.assign({}, userJsdomConfig, defaultJsdomConfig));
+  const window = new Window({
+    ...userJsdomConfig,
+    ...defaultJsdomConfig,
+  });
 
   Object.getOwnPropertyNames(window)
-    .filter(prop => protectedproperties.indexOf(prop) === -1)
+    .filter(prop => protectedProperties.indexOf(prop) === -1)
     .filter(prop => !(properties && properties.indexOf(prop) === -1))
     .forEach(prop => {
       Object.defineProperty(global, prop, {
