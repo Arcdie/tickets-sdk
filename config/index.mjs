@@ -1,9 +1,9 @@
 const config = {
   proxy: {
-    port: 7383,
-    ip: '174.138.165.138',
-    login: 'LV20117302-LPACSUSR12',
-    password: '5GK8XAJX12',
+    port: 22225,
+    ip: 'servercountry-us.zproxy.luminati.io',
+    login: 'lum-customer-flatratetickets-zone-dev',
+    password: '9q3ugap610qp',
   },
 };
 

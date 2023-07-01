@@ -238,6 +238,7 @@ class CheckoutSDK {
       })
       .then(({ error, requestId }) => {
         if (error) {
+          console.log('onSubscribe.error', error);
           reject(error);
         }
 

@@ -124,6 +124,7 @@ export const subscribeToReserveComplete = (
     let subscribed = false;
 
     const handleWebsocketError = (error) => {
+      console.log('error', error);
       error && error.message && logger.error({ data: error.message, requestorId });
       client && client.close && client.close();
 
@@ -161,6 +162,7 @@ export const subscribeToReserveComplete = (
 
       client.onmessage = (event) => {
         const message = JSON.parse(event.data);
+        console.log('message', message);
 
         if (message.type === 'connection_ack') {
           client.send(JSON.stringify({
@@ -206,6 +208,7 @@ export const subscribeToReserveComplete = (
           if (isReserveSuccessful(requestId, status)) {
             resolve(reserveComplete);
           } else {
+            console.log('message.type === data', errors);
             reject(errors[0]);
           }
         }
@@ -216,6 +219,7 @@ export const subscribeToReserveComplete = (
       };
 
       client.onopen = () => {
+        console.log('client.onopen');
         client.send(JSON.stringify({ type: 'connection_init' }));
       };
     } catch (error) {
