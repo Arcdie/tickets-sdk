@@ -7,7 +7,7 @@ import {
   WEBVIEW_LN_ANDROID,
   WEBVIEW_LN_IPHONE,
   WEBVIEW_TABLET,
-} from '../constants/devices';
+} from '../constants/devices.mjs';
 
 export function deriveChannelId({
   clubSiteId,

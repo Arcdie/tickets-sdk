@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "sdk.js",
+  "type": "module",
   "scripts": {
     "start": "ts-node ./src/app",
     "build": "rimraf dist && tsc -p tsconfig.json",
@@ -17,6 +18,7 @@
   },
   "dependencies": {
     "browser-env": "^3.3.0",
+    "crypto": "^1.0.1",
     "xhr2": "^0.2.1"
   }
 }

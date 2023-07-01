@@ -1,11 +1,12 @@
-import SDK from './sdk';
+import SDK from './sdk.mjs';
+
 import {
   getRegion,
-} from './api';
+} from './api.mjs';
 import {
   EVENT_ID_REQUIRED,
-} from './constants/errors';
-import Logger from './logger';
+} from './constants/errors.mjs';
+import Logger from './logger.mjs';
 
 const logger = new Logger('src/index.js');
 

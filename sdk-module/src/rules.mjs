@@ -1,5 +1,5 @@
-import { RADIX_DECIMAL } from 'constants/math';
-import { SYSTEM_CO2, SYSTEM_RCO, WILDCARD_MATCH } from 'constants/system';
+import { RADIX_DECIMAL } from './constants/math.mjs';
+import { SYSTEM_CO2, SYSTEM_RCO, WILDCARD_MATCH } from './constants/system.mjs';
 
 const matchByEventId = (eventId, rule = {}) => eventId &&
   rule.eventId &&

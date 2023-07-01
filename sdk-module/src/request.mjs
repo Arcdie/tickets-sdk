@@ -1,21 +1,21 @@
 import cookies from 'cookies-js';
 import fetch from 'isomorphic-fetch';
-import { v1 } from 'uuid';
+import {v1} from 'uuid';
 import {
   REGION,
   RESERVE,
   RESERVE_STATUS,
   RULES,
-} from 'constants/requestNames';
-import { REQUEST_SPAN_MAPPING } from 'constants/spanNames';
-import { reserveMutation } from 'graphql/mutation';
-import { reserveStatusQuery } from 'graphql/query';
-import Logger from 'logger';
-import Tracer from 'tracer';
+} from './constants/requestNames.mjs';
+import { REQUEST_SPAN_MAPPING } from './constants/spanNames.mjs';
+import { reserveMutation } from './graphql/mutation.mjs';
+import { reserveStatusQuery } from './graphql/query.mjs';
+import Logger from './logger.mjs';
+import Tracer from './tracer/index.mjs';
 import {
   getCheckoutBaseUrl,
   removeUndefinedFields,
-} from 'utils';
+} from './utils/index.mjs';
 
 const logger = new Logger('src/request.js');
 const { API_KEY } = process.env;

@@ -1,5 +1,6 @@
-import { FORMAT_HTTP_HEADERS } from '../opentracing';
-import lightstepTracer from './config';
+import lightstepTracer from './config.mjs';
+
+const FORMAT_HTTP_HEADERS = 'http_headers';
 
 class Tracer {
   constructor(parentTracerHeaders, additionalTags) {

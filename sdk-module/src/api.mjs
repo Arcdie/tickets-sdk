@@ -3,19 +3,19 @@ import {
   sendReserveRequest,
   sendReserveStatusRequest,
   sendRulesRequest,
-} from './request';
-import { createWebSocketClient } from '/websocket';
+} from './request.mjs';
+import { createWebSocketClient } from './websocket.mjs';
 import {
   RESERVE_FAILURE,
   RESERVE_COMPLETE_TIMEOUT_EXCEEDED,
   RESERVE_COMPLETE_WS_ERROR,
   RESERVE_COMPLETE_WS_MESSAGE_ERROR,
-} from 'constants/errors';
-import { reserveCompleteSubscription } from '/graphql/subscription';
-import { STATUS_PROCESSING, STATUS_SUCCESS } from '/constants/status';
-import Logger from 'logger';
-import { RESERVE_START } from '/constants/cookies';
-import { setCookie } from 'cookies';
+} from './constants/errors.mjs';
+import { reserveCompleteSubscription } from './graphql/subscription.mjs';
+import { STATUS_PROCESSING, STATUS_SUCCESS } from './constants/status.mjs';
+import Logger from './logger.mjs';
+import { RESERVE_START } from './constants/cookies.mjs';
+import { setCookie } from './cookies.mjs';
 
 const logger = new Logger('src/api.js');
 

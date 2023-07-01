@@ -2,7 +2,7 @@
 
 import fetch from 'isomorphic-fetch';
 import cookies from 'cookies-js';
-import { getCheckoutBaseUrl } from 'utils';
+import { getCheckoutBaseUrl } from './utils/index.mjs';
 
 const LOG_ENDPOINT = `${getCheckoutBaseUrl()}/api/log`;
 

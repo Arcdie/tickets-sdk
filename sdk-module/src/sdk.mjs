@@ -1,36 +1,36 @@
 /* eslint camelcase: ["error", {properties: "never"}] */
-import '../core_modules/regenerator-runtime/runtime';
-import { v1 } from '../core_modules/uuid';
+import 'regenerator-runtime';
+import { v1 } from 'uuid';
 import {
   getRules,
   pollReserveStatus,
   reserve,
   subscribeToReserveComplete,
-} from './api';
+} from './api.mjs';
 import {
   HEADER_TITLE,
   HIDE_LEFT_PANEL,
   INTEGRATOR_ID,
   PLACEMENT_ID,
   SHOW_HEADER,
-} from './constants/accounts';
-import { LANGUAGE } from './constants/cookies';
-import { RADIX_DECIMAL } from './constants/math';
-import { DESKTOP, MOBILE } from './constants/devices';
-import { DESKTOP_MIN_WIDTH } from './constants/media';
-import { RESERVE_PARENT_SPAN } from './constants/spanNames';
-import { SYSTEM_CO2, SYSTEM_RCO } from './constants/system';
+} from './constants/accounts.mjs';
+import { LANGUAGE } from './constants/cookies.mjs';
+import { RADIX_DECIMAL } from './constants/math.mjs';
+import { DESKTOP, MOBILE } from './constants/devices.mjs';
+// import { DESKTOP_MIN_WIDTH } from './constants/media.mjs';
+import { RESERVE_PARENT_SPAN } from './constants/spanNames.mjs';
+import { SYSTEM_CO2, SYSTEM_RCO } from './constants/system.mjs';
 
-import { getCookie } from './cookies';
-import Logger from './logger';
-import { processReserveRequestMetric } from './metrics';
+import { getCookie } from './cookies.mjs';
+import Logger from './logger.mjs';
+import { processReserveRequestMetric } from './metrics.mjs';
 import {
   getMatchingRules,
   getSystemFromRules,
   isCO2,
-} from './rules';
-import Tracer from './tracer';
-import { tracer } from './tracer/config';
+} from './rules.mjs';
+import Tracer from './tracer/index.mjs';
+import { tracer } from './tracer/config.mjs';
 import {
   getCheckoutBaseUrl,
   getCheckoutBaseUrlOverride,
@@ -39,8 +39,8 @@ import {
   getLoginPageBaseUrl,
   getTickets,
   removeUndefinedFields,
-} from './utils';
-import { deriveChannelId } from './utils/channelId';
+} from './utils/index.mjs';
+import { deriveChannelId } from './utils/channelId.mjs';
 
 const logger = new Logger('src/sdk.js');
 
@@ -151,7 +151,7 @@ class CheckoutSDK {
     const { host, search } = window.location;
     const isAppview = getIsAppview();
 
-    const media = window.matchMedia(`(max-width: ${DESKTOP_MIN_WIDTH - 1}px)`);
+    const media = window.matchMedia(`(max-width: ${1000 - 1}px)`);
     const deviceType = media?.matches ? MOBILE : DESKTOP;
 
     const derivedChannel = deriveChannelId({

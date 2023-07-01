@@ -1,5 +1,6 @@
 // const Window = require('./window.js');
-const Window = require('./window');
+
+import Window from './window.mjs';
 
 // Default jsdom config.
 // These settings must override any custom settings to make sure we can iterate
@@ -49,4 +50,4 @@ const browserEnv = function () {
   return window;
 };
 
-module.exports = browserEnv;
+export default browserEnv;

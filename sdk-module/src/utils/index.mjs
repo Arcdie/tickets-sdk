@@ -1,4 +1,4 @@
-import { DOMAIN_DATA, TM_IE, TM_MX, TM_UK } from '../constants/domains';
+import { DOMAIN_DATA, TM_IE, TM_MX, TM_UK } from '../constants/domains.mjs';
 
 export const removeUndefinedFields = (obj) => JSON.parse(JSON.stringify(obj));
 
@@ -45,6 +45,8 @@ export const getDomainData = () => {
       domainData = DOMAIN_DATA.TM_MX;
     }
   }
+
+  console.log('domainData', domainData);
 
   return domainData || DOMAIN_DATA.default;
 };

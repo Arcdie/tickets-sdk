@@ -1,4 +1,4 @@
-import { getCookie, setCookie } from 'cookies';
+import { getCookie, setCookie } from './cookies.mjs';
 
 export const processReserveRequestMetric = ({ requestId }) => {
   const cookieMetricValues = JSON.parse(getCookie(requestId) || '{}');

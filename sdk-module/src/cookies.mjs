@@ -1,5 +1,5 @@
-import cookies from 'cookies-js';
-import { getCookieDomain } from 'utils';
+import cookies from 'cookies-js/dist/cookies.js';
+import { getCookieDomain } from './utils/index.mjs';
 
 export const setCookie = (name, value) => {
   const domain = getCookieDomain();
