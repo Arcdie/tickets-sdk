@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import '../libs/setEnvironment.mjs';
 import browserEnv from './browserEnv.mjs';
 import { getProxyAgent } from '../libs/proxyAgent.mjs';
 

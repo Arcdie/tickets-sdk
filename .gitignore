@@ -12,3 +12,4 @@ sdk-module/node_modules/
 .DS_Store
 /dist
 Thumbs.db
+.env

@@ -11,6 +11,7 @@
     "browser-env": "^3.3.0",
     "cookies-js": "^1.2.3",
     "crypto": "^1.0.1",
+    "dotenv": "^16.3.1",
     "https-proxy-agent": "^7.0.0",
     "isomorphic-fetch": "^3.0.0",
     "lightstep-tracer": "^0.35.0-no-protobuf",
