@@ -30,7 +30,7 @@ const RESERVE_POLLING_MAX_RETRIES = Math.floor(RESERVE_POLLING_TIMEOUT / RESERVE
 
 const isReserveSuccessful = (requestId, status) => requestId && status && [STATUS_SUCCESS, 'IN', 'IP'].includes(status.toUpperCase());
 
-const handleReserveResponse = ({ data: { reserve } = {} }) => {
+const handleReserveResponse = ({ data: { reserve } = {} }, proxyAgent) => {
   const { errors = [], requestId, status } = reserve;
   const reserveStartTime = window.sessionStorage.getItem(RESERVE_START);
   setCookie(requestId, JSON.stringify({ RESERVE_START: reserveStartTime }));
@@ -44,7 +44,7 @@ const handleReserveResponse = ({ data: { reserve } = {} }) => {
 
     errorMessage = `${message} (${code})`;
 
-    logger.error({ data: errorMessage, requestId });
+    logger.error({ data: errorMessage, requestId }, proxyAgent);
 
     return {
       ...reserve,
@@ -55,7 +55,7 @@ const handleReserveResponse = ({ data: { reserve } = {} }) => {
   if (!isReserveSuccessful(requestId, status)) {
     errorMessage = RESERVE_FAILURE;
 
-    logger.error({ data: errorMessage, requestId });
+    logger.error({ data: errorMessage, requestId }, proxyAgent);
 
     return {
       ...reserve,
@@ -68,15 +68,15 @@ const handleReserveResponse = ({ data: { reserve } = {} }) => {
   return reserve;
 };
 
-export const getRegion = (eventId) => sendRegionRequest(eventId);
+export const getRegion = (eventId, proxyAgent) => sendRegionRequest(eventId, proxyAgent);
 
-export const getRules = (eventId) => sendRulesRequest(eventId);
+export const getRules = (eventId, proxyAgent) => sendRulesRequest(eventId, proxyAgent);
 
-export const reserve = ({ eventId, parentSpanHeaders, region, reserveInput, smartQueueToken, spanHeaders, toolspreview }) => {
+export const reserve = ({ eventId, parentSpanHeaders, region, reserveInput, smartQueueToken, spanHeaders, toolspreview }, proxyAgent) => {
   window.sessionStorage.setItem(RESERVE_START, Date.now());
 
-  return sendReserveRequest({ eventId, parentSpanHeaders, region, reserveInput, smartQueueToken, spanHeaders, toolspreview })
-    .then(handleReserveResponse);
+  return sendReserveRequest({ eventId, parentSpanHeaders, region, reserveInput, smartQueueToken, spanHeaders, toolspreview }, proxyAgent)
+    .then(data => handleReserveResponse(data, proxyAgent));
 };
 
 function delayPromise(interval) {
@@ -85,13 +85,13 @@ function delayPromise(interval) {
   });
 }
 
-export const pollReserveStatus = ({ count = 1, eventId, parentSpanHeaders, requestId }) => {
-  return sendReserveStatusRequest({ eventId, parentSpanHeaders, requestId }).then(({ data = {} }) => {
+export const pollReserveStatus = ({ count = 1, eventId, parentSpanHeaders, requestId }, proxyAgent) => {
+  return sendReserveStatusRequest({ eventId, parentSpanHeaders, requestId }, proxyAgent).then(({ data = {} }) => {
     const { getReserveStatus = {} } = data;
     const { status, errors = [] } = getReserveStatus;
 
     if (count < RESERVE_POLLING_MAX_RETRIES && status === STATUS_PROCESSING) {
-      return delayPromise(RESERVE_POLLING_INTERVAL).then(() => pollReserveStatus({ count: count + 1, eventId, parentSpanHeaders, requestId }));
+      return delayPromise(RESERVE_POLLING_INTERVAL).then(() => pollReserveStatus({ count: count + 1, eventId, parentSpanHeaders, requestId }, proxyAgent));
     } else if (isReserveSuccessful(requestId, status)) {
       return Promise.resolve(getReserveStatus);
     }
@@ -106,7 +106,7 @@ export const subscribeToReserveComplete = (
     onSubscribe,
     region,
     requestorId,
-  }
+  }, proxyAgent,
 ) => {
   return new Promise((resolve, reject) => {
     const SUBSCRIPTION_API_KEY_WEST = 'da2-pbjuejzc5rac3fspc2ozvtouxy';
@@ -125,7 +125,7 @@ export const subscribeToReserveComplete = (
 
     const handleWebsocketError = (error) => {
       console.log('error', error);
-      error && error.message && logger.error({ data: error.message, requestorId });
+      error && error.message && logger.error({ data: error.message, requestorId }, proxyAgent);
       client && client.close && client.close();
 
       if (!subscribed) {
@@ -150,7 +150,7 @@ export const subscribeToReserveComplete = (
       client = createWebSocketClient({
         apiKey,
         host,
-      });
+      }, proxyAgent);
 
       setTimeout(() => {
         handleWebsocketError(new Error(RESERVE_COMPLETE_TIMEOUT_EXCEEDED));

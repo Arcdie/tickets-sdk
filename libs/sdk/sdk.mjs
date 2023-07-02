@@ -44,7 +44,7 @@ import { deriveChannelId } from './utils/channelId.mjs';
 const logger = new Logger('src/sdk.js');
 
 class CheckoutSDK {
-  constructor({ eventId, region = 'east', smartQueueToken }) {
+  constructor({ eventId, region = 'east', smartQueueToken }, proxyAgent) {
     this.accessTokenValid = false;
     this.eventId = eventId;
     this.region = region;
@@ -52,6 +52,7 @@ class CheckoutSDK {
     this.requiresSessionInvalidation = false;
     this.requestId = null;
     this.smartQueueToken = smartQueueToken;
+    this.proxyAgent = proxyAgent;
   }
 
   loadCheckout({
@@ -150,6 +151,7 @@ class CheckoutSDK {
     const { host, search } = window.location;
     const isAppview = getIsAppview();
     const deviceType = DESKTOP;
+    const { proxyAgent } = this;
 
     const derivedChannel = deriveChannelId({
       clubSiteId,
@@ -179,7 +181,7 @@ class CheckoutSDK {
 
     let rules = [];
     try {
-      rules = await getRules(eventId);
+      rules = await getRules(eventId, proxyAgent);
     } catch (error) {
      return Promise.reject(error);
     }
@@ -235,7 +237,7 @@ class CheckoutSDK {
         reserveInput,
         smartQueueToken,
         toolspreview,
-      })
+      }, proxyAgent)
       .then(({ error, requestId }) => {
         if (error) {
           console.log('onSubscribe.error', error);
@@ -250,7 +252,7 @@ class CheckoutSDK {
           onSubscribe,
           region,
           requestorId,
-        })
+        }, proxyAgent)
         .then((subscriptionResponse) => {
           const { pollingRequired = null } = subscriptionResponse;
 
@@ -259,12 +261,12 @@ class CheckoutSDK {
               eventId: this.eventId,
               parentSpanHeaders,
               requestId: this.requestId,
-            })
+            }, this.proxyAgent)
             .then((pollingResponse) => {
               onReserveCompleteSuccess(pollingResponse);
             })
             .catch((error) => {
-              logger.error({ data: error.message, requestId: this.requestId });
+              logger.error({ data: error.message, requestId: this.requestId }, proxyAgent);
 
               reject(error);
             });
@@ -273,7 +275,7 @@ class CheckoutSDK {
           }
         })
         .catch(error => {
-          logger.error({ data: error.message, requestId: this.requestId });
+          logger.error({ data: error.message, requestId: this.requestId }, proxyAgent);
           parentTracerSpan.logError(error.message);
           parentTracerSpan.finishSpan();
           reject(error);

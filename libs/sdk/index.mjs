@@ -10,16 +10,16 @@ import Logger from './logger.mjs';
 
 const logger = new Logger('src/index.js');
 
-const init = ({ eventId, smartQueueToken }) => {
+const init = ({ eventId, smartQueueToken }, proxyAgent) => {
   return new Promise((resolve, reject) => {
     if (!eventId) {
-      logger.warn(EVENT_ID_REQUIRED);
+      logger.warn(EVENT_ID_REQUIRED, proxyAgent);
       return reject(new Error(EVENT_ID_REQUIRED));
     }
 
-    return getRegion(eventId)
+    return getRegion(eventId, proxyAgent)
       .then(
-        ({ region }) => resolve(new SDK({ eventId, region, smartQueueToken }))
+        ({ region }) => resolve(new SDK({ eventId, region, smartQueueToken }, proxyAgent))
       )
       .catch(reject);
   });

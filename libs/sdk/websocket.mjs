@@ -3,7 +3,7 @@ import WebSocket from 'ws';
 export const createWebSocketClient = ({
   apiKey,
   host,
-}) => {
+}, proxyAgent) => {
   const headers = btoa(JSON.stringify({
     host,
     'x-api-key': apiKey,
@@ -15,6 +15,6 @@ export const createWebSocketClient = ({
   return new WebSocket(
     url,
     'graphql-ws',
-    { agent: window.proxyAgent }
+    { agent: proxyAgent }
   );
 }

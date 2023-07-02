@@ -40,7 +40,7 @@ const getRequestHeaders = (headers = {}, eventId, requestName) => removeUndefine
   ...headers,
 });
 
-const handleResponse = ({ channelId, correlationId, isLightstepEnabled = true, requestName, response, span, url }) => {
+const handleResponse = ({ channelId, correlationId, isLightstepEnabled = true, requestName, response, span, url }, proxyAgent) => {
   const { status, statusText } = response;
 
   // order log importance
@@ -61,12 +61,12 @@ const handleResponse = ({ channelId, correlationId, isLightstepEnabled = true, r
     throw new Error(`${statusText} (${status})`);
   }
 
-  logger.info(logContent);
+  logger.info(logContent, proxyAgent);
 
   return response.json();
 };
 
-const handleError = ({ correlationId, err, isLightstepEnabled = true, requestName, span, url }) => {
+const handleError = ({ correlationId, err, isLightstepEnabled = true, requestName, span, url }, proxyAgent) => {
   // order log importance
   const content = {
     message: err.message,
@@ -79,12 +79,12 @@ const handleError = ({ correlationId, err, isLightstepEnabled = true, requestNam
     span.finishSpan();
   }
 
-  logger.error({ correlationId, data: content });
+  logger.error({ correlationId, data: content }, proxyAgent);
 
   throw err;
 };
 
-const sendGraphQLRequest = ({ additionalHeaders = {}, eventId, parentSpanHeaders = {}, requestId, requestInput, requestName }) => {
+const sendGraphQLRequest = ({ additionalHeaders = {}, eventId, parentSpanHeaders = {}, requestId, requestInput, requestName }, proxyAgent) => {
   const span = new Tracer(parentSpanHeaders, removeUndefinedFields({ 'tm.correlation_id': v1(), 'tm.request_id': requestId }));
   span.startSpan(REQUEST_SPAN_MAPPING[requestName]);
   const spanHeaders = span.getSpanHeaders();
@@ -95,7 +95,7 @@ const sendGraphQLRequest = ({ additionalHeaders = {}, eventId, parentSpanHeaders
   const url = `${getCheckoutBaseUrl()}/graphql`;
 
   return fetch(url, {
-    agent: window.proxyAgent,
+    agent: proxyAgent,
     body: JSON.stringify(requestInput),
     headers: {
       ...headers,
@@ -103,7 +103,7 @@ const sendGraphQLRequest = ({ additionalHeaders = {}, eventId, parentSpanHeaders
     },
     ...getRequestOptions(),
   })
-  .then(response => handleResponse({ channelId: requestInput.variables?.reserveInput?.requestContext?.channel, correlationId, requestName, response, span, url }))
+  .then(response => handleResponse({ channelId: requestInput.variables?.reserveInput?.requestContext?.channel, correlationId, requestName, response, span, url }, proxyAgent))
   .then(response => {
     const { errors: [{ message }] = [{}] } = response;
 
@@ -117,36 +117,36 @@ const sendGraphQLRequest = ({ additionalHeaders = {}, eventId, parentSpanHeaders
 
     return response;
   })
-  .catch(err => handleError({ correlationId, err, requestName, span, url }));
+  .catch(err => handleError({ correlationId, err, requestName, span, url }, proxyAgent));
 };
 
-export const sendRegionRequest = (eventId) => {
+export const sendRegionRequest = (eventId, proxyAgent) => {
   const url = `${getCheckoutBaseUrl()}/region`;
   const headers = getRequestHeaders({}, eventId, REGION);
   const correlationId = headers['TMPS-Correlation-Id'];
 
   return fetch(url, {
-    agent: window.proxyAgent,
+    agent: proxyAgent,
     headers: { cookie: document.cookie },
   })
-    .then(response => handleResponse({ requestName: REGION, response, url }))
-    .catch(err => handleError({ correlationId, err, requestName: REGION, url }));
+    .then(response => handleResponse({ requestName: REGION, response, url }, proxyAgent))
+    .catch(err => handleError({ correlationId, err, requestName: REGION, url }, proxyAgent));
 };
 
-export const sendRulesRequest = (eventId) => {
+export const sendRulesRequest = (eventId, proxyAgent) => {
   const url = `${getCheckoutBaseUrl()}/api/rules?eventId=${eventId}`;
   const headers = getRequestHeaders({}, eventId, RULES);
   const correlationId = headers['TMPS-Correlation-Id'];
 
   return fetch(url, {
-    agent: window.proxyAgent,
+    agent: proxyAgent,
     headers: { cookie: document.cookie },
   })
-  .then(response => handleResponse({ requestName: RULES, response, url }))
-  .catch(err => handleError({ correlationId, err, requestName: RULES, url }));
+  .then(response => handleResponse({ requestName: RULES, response, url }, proxyAgent))
+  .catch(err => handleError({ correlationId, err, requestName: RULES, url }, proxyAgent));
 };
 
-export const sendReserveRequest = ({ eventId, parentSpanHeaders, region, reserveInput, smartQueueToken, toolspreview }) => {
+export const sendReserveRequest = ({ eventId, parentSpanHeaders, region, reserveInput, smartQueueToken, toolspreview }, proxyAgent) => {
   const requestInput = {
     query: reserveMutation,
     variables: { reserveInput },
@@ -167,10 +167,10 @@ export const sendReserveRequest = ({ eventId, parentSpanHeaders, region, reserve
     parentSpanHeaders,
     requestInput,
     requestName: RESERVE,
-  });
+  }, proxyAgent);
 };
 
-export const sendReserveStatusRequest = ({ eventId, parentSpanHeaders, requestId }) => {
+export const sendReserveStatusRequest = ({ eventId, parentSpanHeaders, requestId }, proxyAgent) => {
   const requestInput = {
     query: reserveStatusQuery,
     variables: { requestId },
@@ -182,5 +182,5 @@ export const sendReserveStatusRequest = ({ eventId, parentSpanHeaders, requestId
     requestId,
     requestInput,
     requestName: RESERVE_STATUS,
-  });
+  }, proxyAgent);
 };

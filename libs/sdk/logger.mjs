@@ -22,7 +22,7 @@ const getLogMeta = ({ correlationId, requestId, requestorId }) => {
   return meta;
 };
 
-const sendLog = ({ correlationId, data, logLevel, requestId, requestorId, source }) => {
+const sendLog = ({ correlationId, data, logLevel, requestId, requestorId, source }, proxyAgent) => {
   let content = {};
 
   if (data && typeof data === 'object') {
@@ -44,7 +44,7 @@ const sendLog = ({ correlationId, data, logLevel, requestId, requestorId, source
   };
 
   fetch(LOG_ENDPOINT, {
-    agent: window.proxyAgent,
+    agent: proxyAgent,
     body: JSON.stringify(logRequest),
     headers: {
       'Content-Type': 'application/json',
@@ -66,19 +66,19 @@ export default class ClientLogger {
     this.source = source;
   }
 
-  error({ correlationId, data, requestId, requestorId }) {
+  error({ correlationId, data, requestId, requestorId }, proxyAgent) {
     sendLog({ correlationId, data, logLevel: 'error', requestId, requestorId, source: this.source });
   }
 
-  warn(data) {
-    sendLog({ data, logLevel: 'warn', source: this.source });
+  warn(data, proxyAgent) {
+    sendLog({ data, logLevel: 'warn', source: this.source }, proxyAgent);
   }
 
-  info(data) {
-    sendLog({ data, logLevel: 'info', source: this.source });
+  info(data, proxyAgent) {
+    sendLog({ data, logLevel: 'info', source: this.source }, proxyAgent);
   }
 
-  debug(data) {
-    sendLog({ data, logLevel: 'debug', source: this.source });
+  debug(data, proxyAgent) {
+    sendLog({ data, logLevel: 'debug', source: this.source }, proxyAgent);
   }
 }
