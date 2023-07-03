@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "./src/app.mjs",
   "scripts": {
-    "start": "node ./src/app.mjs"
+    "start": "node ./src/app"
   },
   "author": "",
   "license": "ISC",
@@ -16,10 +16,12 @@
     "isomorphic-fetch": "^3.0.0",
     "jsdom": "^22.1.0",
     "lightstep-tracer": "^0.35.0-no-protobuf",
+    "node-fetch": "^2.6.12",
     "opentracing": "^0.14.7",
     "regenerator-runtime": "^0.13.11",
     "uuid": "^9.0.0",
     "whatwg-fetch": "^3.6.2",
-    "ws": "^8.13.0"
+    "ws": "^8.13.0",
+    "xhr2": "^0.2.1"
   }
 }

@@ -1,10 +1,9 @@
+const nodeFetch = require('node-fetch');
 const { JSDOM } = require('jsdom');
 
 require('./libs/setEnvironment');
 const RASSDK = require('./rasSdk');
 const { getProxyAgent } = require('./libs/proxyAgent');
-
-const nativeFetch = fetch;
 
 const subsOnce = async eventId => {
   let oldSet = new Set();
@@ -31,7 +30,7 @@ const subsOnce = async eventId => {
 
     args[1].agent = proxyAgent;
     console.log('fetchLocal', args);
-    return nativeFetch(...args);
+    return nodeFetch(...args);
   };
 
   const { window } = initJSDOM();
