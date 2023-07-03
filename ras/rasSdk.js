@@ -1,58 +1,36 @@
-const { JSDOM } = require('jsdom');
-const WebSocketByProxy = require('./libs/ws'); // for debugging, replace with require('ws');
+const CustomWebSocket = require('./libs/ws'); // for debugging, replace with require('ws');
 
+/* for debugging
 const nativeFetch = fetch;
-
-const initJSDOM = () => {
-  return new JSDOM('', {
-    features: {
-      FetchExternalResources: false,
-      ProcessExternalResources: false
-    }
-  });
+fetch = (...args) => {
+  console.log('fetchGlobal', args);
+  return nativeFetch(...args);
 };
+// */
 
-const initRasSDK = (settings, proxyAgent) => {
-  const fetch = (...args) => {
-    if (!args[1]) {
-      args[1] = {};
-    }
+const initRasSDK = (settings, {
+  fetch,
+  window,
+  document,
+  proxyAgent,
+}) => {
+  global.WebSocket = window.WebSocket = window.MozWebSocket = CustomWebSocket;
+ 
+  /*! For license information please see ras-sdk-v0.js.LICENSE.txt */
+  return (function (t, e) {
+    const RASSDK = e();
+    'object' == typeof exports && 'object' == typeof module
+      ? (module.exports = e())
+      : 'function' == typeof define && define.amd
+        ? define([], e)
+        : 'object' == typeof exports
+          ? (exports.RASSDK = e())
+          : (exports.RASSDK = e());
 
-    args[1].agent = proxyAgent;
-    console.log('fetch', args);
-    return nativeFetch(...args);
-  };
-
-  const {
-    window,
-    document,
-  } = initJSDOM();
-
-  return RASSDK(settings, {
-    fetch,
-    window,
-    document,
-    proxyAgent,
-  });
-};
-
-/*! For license information please see ras-sdk-v0.js.LICENSE.txt */
-const RASSDK = (function (t, e) {
-  const RASSDK = e();
-  'object' == typeof exports && 'object' == typeof module
-    ? (module.exports = e())
-    : 'function' == typeof define && define.amd
-    ? define([], e)
-    : 'object' == typeof exports
-    ? (exports.RASSDK = e())
-    : (exports.RASSDK = e());
-
-  return RASSDK;
-})(this, () =>
-  (() => {
-    let window, document, fetch, proxyAgent;
-
-    var t = {
+    return RASSDK;
+  })(this, () =>
+    (() => {
+      var t = {
         113: (t, e) => {
           'use strict';
           var r, n, i, o, s, a;
@@ -88,9 +66,9 @@ const RASSDK = (function (t, e) {
                   var n = this.bb.__offset(this.bb_pos, 8);
                   return n
                     ? (e || new r.ticketmaster.supermap.avsc.v1.AreaAttribute()).__init(
-                        this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * t),
-                        this.bb,
-                      )
+                      this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * t),
+                      this.bb,
+                    )
                     : null;
                 }),
                 (t.prototype.areaAttributesLength = function () {
@@ -101,9 +79,9 @@ const RASSDK = (function (t, e) {
                   var n = this.bb.__offset(this.bb_pos, 10);
                   return n
                     ? (e || new r.ticketmaster.supermap.avsc.v1.AttributeCategory()).__init(
-                        this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * t),
-                        this.bb,
-                      )
+                      this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * t),
+                      this.bb,
+                    )
                     : null;
                 }),
                 (t.prototype.seatCategoriesLength = function () {
@@ -183,9 +161,9 @@ const RASSDK = (function (t, e) {
                             var r = this.bb.__offset(this.bb_pos, 4);
                             return r
                               ? (e || new t.ticketmaster.supermap.avsc.v1.Attribute()).__init(
-                                  this.bb.__indirect(this.bb_pos + r),
-                                  this.bb,
-                                )
+                                this.bb.__indirect(this.bb_pos + r),
+                                this.bb,
+                              )
                               : null;
                           }),
                           (e.prototype.groupId = function () {
@@ -263,10 +241,10 @@ const RASSDK = (function (t, e) {
                             var t = this.bb.__offset(this.bb_pos, 6);
                             return t
                               ? new Uint8Array(
-                                  this.bb.bytes().buffer,
-                                  this.bb.bytes().byteOffset + this.bb.__vector(this.bb_pos + t),
-                                  this.bb.__vector_len(this.bb_pos + t),
-                                )
+                                this.bb.bytes().buffer,
+                                this.bb.bytes().byteOffset + this.bb.__vector(this.bb_pos + t),
+                                this.bb.__vector_len(this.bb_pos + t),
+                              )
                               : null;
                           }),
                           (t.prototype.restricted = function () {
@@ -340,9 +318,9 @@ const RASSDK = (function (t, e) {
                             var n = this.bb.__offset(this.bb_pos, 6);
                             return n
                               ? (r || new t.ticketmaster.supermap.avsc.v1.Attribute()).__init(
-                                  this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * e),
-                                  this.bb,
-                                )
+                                this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * e),
+                                this.bb,
+                              )
                               : null;
                           }),
                           (e.prototype.attributesLength = function () {
@@ -455,9 +433,9 @@ const RASSDK = (function (t, e) {
                   var n = this.bb.__offset(this.bb_pos, 24);
                   return n
                     ? (e || new r.ticketmaster.supermap.avsc.v1.StringRoaringBitmapPair()).__init(
-                        this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * t),
-                        this.bb,
-                      )
+                      this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * t),
+                      this.bb,
+                    )
                     : null;
                 }),
                 (t.prototype.statusesLength = function () {
@@ -468,9 +446,9 @@ const RASSDK = (function (t, e) {
                   var e = this.bb.__offset(this.bb_pos, 26);
                   return e
                     ? (t || new r.ticketmaster.supermap.avsc.v1.SectionCounts()).__init(
-                        this.bb.__indirect(this.bb_pos + e),
-                        this.bb,
-                      )
+                      this.bb.__indirect(this.bb_pos + e),
+                      this.bb,
+                    )
                     : null;
                 }),
                 (t.startAvailability = function (t) {
@@ -590,10 +568,10 @@ const RASSDK = (function (t, e) {
                             var t = this.bb.__offset(this.bb_pos, 6);
                             return t
                               ? new Uint8Array(
-                                  this.bb.bytes().buffer,
-                                  this.bb.bytes().byteOffset + this.bb.__vector(this.bb_pos + t),
-                                  this.bb.__vector_len(this.bb_pos + t),
-                                )
+                                this.bb.bytes().buffer,
+                                this.bb.bytes().byteOffset + this.bb.__vector(this.bb_pos + t),
+                                this.bb.__vector_len(this.bb_pos + t),
+                              )
                               : null;
                           }),
                           (t.startStringRoaringBitmapPair = function (t) {
@@ -663,9 +641,9 @@ const RASSDK = (function (t, e) {
                             var n = this.bb.__offset(this.bb_pos, 8);
                             return n
                               ? (r || new t.ticketmaster.supermap.avsc.v1.StatusCounts()).__init(
-                                  this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * e),
-                                  this.bb,
-                                )
+                                this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * e),
+                                this.bb,
+                              )
                               : null;
                           }),
                           (e.prototype.statusCountsLength = function () {
@@ -676,9 +654,9 @@ const RASSDK = (function (t, e) {
                             var n = this.bb.__offset(this.bb_pos, 10);
                             return n
                               ? (r || new t.ticketmaster.supermap.avsc.v1.PriceKeyCounts()).__init(
-                                  this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * e),
-                                  this.bb,
-                                )
+                                this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * e),
+                                this.bb,
+                              )
                               : null;
                           }),
                           (e.prototype.priceKeyCountsLength = function () {
@@ -689,9 +667,9 @@ const RASSDK = (function (t, e) {
                             var n = this.bb.__offset(this.bb_pos, 12);
                             return n
                               ? (r || new t.ticketmaster.supermap.avsc.v1.GroupCounts()).__init(
-                                  this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * e),
-                                  this.bb,
-                                )
+                                this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * e),
+                                this.bb,
+                              )
                               : null;
                           }),
                           (e.prototype.groupCountsLength = function () {
@@ -785,9 +763,9 @@ const RASSDK = (function (t, e) {
                             var n = this.bb.__offset(this.bb_pos, 4);
                             return n
                               ? (r || new t.ticketmaster.supermap.avsc.v1.StatusCount()).__init(
-                                  this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * e),
-                                  this.bb,
-                                )
+                                this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * e),
+                                this.bb,
+                              )
                               : null;
                           }),
                           (e.prototype.itemsLength = function () {
@@ -944,9 +922,9 @@ const RASSDK = (function (t, e) {
                             var n = this.bb.__offset(this.bb_pos, 4);
                             return n
                               ? (r || new t.ticketmaster.supermap.avsc.v1.StatusCountsByPriceKey()).__init(
-                                  this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * e),
-                                  this.bb,
-                                )
+                                this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * e),
+                                this.bb,
+                              )
                               : null;
                           }),
                           (e.prototype.itemsLength = function () {
@@ -1004,9 +982,9 @@ const RASSDK = (function (t, e) {
                             var n = this.bb.__offset(this.bb_pos, 4);
                             return n
                               ? (r || new t.ticketmaster.supermap.avsc.v1.StatusCountsByGroup()).__init(
-                                  this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * e),
-                                  this.bb,
-                                )
+                                this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * e),
+                                this.bb,
+                              )
                               : null;
                           }),
                           (e.prototype.itemsLength = function () {
@@ -1068,9 +1046,9 @@ const RASSDK = (function (t, e) {
                             var n = this.bb.__offset(this.bb_pos, 6);
                             return n
                               ? (r || new t.ticketmaster.supermap.avsc.v1.Count()).__init(
-                                  this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * e),
-                                  this.bb,
-                                )
+                                this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * e),
+                                this.bb,
+                              )
                               : null;
                           }),
                           (e.prototype.countsLength = function () {
@@ -1140,9 +1118,9 @@ const RASSDK = (function (t, e) {
                             var n = this.bb.__offset(this.bb_pos, 6);
                             return n
                               ? (r || new t.ticketmaster.supermap.avsc.v1.Count()).__init(
-                                  this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * e),
-                                  this.bb,
-                                )
+                                this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * e),
+                                this.bb,
+                              )
                               : null;
                           }),
                           (e.prototype.countsLength = function () {
@@ -1215,27 +1193,27 @@ const RASSDK = (function (t, e) {
                   var e = this.bb.__offset(this.bb_pos, 4);
                   return e
                     ? (t || new r.ticketmaster.supermap.avsc.v1.Pricing()).__init(
-                        this.bb.__indirect(this.bb_pos + e),
-                        this.bb,
-                      )
+                      this.bb.__indirect(this.bb_pos + e),
+                      this.bb,
+                    )
                     : null;
                 }),
                 (t.prototype.seats = function (t) {
                   var e = this.bb.__offset(this.bb_pos, 6);
                   return e
                     ? (t || new r.ticketmaster.supermap.avsc.v1.Seats()).__init(
-                        this.bb.__indirect(this.bb_pos + e),
-                        this.bb,
-                      )
+                      this.bb.__indirect(this.bb_pos + e),
+                      this.bb,
+                    )
                     : null;
                 }),
                 (t.prototype.sections = function (t) {
                   var e = this.bb.__offset(this.bb_pos, 8);
                   return e
                     ? (t || new r.ticketmaster.supermap.avsc.v1.Sections()).__init(
-                        this.bb.__indirect(this.bb_pos + e),
-                        this.bb,
-                      )
+                      this.bb.__indirect(this.bb_pos + e),
+                      this.bb,
+                    )
                     : null;
                 }),
                 (t.startEvent = function (t) {
@@ -1313,9 +1291,9 @@ const RASSDK = (function (t, e) {
                             var n = this.bb.__offset(this.bb_pos, 18);
                             return n
                               ? (r || new t.ticketmaster.supermap.avsc.v1.Group()).__init(
-                                  this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * e),
-                                  this.bb,
-                                )
+                                this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * e),
+                                this.bb,
+                              )
                               : null;
                           }),
                           (e.prototype.groupsLength = function () {
@@ -1326,9 +1304,9 @@ const RASSDK = (function (t, e) {
                             var n = this.bb.__offset(this.bb_pos, 20);
                             return n
                               ? (r || new t.ticketmaster.supermap.avsc.v1.Offer()).__init(
-                                  this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * e),
-                                  this.bb,
-                                )
+                                this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * e),
+                                this.bb,
+                              )
                               : null;
                           }),
                           (e.prototype.offersLength = function () {
@@ -1339,18 +1317,18 @@ const RASSDK = (function (t, e) {
                             var r = this.bb.__offset(this.bb_pos, 22);
                             return r
                               ? (e || new t.ticketmaster.supermap.avsc.v1.PriceKeys()).__init(
-                                  this.bb.__indirect(this.bb_pos + r),
-                                  this.bb,
-                                )
+                                this.bb.__indirect(this.bb_pos + r),
+                                this.bb,
+                              )
                               : null;
                           }),
                           (e.prototype.prices = function (e) {
                             var r = this.bb.__offset(this.bb_pos, 24);
                             return r
                               ? (e || new t.ticketmaster.supermap.avsc.v1.Prices()).__init(
-                                  this.bb.__indirect(this.bb_pos + r),
-                                  this.bb,
-                                )
+                                this.bb.__indirect(this.bb_pos + r),
+                                this.bb,
+                              )
                               : null;
                           }),
                           (e.startPricing = function (t) {
@@ -1639,9 +1617,9 @@ const RASSDK = (function (t, e) {
                             var r = this.bb.__offset(this.bb_pos, 26);
                             return r
                               ? (e || new t.ticketmaster.supermap.avsc.v1.GroupRef()).__init(
-                                  this.bb.__indirect(this.bb_pos + r),
-                                  this.bb,
-                                )
+                                this.bb.__indirect(this.bb_pos + r),
+                                this.bb,
+                              )
                               : null;
                           }),
                           (e.prototype.limit = function (e) {
@@ -1654,18 +1632,18 @@ const RASSDK = (function (t, e) {
                             var r = this.bb.__offset(this.bb_pos, 30);
                             return r
                               ? (e || new t.ticketmaster.supermap.avsc.v1.LearnMoreInformation()).__init(
-                                  this.bb.__indirect(this.bb_pos + r),
-                                  this.bb,
-                                )
+                                this.bb.__indirect(this.bb_pos + r),
+                                this.bb,
+                              )
                               : null;
                           }),
                           (e.prototype.enablement = function (e) {
                             var r = this.bb.__offset(this.bb_pos, 32);
                             return r
                               ? (e || new t.ticketmaster.supermap.avsc.v1.Enablement()).__init(
-                                  this.bb.__indirect(this.bb_pos + r),
-                                  this.bb,
-                                )
+                                this.bb.__indirect(this.bb_pos + r),
+                                this.bb,
+                              )
                               : null;
                           }),
                           (e.prototype.isSeatLevelPricing = function () {
@@ -1971,10 +1949,10 @@ const RASSDK = (function (t, e) {
                             var t = this.bb.__offset(this.bb_pos, 6);
                             return t
                               ? new Int32Array(
-                                  this.bb.bytes().buffer,
-                                  this.bb.bytes().byteOffset + this.bb.__vector(this.bb_pos + t),
-                                  this.bb.__vector_len(this.bb_pos + t),
-                                )
+                                this.bb.bytes().buffer,
+                                this.bb.bytes().byteOffset + this.bb.__vector(this.bb_pos + t),
+                                this.bb.__vector_len(this.bb_pos + t),
+                              )
                               : null;
                           }),
                           (t.prototype.priceIds = function (t) {
@@ -1989,10 +1967,10 @@ const RASSDK = (function (t, e) {
                             var t = this.bb.__offset(this.bb_pos, 8);
                             return t
                               ? new Int32Array(
-                                  this.bb.bytes().buffer,
-                                  this.bb.bytes().byteOffset + this.bb.__vector(this.bb_pos + t),
-                                  this.bb.__vector_len(this.bb_pos + t),
-                                )
+                                this.bb.bytes().buffer,
+                                this.bb.bytes().byteOffset + this.bb.__vector(this.bb_pos + t),
+                                this.bb.__vector_len(this.bb_pos + t),
+                              )
                               : null;
                           }),
                           (t.prototype.rawXPs = function (t, e) {
@@ -2106,10 +2084,10 @@ const RASSDK = (function (t, e) {
                             var t = this.bb.__offset(this.bb_pos, 6);
                             return t
                               ? new Int32Array(
-                                  this.bb.bytes().buffer,
-                                  this.bb.bytes().byteOffset + this.bb.__vector(this.bb_pos + t),
-                                  this.bb.__vector_len(this.bb_pos + t),
-                                )
+                                this.bb.bytes().buffer,
+                                this.bb.bytes().byteOffset + this.bb.__vector(this.bb_pos + t),
+                                this.bb.__vector_len(this.bb_pos + t),
+                              )
                               : null;
                           }),
                           (t.prototype.faceValues = function (t) {
@@ -2124,10 +2102,10 @@ const RASSDK = (function (t, e) {
                             var t = this.bb.__offset(this.bb_pos, 8);
                             return t
                               ? new Int32Array(
-                                  this.bb.bytes().buffer,
-                                  this.bb.bytes().byteOffset + this.bb.__vector(this.bb_pos + t),
-                                  this.bb.__vector_len(this.bb_pos + t),
-                                )
+                                this.bb.bytes().buffer,
+                                this.bb.bytes().byteOffset + this.bb.__vector(this.bb_pos + t),
+                                this.bb.__vector_len(this.bb_pos + t),
+                              )
                               : null;
                           }),
                           (t.prototype.facilityFees = function (t) {
@@ -2142,10 +2120,10 @@ const RASSDK = (function (t, e) {
                             var t = this.bb.__offset(this.bb_pos, 10);
                             return t
                               ? new Int32Array(
-                                  this.bb.bytes().buffer,
-                                  this.bb.bytes().byteOffset + this.bb.__vector(this.bb_pos + t),
-                                  this.bb.__vector_len(this.bb_pos + t),
-                                )
+                                this.bb.bytes().buffer,
+                                this.bb.bytes().byteOffset + this.bb.__vector(this.bb_pos + t),
+                                this.bb.__vector_len(this.bb_pos + t),
+                              )
                               : null;
                           }),
                           (t.prototype.serviceCharges = function (t) {
@@ -2160,10 +2138,10 @@ const RASSDK = (function (t, e) {
                             var t = this.bb.__offset(this.bb_pos, 12);
                             return t
                               ? new Int32Array(
-                                  this.bb.bytes().buffer,
-                                  this.bb.bytes().byteOffset + this.bb.__vector(this.bb_pos + t),
-                                  this.bb.__vector_len(this.bb_pos + t),
-                                )
+                                this.bb.bytes().buffer,
+                                this.bb.bytes().byteOffset + this.bb.__vector(this.bb_pos + t),
+                                this.bb.__vector_len(this.bb_pos + t),
+                              )
                               : null;
                           }),
                           (t.prototype.distanceCharges = function (t) {
@@ -2178,10 +2156,10 @@ const RASSDK = (function (t, e) {
                             var t = this.bb.__offset(this.bb_pos, 14);
                             return t
                               ? new Int32Array(
-                                  this.bb.bytes().buffer,
-                                  this.bb.bytes().byteOffset + this.bb.__vector(this.bb_pos + t),
-                                  this.bb.__vector_len(this.bb_pos + t),
-                                )
+                                this.bb.bytes().buffer,
+                                this.bb.bytes().byteOffset + this.bb.__vector(this.bb_pos + t),
+                                this.bb.__vector_len(this.bb_pos + t),
+                              )
                               : null;
                           }),
                           (t.prototype.faceValueTaxes = function (t) {
@@ -2196,10 +2174,10 @@ const RASSDK = (function (t, e) {
                             var t = this.bb.__offset(this.bb_pos, 16);
                             return t
                               ? new Int32Array(
-                                  this.bb.bytes().buffer,
-                                  this.bb.bytes().byteOffset + this.bb.__vector(this.bb_pos + t),
-                                  this.bb.__vector_len(this.bb_pos + t),
-                                )
+                                this.bb.bytes().buffer,
+                                this.bb.bytes().byteOffset + this.bb.__vector(this.bb_pos + t),
+                                this.bb.__vector_len(this.bb_pos + t),
+                              )
                               : null;
                           }),
                           (t.prototype.serviceChargeTaxes = function (t) {
@@ -2214,10 +2192,10 @@ const RASSDK = (function (t, e) {
                             var t = this.bb.__offset(this.bb_pos, 18);
                             return t
                               ? new Int32Array(
-                                  this.bb.bytes().buffer,
-                                  this.bb.bytes().byteOffset + this.bb.__vector(this.bb_pos + t),
-                                  this.bb.__vector_len(this.bb_pos + t),
-                                )
+                                this.bb.bytes().buffer,
+                                this.bb.bytes().byteOffset + this.bb.__vector(this.bb_pos + t),
+                                this.bb.__vector_len(this.bb_pos + t),
+                              )
                               : null;
                           }),
                           (t.prototype.serviceChargeTaxes2 = function (t) {
@@ -2232,10 +2210,10 @@ const RASSDK = (function (t, e) {
                             var t = this.bb.__offset(this.bb_pos, 20);
                             return t
                               ? new Int32Array(
-                                  this.bb.bytes().buffer,
-                                  this.bb.bytes().byteOffset + this.bb.__vector(this.bb_pos + t),
-                                  this.bb.__vector_len(this.bb_pos + t),
-                                )
+                                this.bb.bytes().buffer,
+                                this.bb.bytes().byteOffset + this.bb.__vector(this.bb_pos + t),
+                                this.bb.__vector_len(this.bb_pos + t),
+                              )
                               : null;
                           }),
                           (t.prototype.numSeatLevelPrices = function () {
@@ -2415,9 +2393,9 @@ const RASSDK = (function (t, e) {
                             var n = this.bb.__offset(this.bb_pos, 12);
                             return n
                               ? (r || new t.ticketmaster.supermap.avsc.v1.IntRoaringBitmapPair()).__init(
-                                  this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * e),
-                                  this.bb,
-                                )
+                                this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * e),
+                                this.bb,
+                              )
                               : null;
                           }),
                           (e.prototype.priceKeySetsLength = function () {
@@ -2428,9 +2406,9 @@ const RASSDK = (function (t, e) {
                             var n = this.bb.__offset(this.bb_pos, 14);
                             return n
                               ? (r || new t.ticketmaster.supermap.avsc.v1.IntRoaringBitmapPair()).__init(
-                                  this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * e),
-                                  this.bb,
-                                )
+                                this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * e),
+                                this.bb,
+                              )
                               : null;
                           }),
                           (e.prototype.groupSetsLength = function () {
@@ -2441,9 +2419,9 @@ const RASSDK = (function (t, e) {
                             var r = this.bb.__offset(this.bb_pos, 16);
                             return r
                               ? (e || new t.ticketmaster.supermap.avsc.v1.SeatLevelPriceKeySet()).__init(
-                                  this.bb.__indirect(this.bb_pos + r),
-                                  this.bb,
-                                )
+                                this.bb.__indirect(this.bb_pos + r),
+                                this.bb,
+                              )
                               : null;
                           }),
                           (e.startSeats = function (t) {
@@ -2541,10 +2519,10 @@ const RASSDK = (function (t, e) {
                             var t = this.bb.__offset(this.bb_pos, 4);
                             return t
                               ? new Uint8Array(
-                                  this.bb.bytes().buffer,
-                                  this.bb.bytes().byteOffset + this.bb.__vector(this.bb_pos + t),
-                                  this.bb.__vector_len(this.bb_pos + t),
-                                )
+                                this.bb.bytes().buffer,
+                                this.bb.bytes().byteOffset + this.bb.__vector(this.bb_pos + t),
+                                this.bb.__vector_len(this.bb_pos + t),
+                              )
                               : null;
                           }),
                           (t.prototype.keys = function (t) {
@@ -2559,10 +2537,10 @@ const RASSDK = (function (t, e) {
                             var t = this.bb.__offset(this.bb_pos, 6);
                             return t
                               ? new Int32Array(
-                                  this.bb.bytes().buffer,
-                                  this.bb.bytes().byteOffset + this.bb.__vector(this.bb_pos + t),
-                                  this.bb.__vector_len(this.bb_pos + t),
-                                )
+                                this.bb.bytes().buffer,
+                                this.bb.bytes().byteOffset + this.bb.__vector(this.bb_pos + t),
+                                this.bb.__vector_len(this.bb_pos + t),
+                              )
                               : null;
                           }),
                           (t.startSeatLevelPriceKeySet = function (t) {
@@ -2640,9 +2618,9 @@ const RASSDK = (function (t, e) {
                             var n = this.bb.__offset(this.bb_pos, 8);
                             return n
                               ? (r || new t.ticketmaster.supermap.avsc.v1.IntRoaringBitmapPair()).__init(
-                                  this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * e),
-                                  this.bb,
-                                )
+                                this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * e),
+                                this.bb,
+                              )
                               : null;
                           }),
                           (e.prototype.priceKeySetsLength = function () {
@@ -2653,9 +2631,9 @@ const RASSDK = (function (t, e) {
                             var n = this.bb.__offset(this.bb_pos, 10);
                             return n
                               ? (r || new t.ticketmaster.supermap.avsc.v1.IntRoaringBitmapPair()).__init(
-                                  this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * e),
-                                  this.bb,
-                                )
+                                this.bb.__indirect(this.bb.__vector(this.bb_pos + n) + 4 * e),
+                                this.bb,
+                              )
                               : null;
                           }),
                           (e.prototype.groupSetsLength = function () {
@@ -2749,10 +2727,10 @@ const RASSDK = (function (t, e) {
                             var t = this.bb.__offset(this.bb_pos, 6);
                             return t
                               ? new Uint8Array(
-                                  this.bb.bytes().buffer,
-                                  this.bb.bytes().byteOffset + this.bb.__vector(this.bb_pos + t),
-                                  this.bb.__vector_len(this.bb_pos + t),
-                                )
+                                this.bb.bytes().buffer,
+                                this.bb.bytes().byteOffset + this.bb.__vector(this.bb_pos + t),
+                                this.bb.__vector_len(this.bb_pos + t),
+                              )
                               : null;
                           }),
                           (t.startIntRoaringBitmapPair = function (t) {
@@ -2806,203 +2784,203 @@ const RASSDK = (function (t, e) {
           var e,
             r =
               ((e = 'undefined' != typeof document && document.currentScript ? document.currentScript.src : void 0),
-              function (t) {
-                var r, n, i;
-                (t = t || {}),
-                  r || (r = void 0 !== t ? t : {}),
-                  (r.ready = new Promise(function (t, e) {
-                    (n = t), (i = e);
-                  }));
-                var o,
-                  s,
-                  a,
-                  u = {};
-                for (o in r) r.hasOwnProperty(o) && (u[o] = r[o]);
-                (s = 'object' == typeof window), (a = 'function' == typeof importScripts);
-                var c,
-                  f = '';
-                (s || a) &&
-                  (a ? (f = self.location.href) : document.currentScript && (f = document.currentScript.src),
-                  e && (f = e),
-                  (f = 0 !== f.indexOf('blob:') ? f.substr(0, f.lastIndexOf('/') + 1) : ''),
-                  a &&
-                    (c = function (t) {
-                      var e = new XMLHttpRequest();
-                      return (
-                        e.open('GET', t, !1), (e.responseType = 'arraybuffer'), e.send(null), new Uint8Array(e.response)
-                      );
+                function (t) {
+                  var r, n, i;
+                  (t = t || {}),
+                    r || (r = void 0 !== t ? t : {}),
+                    (r.ready = new Promise(function (t, e) {
+                      (n = t), (i = e);
                     }));
-                var l = r.printErr || console.warn.bind(console);
-                for (o in u) u.hasOwnProperty(o) && (r[o] = u[o]);
-                u = null;
-                var p,
-                  h = {
-                    'f64-rem': function (t, e) {
-                      return t % e;
+                  var o,
+                    s,
+                    a,
+                    u = {};
+                  for (o in r) r.hasOwnProperty(o) && (u[o] = r[o]);
+                  (s = 'object' == typeof window), (a = 'function' == typeof importScripts);
+                  var c,
+                    f = '';
+                  (s || a) &&
+                    (a ? (f = self.location.href) : document.currentScript && (f = document.currentScript.src),
+                      e && (f = e),
+                      (f = 0 !== f.indexOf('blob:') ? f.substr(0, f.lastIndexOf('/') + 1) : ''),
+                      a &&
+                      (c = function (t) {
+                        var e = new XMLHttpRequest();
+                        return (
+                          e.open('GET', t, !1), (e.responseType = 'arraybuffer'), e.send(null), new Uint8Array(e.response)
+                        );
+                      }));
+                  var l = r.printErr || console.warn.bind(console);
+                  for (o in u) u.hasOwnProperty(o) && (r[o] = u[o]);
+                  u = null;
+                  var p,
+                    h = {
+                      'f64-rem': function (t, e) {
+                        return t % e;
+                      },
+                      debugger: function () { },
                     },
-                    debugger: function () {},
-                  },
-                  d = 0;
-                r.wasmBinary && (p = r.wasmBinary),
-                  r.noExitRuntime && r.noExitRuntime,
-                  'object' != typeof WebAssembly && B('no native wasm support detected');
-                var b,
-                  y,
-                  v,
-                  _,
-                  m = new WebAssembly.Table({
-                    initial: 0,
-                    maximum: 0,
-                    element: 'anyfunc',
-                  }),
-                  g = !1,
-                  w = 'undefined' != typeof TextDecoder ? new TextDecoder('utf8') : void 0;
+                    d = 0;
+                  r.wasmBinary && (p = r.wasmBinary),
+                    r.noExitRuntime && r.noExitRuntime,
+                    'object' != typeof WebAssembly && B('no native wasm support detected');
+                  var b,
+                    y,
+                    v,
+                    _,
+                    m = new WebAssembly.Table({
+                      initial: 0,
+                      maximum: 0,
+                      element: 'anyfunc',
+                    }),
+                    g = !1,
+                    w = 'undefined' != typeof TextDecoder ? new TextDecoder('utf8') : void 0;
 
-                function I(t) {
-                  if (t) {
-                    for (var e = v, r = t + NaN, n = t; e[n] && !(n >= r); ) ++n;
-                    if (16 < n - t && e.subarray && w) t = w.decode(e.subarray(t, n));
-                    else {
-                      for (r = ''; t < n; ) {
-                        var i = e[t++];
-                        if (128 & i) {
-                          var o = 63 & e[t++];
-                          if (192 == (224 & i)) r += String.fromCharCode(((31 & i) << 6) | o);
-                          else {
-                            var s = 63 & e[t++];
-                            65536 >
-                            (i =
-                              224 == (240 & i)
-                                ? ((15 & i) << 12) | (o << 6) | s
-                                : ((7 & i) << 18) | (o << 12) | (s << 6) | (63 & e[t++]))
-                              ? (r += String.fromCharCode(i))
-                              : ((i -= 65536), (r += String.fromCharCode(55296 | (i >> 10), 56320 | (1023 & i))));
-                          }
-                        } else r += String.fromCharCode(i);
+                  function I(t) {
+                    if (t) {
+                      for (var e = v, r = t + NaN, n = t; e[n] && !(n >= r);) ++n;
+                      if (16 < n - t && e.subarray && w) t = w.decode(e.subarray(t, n));
+                      else {
+                        for (r = ''; t < n;) {
+                          var i = e[t++];
+                          if (128 & i) {
+                            var o = 63 & e[t++];
+                            if (192 == (224 & i)) r += String.fromCharCode(((31 & i) << 6) | o);
+                            else {
+                              var s = 63 & e[t++];
+                              65536 >
+                                (i =
+                                  224 == (240 & i)
+                                    ? ((15 & i) << 12) | (o << 6) | s
+                                    : ((7 & i) << 18) | (o << 12) | (s << 6) | (63 & e[t++]))
+                                ? (r += String.fromCharCode(i))
+                                : ((i -= 65536), (r += String.fromCharCode(55296 | (i >> 10), 56320 | (1023 & i))));
+                            }
+                          } else r += String.fromCharCode(i);
+                        }
+                        t = r;
                       }
-                      t = r;
-                    }
-                  } else t = '';
-                  return t;
-                }
+                    } else t = '';
+                    return t;
+                  }
 
-                function S(t) {
-                  (y = t),
-                    (r.HEAP8 = new Int8Array(t)),
-                    (r.HEAP16 = new Int16Array(t)),
-                    (r.HEAP32 = _ = new Int32Array(t)),
-                    (r.HEAPU8 = v = new Uint8Array(t)),
-                    (r.HEAPU16 = new Uint16Array(t)),
-                    (r.HEAPU32 = new Uint32Array(t)),
-                    (r.HEAPF32 = new Float32Array(t)),
-                    (r.HEAPF64 = new Float64Array(t));
-                }
+                  function S(t) {
+                    (y = t),
+                      (r.HEAP8 = new Int8Array(t)),
+                      (r.HEAP16 = new Int16Array(t)),
+                      (r.HEAP32 = _ = new Int32Array(t)),
+                      (r.HEAPU8 = v = new Uint8Array(t)),
+                      (r.HEAPU16 = new Uint16Array(t)),
+                      (r.HEAPU32 = new Uint32Array(t)),
+                      (r.HEAPF32 = new Float32Array(t)),
+                      (r.HEAPF64 = new Float64Array(t));
+                  }
 
-                var E = r.INITIAL_MEMORY || 16777216;
+                  var E = r.INITIAL_MEMORY || 16777216;
 
-                function O(t) {
-                  for (; 0 < t.length; ) {
-                    var e = t.shift();
-                    if ('function' == typeof e) e(r);
-                    else {
-                      var n = e.V;
-                      'number' == typeof n
-                        ? void 0 === e.U
-                          ? r.dynCall_v(n)
-                          : r.dynCall_vi(n, e.U)
-                        : n(void 0 === e.U ? null : e.U);
+                  function O(t) {
+                    for (; 0 < t.length;) {
+                      var e = t.shift();
+                      if ('function' == typeof e) e(r);
+                      else {
+                        var n = e.V;
+                        'number' == typeof n
+                          ? void 0 === e.U
+                            ? r.dynCall_v(n)
+                            : r.dynCall_vi(n, e.U)
+                          : n(void 0 === e.U ? null : e.U);
+                      }
                     }
                   }
-                }
 
-                (b = r.wasmMemory
-                  ? r.wasmMemory
-                  : new WebAssembly.Memory({
+                  (b = r.wasmMemory
+                    ? r.wasmMemory
+                    : new WebAssembly.Memory({
                       initial: E / 65536,
                       maximum: 32768,
                     })) && (y = b.buffer),
-                  (E = y.byteLength),
-                  S(y),
-                  (_[1e3] = 5247088);
-                var T = [],
-                  k = [],
-                  A = [],
-                  R = [];
+                    (E = y.byteLength),
+                    S(y),
+                    (_[1e3] = 5247088);
+                  var T = [],
+                    k = [],
+                    A = [],
+                    R = [];
 
-                function F() {
-                  var t = r.preRun.shift();
-                  T.unshift(t);
-                }
-
-                var x = Math.clz32,
-                  P = 0,
-                  C = null,
-                  V = null;
-
-                function B(t) {
-                  throw (
-                    (r.onAbort && r.onAbort(t),
-                    l(t),
-                    (g = !0),
-                    (t = new WebAssembly.RuntimeError('abort(' + t + '). Build with -s ASSERTIONS=1 for more info.')),
-                    i(t),
-                    t)
-                  );
-                }
-
-                function N() {
-                  var t = L;
-                  return String.prototype.startsWith
-                    ? t.startsWith('data:application/octet-stream;base64,')
-                    : 0 === t.indexOf('data:application/octet-stream;base64,');
-                }
-
-                (r.preloadedImages = {}), (r.preloadedAudios = {});
-                var L = 'roaring-wasm-module.wasm';
-                if (!N()) {
-                  var j = L;
-                  L = r.locateFile ? r.locateFile(j, f) : f + j;
-                }
-
-                function M() {
-                  try {
-                    if (p) return new Uint8Array(p);
-                    if (c) return c(L);
-                    throw 'both async and sync fetching of the wasm failed';
-                  } catch (t) {
-                    B(t);
-                  }
-                }
-
-                function Q() {
-                  return v.length;
-                }
-
-                function q(t) {
-                  return 0 | ((t |= 0) ? (31 - (0 | x(t ^ (t - 1)))) | 0 : 32);
-                }
-
-                r.asm = function () {
-                  function t(t) {
-                    (r.asm = t.exports),
-                      P--,
-                      r.monitorRunDependencies && r.monitorRunDependencies(P),
-                      0 == P && (null !== C && (clearInterval(C), (C = null)), V && ((t = V), (V = null), t()));
+                  function F() {
+                    var t = r.preRun.shift();
+                    T.unshift(t);
                   }
 
-                  function e(e) {
-                    t(e.instance);
+                  var x = Math.clz32,
+                    P = 0,
+                    C = null,
+                    V = null;
+
+                  function B(t) {
+                    throw (
+                      (r.onAbort && r.onAbort(t),
+                        l(t),
+                        (g = !0),
+                        (t = new WebAssembly.RuntimeError('abort(' + t + '). Build with -s ASSERTIONS=1 for more info.')),
+                        i(t),
+                        t)
+                    );
                   }
 
-                  function n(t) {
-                    return (
-                      p || (!s && !a) || 'function' != typeof fetch
-                        ? new Promise(function (t) {
+                  function N() {
+                    var t = L;
+                    return String.prototype.startsWith
+                      ? t.startsWith('data:application/octet-stream;base64,')
+                      : 0 === t.indexOf('data:application/octet-stream;base64,');
+                  }
+
+                  (r.preloadedImages = {}), (r.preloadedAudios = {});
+                  var L = 'roaring-wasm-module.wasm';
+                  if (!N()) {
+                    var j = L;
+                    L = r.locateFile ? r.locateFile(j, f) : f + j;
+                  }
+
+                  function M() {
+                    try {
+                      if (p) return new Uint8Array(p);
+                      if (c) return c(L);
+                      throw 'both async and sync fetching of the wasm failed';
+                    } catch (t) {
+                      B(t);
+                    }
+                  }
+
+                  function Q() {
+                    return v.length;
+                  }
+
+                  function q(t) {
+                    return 0 | ((t |= 0) ? (31 - (0 | x(t ^ (t - 1)))) | 0 : 32);
+                  }
+
+                  r.asm = function () {
+                    function t(t) {
+                      (r.asm = t.exports),
+                        P--,
+                        r.monitorRunDependencies && r.monitorRunDependencies(P),
+                        0 == P && (null !== C && (clearInterval(C), (C = null)), V && ((t = V), (V = null), t()));
+                    }
+
+                    function e(e) {
+                      t(e.instance);
+                    }
+
+                    function n(t) {
+                      return (
+                        p || (!s && !a) || 'function' != typeof fetch
+                          ? new Promise(function (t) {
                             t(M());
                           })
-                        : fetch(L, {
+                          : fetch(L, {
                             credentials: 'same-origin',
-                        })
+                          })
                             .then(function (t) {
                               if (!t.ok) throw "failed to load wasm binary file at '" + L + "'";
                               return t.arrayBuffer();
@@ -3010,120 +2988,120 @@ const RASSDK = (function (t, e) {
                             .catch(function () {
                               return M();
                             })
-                    )
-                      .then(function (t) {
-                        return WebAssembly.instantiate(t, i);
-                      })
-                      .then(t, function (t) {
-                        l('failed to asynchronously prepare wasm: ' + t), B(t);
-                      });
-                  }
-
-                  var i = {
-                    env: U,
-                    wasi_snapshot_preview1: U,
-                    global: {
-                      NaN: NaN,
-                      Infinity: 1 / 0,
-                    },
-                    'global.Math': Math,
-                    asm2wasm: h,
-                  };
-                  if ((P++, r.monitorRunDependencies && r.monitorRunDependencies(P), r.instantiateWasm))
-                    try {
-                      return r.instantiateWasm(i, t);
-                    } catch (t) {
-                      return l('Module.instantiateWasm callback failed with error: ' + t), !1;
-                    }
-                  return (
-                    (function () {
-                      if (
-                        p ||
-                        'function' != typeof WebAssembly.instantiateStreaming ||
-                        N() ||
-                        'function' != typeof fetch
                       )
-                        return n(e);
-                      fetch(L, {
-                        credentials: 'same-origin',
-                      }).then(function (t) {
-                        return WebAssembly.instantiateStreaming(t, i).then(e, function (t) {
-                          return (
-                            l('wasm streaming compile failed: ' + t),
-                            l('falling back to ArrayBuffer instantiation'),
-                            n(e)
-                          );
+                        .then(function (t) {
+                          return WebAssembly.instantiate(t, i);
+                        })
+                        .then(t, function (t) {
+                          l('failed to asynchronously prepare wasm: ' + t), B(t);
                         });
-                      });
-                    })(),
-                    {}
-                  );
-                };
-                var D,
-                  U = {
-                    b: function (t, e, r, n) {
-                      B(
-                        'Assertion failed: ' +
+                    }
+
+                    var i = {
+                      env: U,
+                      wasi_snapshot_preview1: U,
+                      global: {
+                        NaN: NaN,
+                        Infinity: 1 / 0,
+                      },
+                      'global.Math': Math,
+                      asm2wasm: h,
+                    };
+                    if ((P++, r.monitorRunDependencies && r.monitorRunDependencies(P), r.instantiateWasm))
+                      try {
+                        return r.instantiateWasm(i, t);
+                      } catch (t) {
+                        return l('Module.instantiateWasm callback failed with error: ' + t), !1;
+                      }
+                    return (
+                      (function () {
+                        if (
+                          p ||
+                          'function' != typeof WebAssembly.instantiateStreaming ||
+                          N() ||
+                          'function' != typeof fetch
+                        )
+                          return n(e);
+                        fetch(L, {
+                          credentials: 'same-origin',
+                        }).then(function (t) {
+                          return WebAssembly.instantiateStreaming(t, i).then(e, function (t) {
+                            return (
+                              l('wasm streaming compile failed: ' + t),
+                              l('falling back to ArrayBuffer instantiation'),
+                              n(e)
+                            );
+                          });
+                        });
+                      })(),
+                      {}
+                    );
+                  };
+                  var D,
+                    U = {
+                      b: function (t, e, r, n) {
+                        B(
+                          'Assertion failed: ' +
                           I(t) +
                           ', at: ' +
                           [e ? I(e) : 'unknown filename', r, n ? I(n) : 'unknown function'],
-                      );
-                    },
-                    __memory_base: 1024,
-                    __table_base: 0,
-                    f: Q,
-                    g: function (t, e, r) {
-                      v.copyWithin(t, e, e + r);
-                    },
-                    e: function (t) {
-                      t >>>= 0;
-                      var e = Q();
-                      if (2147483648 < t) return !1;
-                      for (var r = 1; 4 >= r; r *= 2) {
-                        var n = e * (1 + 0.2 / r);
-                        (n = Math.min(n, t + 100663296)),
-                          0 < (n = Math.max(16777216, t, n)) % 65536 && (n += 65536 - (n % 65536));
-                        t: {
-                          try {
-                            b.grow((Math.min(2147483648, n) - y.byteLength + 65535) >>> 16), S(b.buffer);
-                            var i = 1;
-                            break t;
-                          } catch (t) {}
-                          i = void 0;
+                        );
+                      },
+                      __memory_base: 1024,
+                      __table_base: 0,
+                      f: Q,
+                      g: function (t, e, r) {
+                        v.copyWithin(t, e, e + r);
+                      },
+                      e: function (t) {
+                        t >>>= 0;
+                        var e = Q();
+                        if (2147483648 < t) return !1;
+                        for (var r = 1; 4 >= r; r *= 2) {
+                          var n = e * (1 + 0.2 / r);
+                          (n = Math.min(n, t + 100663296)),
+                            0 < (n = Math.max(16777216, t, n)) % 65536 && (n += 65536 - (n % 65536));
+                          t: {
+                            try {
+                              b.grow((Math.min(2147483648, n) - y.byteLength + 65535) >>> 16), S(b.buffer);
+                              var i = 1;
+                              break t;
+                            } catch (t) { }
+                            i = void 0;
+                          }
+                          if (i) return !0;
                         }
-                        if (i) return !0;
+                        return !1;
+                      },
+                      d: function (t, e) {
+                        return 32 == (t = q(t)) && (t += q(e)), (d = 0), 0 | t;
+                      },
+                      a: function () {
+                        return d;
+                      },
+                      memory: b,
+                      c: function (t) {
+                        d = t;
+                      },
+                      table: m,
+                    };
+
+                  function G() {
+                    function t() {
+                      if (!D && ((D = !0), (r.calledRun = !0), !g)) {
+                        if ((O(k), O(A), n(r), r.onRuntimeInitialized && r.onRuntimeInitialized(), r.postRun))
+                          for ('function' == typeof r.postRun && (r.postRun = [r.postRun]); r.postRun.length;) {
+                            var t = r.postRun.shift();
+                            R.unshift(t);
+                          }
+                        O(R);
                       }
-                      return !1;
-                    },
-                    d: function (t, e) {
-                      return 32 == (t = q(t)) && (t += q(e)), (d = 0), 0 | t;
-                    },
-                    a: function () {
-                      return d;
-                    },
-                    memory: b,
-                    c: function (t) {
-                      d = t;
-                    },
-                    table: m,
-                  };
-
-                function G() {
-                  function t() {
-                    if (!D && ((D = !0), (r.calledRun = !0), !g)) {
-                      if ((O(k), O(A), n(r), r.onRuntimeInitialized && r.onRuntimeInitialized(), r.postRun))
-                        for ('function' == typeof r.postRun && (r.postRun = [r.postRun]); r.postRun.length; ) {
-                          var t = r.postRun.shift();
-                          R.unshift(t);
-                        }
-                      O(R);
                     }
-                  }
 
-                  if (!(0 < P)) {
-                    if (r.preRun) for ('function' == typeof r.preRun && (r.preRun = [r.preRun]); r.preRun.length; ) F();
-                    O(T),
-                      0 < P ||
+                    if (!(0 < P)) {
+                      if (r.preRun) for ('function' == typeof r.preRun && (r.preRun = [r.preRun]); r.preRun.length;) F();
+                      O(T),
+                        0 < P ||
                         (r.setStatus
                           ? (r.setStatus('Running...'),
                             setTimeout(function () {
@@ -3133,138 +3111,138 @@ const RASSDK = (function (t, e) {
                                 t();
                             }, 1))
                           : t());
+                    }
                   }
-                }
 
-                if (
-                  (r.asm({}, U, y),
-                  (r._free = function () {
-                    return (r._free = r.asm.h).apply(null, arguments);
-                  }),
-                  (r._get_sizeof_roaring_bitmap_t = function () {
-                    return (r._get_sizeof_roaring_bitmap_t = r.asm.i).apply(null, arguments);
-                  }),
-                  (r._malloc = function () {
-                    return (r._malloc = r.asm.j).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_add = function () {
-                    return (r._roaring_bitmap_add = r.asm.k).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_add_checked_js = function () {
-                    return (r._roaring_bitmap_add_checked_js = r.asm.l).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_add_many = function () {
-                    return (r._roaring_bitmap_add_many = r.asm.m).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_and_cardinality = function () {
-                    return (r._roaring_bitmap_and_cardinality = r.asm.n).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_and_inplace = function () {
-                    return (r._roaring_bitmap_and_inplace = r.asm.o).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_andnot_cardinality = function () {
-                    return (r._roaring_bitmap_andnot_cardinality = r.asm.p).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_andnot_inplace = function () {
-                    return (r._roaring_bitmap_andnot_inplace = r.asm.q).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_contains = function () {
-                    return (r._roaring_bitmap_contains = r.asm.r).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_create_js = function () {
-                    return (r._roaring_bitmap_create_js = r.asm.s).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_equals = function () {
-                    return (r._roaring_bitmap_equals = r.asm.t).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_flip_inplace = function () {
-                    return (r._roaring_bitmap_flip_inplace = r.asm.u).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_free = function () {
-                    return (r._roaring_bitmap_free = r.asm.v).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_get_cardinality = function () {
-                    return (r._roaring_bitmap_get_cardinality = r.asm.w).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_intersect = function () {
-                    return (r._roaring_bitmap_intersect = r.asm.x).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_is_empty = function () {
-                    return (r._roaring_bitmap_is_empty = r.asm.y).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_is_strict_subset = function () {
-                    return (r._roaring_bitmap_is_strict_subset = r.asm.z).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_is_subset = function () {
-                    return (r._roaring_bitmap_is_subset = r.asm.A).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_jaccard_index = function () {
-                    return (r._roaring_bitmap_jaccard_index = r.asm.B).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_maximum = function () {
-                    return (r._roaring_bitmap_maximum = r.asm.C).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_minimum = function () {
-                    return (r._roaring_bitmap_minimum = r.asm.D).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_native_deserialize_js = function () {
-                    return (r._roaring_bitmap_native_deserialize_js = r.asm.E).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_native_serialize_js = function () {
-                    return (r._roaring_bitmap_native_serialize_js = r.asm.F).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_native_size_in_bytes_js = function () {
-                    return (r._roaring_bitmap_native_size_in_bytes_js = r.asm.G).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_optimize_js = function () {
-                    return (r._roaring_bitmap_optimize_js = r.asm.H).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_or_cardinality = function () {
-                    return (r._roaring_bitmap_or_cardinality = r.asm.I).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_or_inplace = function () {
-                    return (r._roaring_bitmap_or_inplace = r.asm.J).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_portable_deserialize_js = function () {
-                    return (r._roaring_bitmap_portable_deserialize_js = r.asm.K).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_portable_serialize_js = function () {
-                    return (r._roaring_bitmap_portable_serialize_js = r.asm.L).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_portable_size_in_bytes = function () {
-                    return (r._roaring_bitmap_portable_size_in_bytes = r.asm.M).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_rank = function () {
-                    return (r._roaring_bitmap_rank = r.asm.N).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_remove = function () {
-                    return (r._roaring_bitmap_remove = r.asm.O).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_remove_checked_js = function () {
-                    return (r._roaring_bitmap_remove_checked_js = r.asm.P).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_select_js = function () {
-                    return (r._roaring_bitmap_select_js = r.asm.Q).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_to_uint32_array = function () {
-                    return (r._roaring_bitmap_to_uint32_array = r.asm.R).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_xor_cardinality = function () {
-                    return (r._roaring_bitmap_xor_cardinality = r.asm.S).apply(null, arguments);
-                  }),
-                  (r._roaring_bitmap_xor_inplace = function () {
-                    return (r._roaring_bitmap_xor_inplace = r.asm.T).apply(null, arguments);
-                  }),
-                  (V = function t() {
-                    D || G(), D || (V = t);
-                  }),
-                  (r.run = G),
-                  r.preInit)
-                )
-                  for ('function' == typeof r.preInit && (r.preInit = [r.preInit]); 0 < r.preInit.length; )
-                    r.preInit.pop()();
-                return G(), t.ready;
-              });
+                  if (
+                    (r.asm({}, U, y),
+                      (r._free = function () {
+                        return (r._free = r.asm.h).apply(null, arguments);
+                      }),
+                      (r._get_sizeof_roaring_bitmap_t = function () {
+                        return (r._get_sizeof_roaring_bitmap_t = r.asm.i).apply(null, arguments);
+                      }),
+                      (r._malloc = function () {
+                        return (r._malloc = r.asm.j).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_add = function () {
+                        return (r._roaring_bitmap_add = r.asm.k).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_add_checked_js = function () {
+                        return (r._roaring_bitmap_add_checked_js = r.asm.l).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_add_many = function () {
+                        return (r._roaring_bitmap_add_many = r.asm.m).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_and_cardinality = function () {
+                        return (r._roaring_bitmap_and_cardinality = r.asm.n).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_and_inplace = function () {
+                        return (r._roaring_bitmap_and_inplace = r.asm.o).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_andnot_cardinality = function () {
+                        return (r._roaring_bitmap_andnot_cardinality = r.asm.p).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_andnot_inplace = function () {
+                        return (r._roaring_bitmap_andnot_inplace = r.asm.q).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_contains = function () {
+                        return (r._roaring_bitmap_contains = r.asm.r).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_create_js = function () {
+                        return (r._roaring_bitmap_create_js = r.asm.s).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_equals = function () {
+                        return (r._roaring_bitmap_equals = r.asm.t).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_flip_inplace = function () {
+                        return (r._roaring_bitmap_flip_inplace = r.asm.u).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_free = function () {
+                        return (r._roaring_bitmap_free = r.asm.v).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_get_cardinality = function () {
+                        return (r._roaring_bitmap_get_cardinality = r.asm.w).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_intersect = function () {
+                        return (r._roaring_bitmap_intersect = r.asm.x).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_is_empty = function () {
+                        return (r._roaring_bitmap_is_empty = r.asm.y).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_is_strict_subset = function () {
+                        return (r._roaring_bitmap_is_strict_subset = r.asm.z).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_is_subset = function () {
+                        return (r._roaring_bitmap_is_subset = r.asm.A).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_jaccard_index = function () {
+                        return (r._roaring_bitmap_jaccard_index = r.asm.B).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_maximum = function () {
+                        return (r._roaring_bitmap_maximum = r.asm.C).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_minimum = function () {
+                        return (r._roaring_bitmap_minimum = r.asm.D).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_native_deserialize_js = function () {
+                        return (r._roaring_bitmap_native_deserialize_js = r.asm.E).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_native_serialize_js = function () {
+                        return (r._roaring_bitmap_native_serialize_js = r.asm.F).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_native_size_in_bytes_js = function () {
+                        return (r._roaring_bitmap_native_size_in_bytes_js = r.asm.G).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_optimize_js = function () {
+                        return (r._roaring_bitmap_optimize_js = r.asm.H).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_or_cardinality = function () {
+                        return (r._roaring_bitmap_or_cardinality = r.asm.I).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_or_inplace = function () {
+                        return (r._roaring_bitmap_or_inplace = r.asm.J).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_portable_deserialize_js = function () {
+                        return (r._roaring_bitmap_portable_deserialize_js = r.asm.K).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_portable_serialize_js = function () {
+                        return (r._roaring_bitmap_portable_serialize_js = r.asm.L).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_portable_size_in_bytes = function () {
+                        return (r._roaring_bitmap_portable_size_in_bytes = r.asm.M).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_rank = function () {
+                        return (r._roaring_bitmap_rank = r.asm.N).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_remove = function () {
+                        return (r._roaring_bitmap_remove = r.asm.O).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_remove_checked_js = function () {
+                        return (r._roaring_bitmap_remove_checked_js = r.asm.P).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_select_js = function () {
+                        return (r._roaring_bitmap_select_js = r.asm.Q).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_to_uint32_array = function () {
+                        return (r._roaring_bitmap_to_uint32_array = r.asm.R).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_xor_cardinality = function () {
+                        return (r._roaring_bitmap_xor_cardinality = r.asm.S).apply(null, arguments);
+                      }),
+                      (r._roaring_bitmap_xor_inplace = function () {
+                        return (r._roaring_bitmap_xor_inplace = r.asm.T).apply(null, arguments);
+                      }),
+                      (V = function t() {
+                        D || G(), D || (V = t);
+                      }),
+                      (r.run = G),
+                      r.preInit)
+                  )
+                    for ('function' == typeof r.preInit && (r.preInit = [r.preInit]); 0 < r.preInit.length;)
+                      r.preInit.pop()();
+                  return G(), t.ready;
+                });
           t.exports = r;
         },
         10: t => {
@@ -3333,7 +3311,7 @@ const RASSDK = (function (t, e) {
               return (
                 2 === a && ((e = (n[t.charCodeAt(r)] << 2) | (n[t.charCodeAt(r + 1)] >> 4)), (c[f++] = 255 & e)),
                 1 === a &&
-                  ((e = (n[t.charCodeAt(r)] << 10) | (n[t.charCodeAt(r + 1)] << 4) | (n[t.charCodeAt(r + 2)] >> 2)),
+                ((e = (n[t.charCodeAt(r)] << 10) | (n[t.charCodeAt(r + 1)] << 4) | (n[t.charCodeAt(r + 2)] >> 2)),
                   (c[f++] = (e >> 8) & 255),
                   (c[f++] = 255 & e)),
                 c
@@ -3346,17 +3324,17 @@ const RASSDK = (function (t, e) {
                 1 === i
                   ? ((e = t[n - 1]), o.push(r[e >> 2] + r[(e << 4) & 63] + '=='))
                   : 2 === i &&
-                    ((e = (t[n - 2] << 8) + t[n - 1]), o.push(r[e >> 10] + r[(e >> 4) & 63] + r[(e << 2) & 63] + '=')),
+                  ((e = (t[n - 2] << 8) + t[n - 1]), o.push(r[e >> 10] + r[(e >> 4) & 63] + r[(e << 2) & 63] + '=')),
                 o.join('')
               );
             });
           for (
             var r = [],
-              n = [],
-              i = 'undefined' != typeof Uint8Array ? Uint8Array : Array,
-              o = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/',
-              s = 0,
-              a = o.length;
+            n = [],
+            i = 'undefined' != typeof Uint8Array ? Uint8Array : Array,
+            o = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/',
+            s = 0,
+            a = o.length;
             s < a;
             ++s
           )
@@ -3425,7 +3403,7 @@ const RASSDK = (function (t, e) {
             if (null == t)
               throw new TypeError(
                 'The first argument must be one of type string, Buffer, ArrayBuffer, Array, or Array-like Object. Received type ' +
-                  typeof t,
+                typeof t,
               );
             if (H(t, ArrayBuffer) || (t && H(t.buffer, ArrayBuffer))) return h(t, e, r);
             if (
@@ -3448,8 +3426,8 @@ const RASSDK = (function (t, e) {
                   ? a(0)
                   : p(t)
                 : 'Buffer' === t.type && Array.isArray(t.data)
-                ? p(t.data)
-                : void 0;
+                  ? p(t.data)
+                  : void 0;
             })(t);
             if (i) return i;
             if (
@@ -3460,7 +3438,7 @@ const RASSDK = (function (t, e) {
               return u.from(t[Symbol.toPrimitive]('string'), e, r);
             throw new TypeError(
               'The first argument must be one of type string, Buffer, ArrayBuffer, Array, or Array-like Object. Received type ' +
-                typeof t,
+              typeof t,
             );
           }
 
@@ -3489,8 +3467,8 @@ const RASSDK = (function (t, e) {
                 void 0 === e && void 0 === r
                   ? new Uint8Array(t)
                   : void 0 === r
-                  ? new Uint8Array(t, e)
-                  : new Uint8Array(t, e, r)),
+                    ? new Uint8Array(t, e)
+                    : new Uint8Array(t, e, r)),
               Object.setPrototypeOf(n, u.prototype),
               n
             );
@@ -3515,7 +3493,7 @@ const RASSDK = (function (t, e) {
               n = arguments.length > 2 && !0 === arguments[2];
             if (!n && 0 === r) return 0;
             let i = !1;
-            for (;;)
+            for (; ;)
               switch (e) {
                 case 'ascii':
                 case 'latin1':
@@ -3544,7 +3522,7 @@ const RASSDK = (function (t, e) {
             if (((void 0 === e || e < 0) && (e = 0), e > this.length)) return '';
             if (((void 0 === r || r > this.length) && (r = this.length), r <= 0)) return '';
             if ((r >>>= 0) <= (e >>>= 0)) return '';
-            for (t || (t = 'utf8'); ; )
+            for (t || (t = 'utf8'); ;)
               switch (t) {
                 case 'hex':
                   return F(this, e, r);
@@ -3580,11 +3558,11 @@ const RASSDK = (function (t, e) {
               ('string' == typeof r
                 ? ((n = r), (r = 0))
                 : r > 2147483647
-                ? (r = 2147483647)
-                : r < -2147483648 && (r = -2147483648),
-              Y((r = +r)) && (r = i ? 0 : t.length - 1),
-              r < 0 && (r = t.length + r),
-              r >= t.length)
+                  ? (r = 2147483647)
+                  : r < -2147483648 && (r = -2147483648),
+                Y((r = +r)) && (r = i ? 0 : t.length - 1),
+                r < 0 && (r = t.length + r),
+                r >= t.length)
             ) {
               if (i) return -1;
               r = t.length - 1;
@@ -3700,7 +3678,7 @@ const RASSDK = (function (t, e) {
             r = Math.min(t.length, r);
             const n = [];
             let i = e;
-            for (; i < r; ) {
+            for (; i < r;) {
               const e = t[i];
               let o = null,
                 s = e > 239 ? 4 : e > 223 ? 3 : e > 191 ? 2 : 1;
@@ -3717,8 +3695,8 @@ const RASSDK = (function (t, e) {
                     (r = t[i + 1]),
                       (n = t[i + 2]),
                       128 == (192 & r) &&
-                        128 == (192 & n) &&
-                        ((u = ((15 & e) << 12) | ((63 & r) << 6) | (63 & n)),
+                      128 == (192 & n) &&
+                      ((u = ((15 & e) << 12) | ((63 & r) << 6) | (63 & n)),
                         u > 2047 && (u < 55296 || u > 57343) && (o = u));
                     break;
                   case 4:
@@ -3726,9 +3704,9 @@ const RASSDK = (function (t, e) {
                       (n = t[i + 2]),
                       (a = t[i + 3]),
                       128 == (192 & r) &&
-                        128 == (192 & n) &&
-                        128 == (192 & a) &&
-                        ((u = ((15 & e) << 18) | ((63 & r) << 12) | ((63 & n) << 6) | (63 & a)),
+                      128 == (192 & n) &&
+                      128 == (192 & a) &&
+                      ((u = ((15 & e) << 18) | ((63 & r) << 12) | ((63 & n) << 6) | (63 & a)),
                         u > 65535 && u < 1114112 && (o = u));
                 }
               }
@@ -3743,7 +3721,7 @@ const RASSDK = (function (t, e) {
               if (e <= k) return String.fromCharCode.apply(String, t);
               let r = '',
                 n = 0;
-              for (; n < e; ) r += String.fromCharCode.apply(String, t.slice(n, (n += k)));
+              for (; n < e;) r += String.fromCharCode.apply(String, t.slice(n, (n += k)));
               return r;
             })(n);
           }
@@ -3762,11 +3740,11 @@ const RASSDK = (function (t, e) {
             }
           })()),
             u.TYPED_ARRAY_SUPPORT ||
-              'undefined' == typeof console ||
-              'function' != typeof console.error ||
-              console.error(
-                'This browser lacks typed array (Uint8Array) support which is required by `buffer` v5.x. Use `buffer` v4.x if you require old browser support.',
-              ),
+            'undefined' == typeof console ||
+            'function' != typeof console.error ||
+            console.error(
+              'This browser lacks typed array (Uint8Array) support which is required by `buffer` v5.x. Use `buffer` v4.x if you require old browser support.',
+            ),
             Object.defineProperty(u.prototype, 'parent', {
               enumerable: !0,
               get: function () {
@@ -3804,8 +3782,8 @@ const RASSDK = (function (t, e) {
             (u.compare = function (t, e) {
               if (
                 (H(t, Uint8Array) && (t = u.from(t, t.offset, t.byteLength)),
-                H(e, Uint8Array) && (e = u.from(e, e.offset, e.byteLength)),
-                !u.isBuffer(t) || !u.isBuffer(e))
+                  H(e, Uint8Array) && (e = u.from(e, e.offset, e.byteLength)),
+                  !u.isBuffer(t) || !u.isBuffer(e))
               )
                 throw new TypeError('The "buf1", "buf2" arguments must be one of type Buffer or Uint8Array');
               if (t === e) return 0;
@@ -3906,10 +3884,10 @@ const RASSDK = (function (t, e) {
                 );
               if (
                 (void 0 === e && (e = 0),
-                void 0 === r && (r = t ? t.length : 0),
-                void 0 === n && (n = 0),
-                void 0 === i && (i = this.length),
-                e < 0 || r > t.length || n < 0 || i > this.length)
+                  void 0 === r && (r = t ? t.length : 0),
+                  void 0 === n && (n = 0),
+                  void 0 === i && (i = this.length),
+                  e < 0 || r > t.length || n < 0 || i > this.length)
               )
                 throw new RangeError('out of range index');
               if (n >= i && e >= r) return 0;
@@ -3950,7 +3928,7 @@ const RASSDK = (function (t, e) {
                 throw new RangeError('Attempt to write outside buffer bounds');
               n || (n = 'utf8');
               let o = !1;
-              for (;;)
+              for (; ;)
                 switch (n) {
                   case 'hex':
                     return g(this, t, e, r);
@@ -4064,7 +4042,7 @@ const RASSDK = (function (t, e) {
                 let n = this[t],
                   i = 1,
                   o = 0;
-                for (; ++o < e && (i *= 256); ) n += this[t + o] * i;
+                for (; ++o < e && (i *= 256);) n += this[t + o] * i;
                 return n;
               }),
             (u.prototype.readUintBE = u.prototype.readUIntBE =
@@ -4072,7 +4050,7 @@ const RASSDK = (function (t, e) {
                 (t >>>= 0), (e >>>= 0), r || P(t, e, this.length);
                 let n = this[t + --e],
                   i = 1;
-                for (; e > 0 && (i *= 256); ) n += this[t + --e] * i;
+                for (; e > 0 && (i *= 256);) n += this[t + --e] * i;
                 return n;
               }),
             (u.prototype.readUint8 = u.prototype.readUInt8 =
@@ -4126,7 +4104,7 @@ const RASSDK = (function (t, e) {
               let n = this[t],
                 i = 1,
                 o = 0;
-              for (; ++o < e && (i *= 256); ) n += this[t + o] * i;
+              for (; ++o < e && (i *= 256);) n += this[t + o] * i;
               return (i *= 128), n >= i && (n -= Math.pow(2, 8 * e)), n;
             }),
             (u.prototype.readIntBE = function (t, e, r) {
@@ -4134,7 +4112,7 @@ const RASSDK = (function (t, e) {
               let n = e,
                 i = 1,
                 o = this[t + --n];
-              for (; n > 0 && (i *= 256); ) o += this[t + --n] * i;
+              for (; n > 0 && (i *= 256);) o += this[t + --n] * i;
               return (i *= 128), o >= i && (o -= Math.pow(2, 8 * e)), o;
             }),
             (u.prototype.readInt8 = function (t, e) {
@@ -4197,7 +4175,7 @@ const RASSDK = (function (t, e) {
                 (t = +t), (e >>>= 0), (r >>>= 0), n || C(this, t, e, r, Math.pow(2, 8 * r) - 1, 0);
                 let i = 1,
                   o = 0;
-                for (this[e] = 255 & t; ++o < r && (i *= 256); ) this[e + o] = (t / i) & 255;
+                for (this[e] = 255 & t; ++o < r && (i *= 256);) this[e + o] = (t / i) & 255;
                 return e + r;
               }),
             (u.prototype.writeUintBE = u.prototype.writeUIntBE =
@@ -4205,7 +4183,7 @@ const RASSDK = (function (t, e) {
                 (t = +t), (e >>>= 0), (r >>>= 0), n || C(this, t, e, r, Math.pow(2, 8 * r) - 1, 0);
                 let i = r - 1,
                   o = 1;
-                for (this[e + i] = 255 & t; --i >= 0 && (o *= 256); ) this[e + i] = (t / o) & 255;
+                for (this[e + i] = 255 & t; --i >= 0 && (o *= 256);) this[e + i] = (t / o) & 255;
                 return e + r;
               }),
             (u.prototype.writeUint8 = u.prototype.writeUInt8 =
@@ -4274,7 +4252,7 @@ const RASSDK = (function (t, e) {
               let i = 0,
                 o = 1,
                 s = 0;
-              for (this[e] = 255 & t; ++i < r && (o *= 256); )
+              for (this[e] = 255 & t; ++i < r && (o *= 256);)
                 t < 0 && 0 === s && 0 !== this[e + i - 1] && (s = 1), (this[e + i] = (((t / o) >> 0) - s) & 255);
               return e + r;
             }),
@@ -4286,7 +4264,7 @@ const RASSDK = (function (t, e) {
               let i = r - 1,
                 o = 1,
                 s = 0;
-              for (this[e + i] = 255 & t; --i >= 0 && (o *= 256); )
+              for (this[e + i] = 255 & t; --i >= 0 && (o *= 256);)
                 t < 0 && 0 === s && 0 !== this[e + i + 1] && (s = 1), (this[e + i] = (((t / o) >> 0) - s) & 255);
               return e + r;
             }),
@@ -4367,11 +4345,11 @@ const RASSDK = (function (t, e) {
               if (!u.isBuffer(t)) throw new TypeError('argument should be a Buffer');
               if (
                 (r || (r = 0),
-                n || 0 === n || (n = this.length),
-                e >= t.length && (e = t.length),
-                e || (e = 0),
-                n > 0 && n < r && (n = r),
-                n === r)
+                  n || 0 === n || (n = this.length),
+                  e >= t.length && (e = t.length),
+                  e || (e = 0),
+                  n > 0 && n < r && (n = r),
+                  n === r)
               )
                 return 0;
               if (0 === t.length || 0 === this.length) return 0;
@@ -4393,7 +4371,7 @@ const RASSDK = (function (t, e) {
                   ('string' == typeof e
                     ? ((n = e), (e = 0), (r = this.length))
                     : 'string' == typeof r && ((n = r), (r = this.length)),
-                  void 0 !== n && 'string' != typeof n)
+                    void 0 !== n && 'string' != typeof n)
                 )
                   throw new TypeError('encoding must be a string');
                 if ('string' == typeof n && !u.isEncoding(n)) throw new TypeError('Unknown encoding: ' + n);
@@ -4469,7 +4447,7 @@ const RASSDK = (function (t, e) {
                       ? `>= 0${n} and < 2${n} ** ${8 * (o + 1)}${n}`
                       : `>= -(2${n} ** ${8 * (o + 1) - 1}${n}) and < 2 ** ${8 * (o + 1) - 1}${n}`
                     : `>= ${e}${n} and <= ${r}${n}`),
-                new M.ERR_OUT_OF_RANGE('value', i, t))
+                  new M.ERR_OUT_OF_RANGE('value', i, t))
               );
             }
             !(function (t, e, r) {
@@ -4510,7 +4488,7 @@ const RASSDK = (function (t, e) {
                   Number.isInteger(r) && Math.abs(r) > 2 ** 32
                     ? (i = q(String(r)))
                     : 'bigint' == typeof r &&
-                      ((i = String(r)),
+                    ((i = String(r)),
                       (r > BigInt(2) ** BigInt(32) || r < -(BigInt(2) ** BigInt(32))) && (i = q(i)),
                       (i += 'n')),
                   (n += ` It must be ${e}. Received ${i}`),
@@ -4569,7 +4547,7 @@ const RASSDK = (function (t, e) {
             return n.toByteArray(
               (function (t) {
                 if ((t = (t = t.split('=')[0]).trim().replace(z, '')).length < 2) return '';
-                for (; t.length % 4 != 0; ) t += '=';
+                for (; t.length % 4 != 0;) t += '=';
                 return t;
               })(t),
             );
@@ -4615,7 +4593,7 @@ const RASSDK = (function (t, e) {
           var e = Object.prototype.hasOwnProperty,
             r = '~';
 
-          function n() {}
+          function n() { }
 
           function i(t, e, r) {
             (this.fn = t), (this.context = e), (this.once = r || !1);
@@ -4752,27 +4730,27 @@ const RASSDK = (function (t, e) {
           t.exports = function (t, e) {
             e || (e = {}),
               'function' == typeof e &&
-                (e = {
-                  cmp: e,
-                });
+              (e = {
+                cmp: e,
+              });
             var r,
               n = 'boolean' == typeof e.cycles && e.cycles,
               i =
                 e.cmp &&
                 ((r = e.cmp),
-                function (t) {
-                  return function (e, n) {
-                    var i = {
+                  function (t) {
+                    return function (e, n) {
+                      var i = {
                         key: e,
                         value: t[e],
                       },
-                      o = {
-                        key: n,
-                        value: t[n],
-                      };
-                    return r(i, o);
-                  };
-                }),
+                        o = {
+                          key: n,
+                          value: t[n],
+                        };
+                      return r(i, o);
+                    };
+                  }),
               o = [];
             return (function t(e) {
               if ((e && e.toJSON && 'function' == typeof e.toJSON && (e = e.toJSON()), void 0 !== e)) {
@@ -4993,13 +4971,13 @@ const RASSDK = (function (t, e) {
                 r(t, e);
               }),
               t.variableDefinitions &&
-                t.variableDefinitions.forEach(function (t) {
-                  r(t, e);
-                }),
+              t.variableDefinitions.forEach(function (t) {
+                r(t, e);
+              }),
               t.definitions &&
-                t.definitions.forEach(function (t) {
-                  r(t, e);
-                });
+              t.definitions.forEach(function (t) {
+                r(t, e);
+              });
           }
 
           e.loc.source = {
@@ -5047,9 +5025,9 @@ const RASSDK = (function (t, e) {
                   u.forEach(function (t) {
                     s.has(t) ||
                       (s.add(t),
-                      (n[t] || new Set()).forEach(function (t) {
-                        a.add(t);
-                      }));
+                        (n[t] || new Set()).forEach(function (t) {
+                          a.add(t);
+                        }));
                   });
               }
               return (
@@ -5079,8 +5057,8 @@ const RASSDK = (function (t, e) {
             return t && t.__esModule
               ? t
               : {
-                  default: t,
-                };
+                default: t,
+              };
           }
         },
         2: (t, e, r) => {
@@ -5096,21 +5074,21 @@ const RASSDK = (function (t, e) {
               (n = r(554)) && n.__esModule
                 ? n
                 : {
-                    default: n,
-                  };
+                  default: n,
+                };
 
           function o(t) {
             return (
               (o =
                 'function' == typeof Symbol && 'symbol' == typeof Symbol.iterator
                   ? function (t) {
-                      return typeof t;
-                    }
+                    return typeof t;
+                  }
                   : function (t) {
-                      return t && 'function' == typeof Symbol && t.constructor === Symbol && t !== Symbol.prototype
-                        ? 'symbol'
-                        : typeof t;
-                    }),
+                    return t && 'function' == typeof Symbol && t.constructor === Symbol && t !== Symbol.prototype
+                      ? 'symbol'
+                      : typeof t;
+                  }),
               o(t)
             );
           }
@@ -5125,53 +5103,53 @@ const RASSDK = (function (t, e) {
                 return null === t
                   ? 'null'
                   : (function (t, e) {
-                      if (-1 !== e.indexOf(t)) return '[Circular]';
-                      var r = [].concat(e, [t]),
-                        n = (function (t) {
-                          var e = t[String(i.default)];
-                          return 'function' == typeof e ? e : 'function' == typeof t.inspect ? t.inspect : void 0;
-                        })(t);
-                      if (void 0 !== n) {
-                        var o = n.call(t);
-                        if (o !== t) return 'string' == typeof o ? o : s(o, r);
-                      } else if (Array.isArray(t))
-                        return (function (t, e) {
-                          if (0 === t.length) return '[]';
-                          if (e.length > 2) return '[Array]';
-                          for (var r = Math.min(10, t.length), n = t.length - r, i = [], o = 0; o < r; ++o)
-                            i.push(s(t[o], e));
-                          return (
-                            1 === n ? i.push('... 1 more item') : n > 1 && i.push('... '.concat(n, ' more items')),
-                            '[' + i.join(', ') + ']'
-                          );
-                        })(t, r);
+                    if (-1 !== e.indexOf(t)) return '[Circular]';
+                    var r = [].concat(e, [t]),
+                      n = (function (t) {
+                        var e = t[String(i.default)];
+                        return 'function' == typeof e ? e : 'function' == typeof t.inspect ? t.inspect : void 0;
+                      })(t);
+                    if (void 0 !== n) {
+                      var o = n.call(t);
+                      if (o !== t) return 'string' == typeof o ? o : s(o, r);
+                    } else if (Array.isArray(t))
                       return (function (t, e) {
-                        var r = Object.keys(t);
-                        return 0 === r.length
-                          ? '{}'
-                          : e.length > 2
-                          ? '[' +
-                            (function (t) {
-                              var e = Object.prototype.toString
-                                .call(t)
-                                .replace(/^\[object /, '')
-                                .replace(/]$/, '');
-                              if ('Object' === e && 'function' == typeof t.constructor) {
-                                var r = t.constructor.name;
-                                if ('string' == typeof r && '' !== r) return r;
-                              }
-                              return e;
-                            })(t) +
-                            ']'
-                          : '{ ' +
-                            r
-                              .map(function (r) {
-                                return r + ': ' + s(t[r], e);
-                              })
-                              .join(', ') +
-                            ' }';
+                        if (0 === t.length) return '[]';
+                        if (e.length > 2) return '[Array]';
+                        for (var r = Math.min(10, t.length), n = t.length - r, i = [], o = 0; o < r; ++o)
+                          i.push(s(t[o], e));
+                        return (
+                          1 === n ? i.push('... 1 more item') : n > 1 && i.push('... '.concat(n, ' more items')),
+                          '[' + i.join(', ') + ']'
+                        );
                       })(t, r);
-                    })(t, e);
+                    return (function (t, e) {
+                      var r = Object.keys(t);
+                      return 0 === r.length
+                        ? '{}'
+                        : e.length > 2
+                          ? '[' +
+                          (function (t) {
+                            var e = Object.prototype.toString
+                              .call(t)
+                              .replace(/^\[object /, '')
+                              .replace(/]$/, '');
+                            if ('Object' === e && 'function' == typeof t.constructor) {
+                              var r = t.constructor.name;
+                              if ('string' == typeof r && '' !== r) return r;
+                            }
+                            return e;
+                          })(t) +
+                          ']'
+                          : '{ ' +
+                          r
+                            .map(function (r) {
+                              return r + ': ' + s(t[r], e);
+                            })
+                            .join(', ') +
+                          ' }';
+                    })(t, r);
+                  })(t, e);
               default:
                 return String(t);
             }
@@ -5212,8 +5190,8 @@ const RASSDK = (function (t, e) {
               (n = r(972)) && n.__esModule
                 ? n
                 : {
-                    default: n,
-                  },
+                  default: n,
+                },
             o = (function () {
               function t(t, e, r) {
                 (this.start = t.start),
@@ -5293,8 +5271,8 @@ const RASSDK = (function (t, e) {
               var e = t.split(/\r\n|[\n\r]/g),
                 i = n(t);
               if (0 !== i) for (var o = 1; o < e.length; o++) e[o] = e[o].slice(i);
-              for (var s = 0; s < e.length && r(e[s]); ) ++s;
-              for (var a = e.length; a > s && r(e[a - 1]); ) --a;
+              for (var s = 0; s < e.length && r(e[s]);) ++s;
+              for (var a = e.length; a > s && r(e[a - 1]);) --a;
               return e.slice(s, a).join('\n');
             }),
             (e.getBlockStringIndentation = n),
@@ -5614,10 +5592,10 @@ const RASSDK = (function (t, e) {
                 null == t
                   ? void 0
                   : t
-                      .filter(function (t) {
-                        return t;
-                      })
-                      .join(r)) && void 0 !== e
+                    .filter(function (t) {
+                      return t;
+                    })
+                    .join(r)) && void 0 !== e
               ? e
               : '';
           }
@@ -5710,12 +5688,12 @@ const RASSDK = (function (t, e) {
                   m
                     ? y.pop()
                     : ((n = {
-                        inArray: c,
-                        index: l,
-                        keys: f,
-                        edits: p,
-                        prev: n,
-                      }),
+                      inArray: c,
+                      index: l,
+                      keys: f,
+                      edits: p,
+                      prev: n,
+                    }),
                       (f = (c = Array.isArray(h)) ? h : null !== (R = r[h.kind]) && void 0 !== R ? R : []),
                       (l = -1),
                       (p = []),
@@ -5759,8 +5737,8 @@ const RASSDK = (function (t, e) {
               (n = r(2)) && n.__esModule
                 ? n
                 : {
-                    default: n,
-                  },
+                  default: n,
+                },
             o = r(807),
             s = {
               Name: [],
@@ -5880,14 +5858,14 @@ const RASSDK = (function (t, e) {
                 b = e < 0 || (0 === e && 1 / e < 0) ? 1 : 0;
               for (
                 e = Math.abs(e),
-                  isNaN(e) || e === 1 / 0
-                    ? ((a = isNaN(e) ? 1 : 0), (s = f))
-                    : ((s = Math.floor(Math.log(e) / Math.LN2)),
-                      e * (u = Math.pow(2, -s)) < 1 && (s--, (u *= 2)),
-                      (e += s + l >= 1 ? p / u : p * Math.pow(2, 1 - l)) * u >= 2 && (s++, (u /= 2)),
-                      s + l >= f
-                        ? ((a = 0), (s = f))
-                        : s + l >= 1
+                isNaN(e) || e === 1 / 0
+                  ? ((a = isNaN(e) ? 1 : 0), (s = f))
+                  : ((s = Math.floor(Math.log(e) / Math.LN2)),
+                    e * (u = Math.pow(2, -s)) < 1 && (s--, (u *= 2)),
+                    (e += s + l >= 1 ? p / u : p * Math.pow(2, 1 - l)) * u >= 2 && (s++, (u /= 2)),
+                    s + l >= f
+                      ? ((a = 0), (s = f))
+                      : s + l >= 1
                         ? ((a = (e * u - 1) * Math.pow(2, i)), (s += l))
                         : ((a = e * Math.pow(2, l - 1) * Math.pow(2, i)), (s = 0)));
                 i >= 8;
@@ -5900,19 +5878,19 @@ const RASSDK = (function (t, e) {
         313: function (t, e, r) {
           'use strict';
           var n =
-              (this && this.__assign) ||
-              function () {
-                return (
-                  (n =
-                    Object.assign ||
-                    function (t) {
-                      for (var e, r = 1, n = arguments.length; r < n; r++)
-                        for (var i in (e = arguments[r])) Object.prototype.hasOwnProperty.call(e, i) && (t[i] = e[i]);
-                      return t;
-                    }),
-                  n.apply(this, arguments)
-                );
-              },
+            (this && this.__assign) ||
+            function () {
+              return (
+                (n =
+                  Object.assign ||
+                  function (t) {
+                    for (var e, r = 1, n = arguments.length; r < n; r++)
+                      for (var i in (e = arguments[r])) Object.prototype.hasOwnProperty.call(e, i) && (t[i] = e[i]);
+                    return t;
+                  }),
+                n.apply(this, arguments)
+              );
+            },
             i =
               (this && this.__awaiter) ||
               function (t, e, r, n) {
@@ -5941,8 +5919,8 @@ const RASSDK = (function (t, e) {
                         e instanceof r
                           ? e
                           : new r(function (t) {
-                              t(e);
-                            })).then(s, a);
+                            t(e);
+                          })).then(s, a);
                   }
 
                   u((n = n.apply(t, e || [])).next());
@@ -5971,9 +5949,9 @@ const RASSDK = (function (t, e) {
                     return: a(2),
                   }),
                   'function' == typeof Symbol &&
-                    (o[Symbol.iterator] = function () {
-                      return this;
-                    }),
+                  (o[Symbol.iterator] = function () {
+                    return this;
+                  }),
                   o
                 );
 
@@ -5981,11 +5959,11 @@ const RASSDK = (function (t, e) {
                   return function (a) {
                     return (function (o) {
                       if (r) throw new TypeError('Generator is already executing.');
-                      for (; s; )
+                      for (; s;)
                         try {
                           if (
                             ((r = 1),
-                            n &&
+                              n &&
                               (i = 2 & o[0] ? n.return : o[0] ? n.throw || ((i = n.return) && i.call(n), 0) : n.next) &&
                               !(i = i.call(n, o[1])).done)
                           )
@@ -6057,8 +6035,9 @@ const RASSDK = (function (t, e) {
             value: !0,
           }),
             (e.SubscriptionClient = void 0);
+
           var a = void 0 !== r.g ? r.g : 'undefined' != typeof window ? window : {},
-            u = WebSocketByProxy,
+            u = a.WebSocket || a.MozWebSocket,
             c = r(10),
             f = r(729),
             l = r(277),
@@ -6090,6 +6069,7 @@ const RASSDK = (function (t, e) {
                   O = void 0 === E ? 0 : E,
                   T = i.wsOptionArguments,
                   k = void 0 === T ? [] : T;
+
                 if (((this.wsImpl = r || u), !this.wsImpl))
                   throw new Error('Unable to find native implementation, or alternative implementation for WebSocket!');
                 (this.wsProtocols = n || y.GRAPHQL_WS),
@@ -6131,9 +6111,9 @@ const RASSDK = (function (t, e) {
                     void 0 === e && (e = !0),
                     this.clearInactivityTimeout(),
                     null !== this.client &&
-                      ((this.closedByUser = e),
+                    ((this.closedByUser = e),
                       t &&
-                        (this.clearCheckConnectionInterval(),
+                      (this.clearCheckConnectionInterval(),
                         this.clearMaxConnectTimeout(),
                         this.clearTryReconnectTimeout(),
                         this.unsubscribeAll(),
@@ -6165,8 +6145,8 @@ const RASSDK = (function (t, e) {
                           null === t && null === e
                             ? u.complete && u.complete()
                             : t
-                            ? u.error && u.error(t[0])
-                            : u.next && u.next(e);
+                              ? u.error && u.error(t[0])
+                              : u.next && u.next(e);
                         })),
                         {
                           unsubscribe: function () {
@@ -6260,10 +6240,10 @@ const RASSDK = (function (t, e) {
                       .then(function (t) {
                         r.checkOperationOptions(t, e),
                           r.operations[n] &&
-                            ((r.operations[n] = {
-                              options: t,
-                              handler: e,
-                            }),
+                          ((r.operations[n] = {
+                            options: t,
+                            handler: e,
+                          }),
                             r.sendMessage(n, _.default.GQL_START, t));
                       })
                       .catch(function (t) {
@@ -6275,16 +6255,16 @@ const RASSDK = (function (t, e) {
                 (t.prototype.getObserver = function (t, e, r) {
                   return 'function' == typeof t
                     ? {
-                        next: function (e) {
-                          return t(e);
-                        },
-                        error: function (t) {
-                          return e && e(t);
-                        },
-                        complete: function () {
-                          return r && r();
-                        },
-                      }
+                      next: function (e) {
+                        return t(e);
+                      },
+                      error: function (t) {
+                        return e && e(t);
+                      },
+                      complete: function () {
+                        return r && r();
+                      },
+                    }
                     : t;
                 }),
                 (t.prototype.createMaxConnectTimeGenerator = function () {
@@ -6338,8 +6318,8 @@ const RASSDK = (function (t, e) {
                     payload:
                       r && r.query
                         ? n(n({}, r), {
-                            query: 'string' == typeof r.query ? r.query : h.print(r.query),
-                          })
+                          query: 'string' == typeof r.query ? r.query : h.print(r.query),
+                        })
                         : r,
                   };
                 }),
@@ -6347,16 +6327,16 @@ const RASSDK = (function (t, e) {
                   return Array.isArray(t)
                     ? t
                     : t && t.errors
-                    ? this.formatErrors(t.errors)
-                    : t && t.message
-                    ? [t]
-                    : [
-                        {
-                          name: 'FormatedError',
-                          message: 'Unknown error',
-                          originalError: t,
-                        },
-                      ];
+                      ? this.formatErrors(t.errors)
+                      : t && t.message
+                        ? [t]
+                        : [
+                          {
+                            name: 'FormatedError',
+                            message: 'Unknown error',
+                            originalError: t,
+                          },
+                        ];
                 }),
                 (t.prototype.sendMessage = function (t, e, r) {
                   this.sendMessageRaw(this.buildMessage(t, e, r));
@@ -6381,7 +6361,7 @@ const RASSDK = (function (t, e) {
                           'error',
                           new Error(
                             'A message was not sent because socket is not connected, is closing or is already closed. Message was: ' +
-                              JSON.stringify(t),
+                            JSON.stringify(t),
                           ),
                         );
                   }
@@ -6396,7 +6376,7 @@ const RASSDK = (function (t, e) {
                       (Object.keys(this.operations).forEach(function (e) {
                         t.unsentMessagesQueue.push(t.buildMessage(e, _.default.GQL_START, t.operations[e].options));
                       }),
-                      (this.reconnecting = !0)),
+                        (this.reconnecting = !0)),
                       this.clearTryReconnectTimeout();
                     var e = this.backoff.duration();
                     this.tryReconnectTimeoutId = setTimeout(function () {
@@ -6507,8 +6487,8 @@ const RASSDK = (function (t, e) {
                       case _.default.GQL_DATA:
                         var o = e.payload.errors
                           ? n(n({}, e.payload), {
-                              errors: this.formatErrors(e.payload.errors),
-                            })
+                            errors: this.formatErrors(e.payload.errors),
+                          })
                           : e.payload;
                         this.operations[r].handler(null, o);
                         break;
@@ -6517,7 +6497,7 @@ const RASSDK = (function (t, e) {
                         (this.wasKeepAliveReceived = !0),
                           s && this.checkConnection(),
                           this.checkConnectionIntervalId &&
-                            (clearInterval(this.checkConnectionIntervalId), this.checkConnection()),
+                          (clearInterval(this.checkConnectionIntervalId), this.checkConnection()),
                           (this.checkConnectionIntervalId = setInterval(
                             this.checkConnection.bind(this),
                             this.wsTimeout,
@@ -6531,8 +6511,8 @@ const RASSDK = (function (t, e) {
                 (t.prototype.unsubscribe = function (t) {
                   this.operations[t] &&
                     (delete this.operations[t],
-                    this.setInactivityTimeout(),
-                    this.sendMessage(t, _.default.GQL_STOP, void 0));
+                      this.setInactivityTimeout(),
+                      this.sendMessage(t, _.default.GQL_STOP, void 0));
                 }),
                 t
               );
@@ -6656,8 +6636,8 @@ const RASSDK = (function (t, e) {
 
           e.Observable = void 0;
           var o = function () {
-              return 'function' == typeof Symbol;
-            },
+            return 'function' == typeof Symbol;
+          },
             s = function (t) {
               return o() && Boolean(Symbol[t]);
             },
@@ -6690,8 +6670,8 @@ const RASSDK = (function (t, e) {
             d.log
               ? d.log(t)
               : setTimeout(function () {
-                  throw t;
-                });
+                throw t;
+              });
           }
 
           function b(t) {
@@ -6773,39 +6753,39 @@ const RASSDK = (function (t, e) {
           }
 
           var g = (function () {
-              function t(e, n) {
-                r(this, t),
-                  (this._cleanup = void 0),
-                  (this._observer = e),
-                  (this._queue = void 0),
-                  (this._state = 'initializing');
-                var i = new w(this);
-                try {
-                  this._cleanup = n.call(void 0, i);
-                } catch (t) {
-                  i.error(t);
-                }
-                'initializing' === this._state && (this._state = 'ready');
+            function t(e, n) {
+              r(this, t),
+                (this._cleanup = void 0),
+                (this._observer = e),
+                (this._queue = void 0),
+                (this._state = 'initializing');
+              var i = new w(this);
+              try {
+                this._cleanup = n.call(void 0, i);
+              } catch (t) {
+                i.error(t);
               }
+              'initializing' === this._state && (this._state = 'ready');
+            }
 
-              return (
-                i(t, [
-                  {
-                    key: 'unsubscribe',
-                    value: function () {
-                      'closed' !== this._state && (v(this), y(this));
-                    },
+            return (
+              i(t, [
+                {
+                  key: 'unsubscribe',
+                  value: function () {
+                    'closed' !== this._state && (v(this), y(this));
                   },
-                  {
-                    key: 'closed',
-                    get: function () {
-                      return 'closed' === this._state;
-                    },
+                },
+                {
+                  key: 'closed',
+                  get: function () {
+                    return 'closed' === this._state;
                   },
-                ]),
-                t
-              );
-            })(),
+                },
+              ]),
+              t
+            );
+          })(),
             w = (function () {
               function t(e) {
                 r(this, t), (this._subscription = e);
@@ -6858,11 +6838,11 @@ const RASSDK = (function (t, e) {
                       value: function (t) {
                         return (
                           ('object' == typeof t && null !== t) ||
-                            (t = {
-                              next: t,
-                              error: arguments[1],
-                              complete: arguments[2],
-                            }),
+                          (t = {
+                            next: t,
+                            error: arguments[1],
+                            complete: arguments[2],
+                          }),
                           new g(t, this._subscriber)
                         );
                       },
@@ -7076,8 +7056,8 @@ const RASSDK = (function (t, e) {
                           return h(i) && i.constructor === r
                             ? i
                             : new r(function (t) {
-                                return i.subscribe(t);
-                              });
+                              return i.subscribe(t);
+                            });
                         }
                         if (s('iterator') && (n = l(e, u)))
                           return new r(function (t) {
@@ -7144,13 +7124,13 @@ const RASSDK = (function (t, e) {
             })();
           (e.Observable = I),
             o() &&
-              Object.defineProperty(I, Symbol('extensions'), {
-                value: {
-                  symbol: c,
-                  hostReportError: d,
-                },
-                configurable: !0,
-              });
+            Object.defineProperty(I, Symbol('extensions'), {
+              value: {
+                symbol: c,
+                hostReportError: d,
+              },
+              configurable: !0,
+            });
         },
         686: (t, e, r) => {
           'use strict';
@@ -7223,7 +7203,7 @@ const RASSDK = (function (t, e) {
             }),
             (n.Builder.prototype.prep = function (t, e) {
               t > this.minalign && (this.minalign = t);
-              for (var r = (1 + ~(this.bb.capacity() - this.space + e)) & (t - 1); this.space < r + t + e; ) {
+              for (var r = (1 + ~(this.bb.capacity() - this.space + e)) & (t - 1); this.space < r + t + e;) {
                 var i = this.bb.capacity();
                 (this.bb = n.Builder.growByteBuffer(this.bb)), (this.space += this.bb.capacity() - i);
               }
@@ -7353,7 +7333,7 @@ const RASSDK = (function (t, e) {
                 var o = e;
                 if (
                   (this.prep(this.minalign, n.SIZEOF_INT + n.FILE_IDENTIFIER_LENGTH + i),
-                  o.length != n.FILE_IDENTIFIER_LENGTH)
+                    o.length != n.FILE_IDENTIFIER_LENGTH)
                 )
                   throw new Error('FlatBuffers: file identifier must be length ' + n.FILE_IDENTIFIER_LENGTH);
                 for (var s = n.FILE_IDENTIFIER_LENGTH - 1; s >= 0; s--) this.writeInt8(o.charCodeAt(s));
@@ -7381,17 +7361,17 @@ const RASSDK = (function (t, e) {
               if (t instanceof Uint8Array) var e = t;
               else {
                 e = [];
-                for (var r = 0; r < t.length; ) {
+                for (var r = 0; r < t.length;) {
                   var n,
                     i = t.charCodeAt(r++);
                   (n = i < 55296 || i >= 56320 ? i : (i << 10) + t.charCodeAt(r++) + -56613888) < 128
                     ? e.push(n)
                     : (n < 2048
-                        ? e.push(((n >> 6) & 31) | 192)
-                        : (n < 65536
-                            ? e.push(((n >> 12) & 15) | 224)
-                            : e.push(((n >> 18) & 7) | 240, ((n >> 12) & 63) | 128),
-                          e.push(((n >> 6) & 63) | 128)),
+                      ? e.push(((n >> 6) & 31) | 192)
+                      : (n < 65536
+                        ? e.push(((n >> 12) & 15) | 224)
+                        : e.push(((n >> 18) & 7) | 240, ((n >> 12) & 63) | 128),
+                        e.push(((n >> 6) & 63) | 128)),
                       e.push((63 & n) | 128));
                 }
               }
@@ -7517,7 +7497,7 @@ const RASSDK = (function (t, e) {
                 i = '',
                 o = 0;
               if (((t += n.SIZEOF_INT), e === n.Encoding.UTF8_BYTES)) return this.bytes_.subarray(t, t + r);
-              for (; o < r; ) {
+              for (; o < r;) {
                 var s,
                   a = this.readUint8(t + o++);
                 if (a < 192) s = a;
@@ -7559,349 +7539,349 @@ const RASSDK = (function (t, e) {
             });
         },
       },
-      e = {};
+        e = {};
 
-    function r(n) {
-      var i = e[n];
-      if (void 0 !== i) return i.exports;
-      var o = (e[n] = {
-        id: n,
-        loaded: !1,
-        exports: {},
-      });
-      return t[n].call(o.exports, o, o.exports, r), (o.loaded = !0), o.exports;
-    }
-
-    (r.n = t => {
-      var e = t && t.__esModule ? () => t.default : () => t;
-      return (
-        r.d(e, {
-          a: e,
-        }),
-        e
-      );
-    }),
-      (r.d = (t, e) => {
-        for (var n in e)
-          r.o(e, n) &&
-            !r.o(t, n) &&
-            Object.defineProperty(t, n, {
-              enumerable: !0,
-              get: e[n],
-            });
-      }),
-      (r.g = (function () {
-        if ('object' == typeof globalThis) return globalThis;
-        try {
-          return this || new Function('return this')();
-        } catch (t) {
-          if ('object' == typeof window) return window;
-        }
-      })()),
-      (r.hmd = t => (
-        (t = Object.create(t)).children || (t.children = []),
-        Object.defineProperty(t, 'exports', {
-          enumerable: !0,
-          set: () => {
-            throw new Error(
-              'ES Modules may not assign module.exports or exports.*, Use ESM export syntax, instead: ' + t.id,
-            );
-          },
-        }),
-        t
-      )),
-      (r.o = (t, e) => Object.prototype.hasOwnProperty.call(t, e)),
-      (r.r = t => {
-        'undefined' != typeof Symbol &&
-          Symbol.toStringTag &&
-          Object.defineProperty(t, Symbol.toStringTag, {
-            value: 'Module',
-          }),
-          Object.defineProperty(t, '__esModule', {
-            value: !0,
-          });
-      }),
-      (r.p = 'https://pubapi.ticketmaster.com/sdk/');
-    var n = {};
-    return (
-      (() => {
-        'use strict';
-
-        r.d(n, {
-          default: () => fi,
+      function r(n) {
+        var i = e[n];
+        if (void 0 !== i) return i.exports;
+        var o = (e[n] = {
+          id: n,
+          loaded: !1,
+          exports: {},
         });
-        const t = 'MANIFEST_HTTP_ERROR',
-          e = 'VERSION_MISMATCH',
-          i = 'MANIFEST_REST_TIMEOUT_EXCEEDED';
-        new Error(i);
+        return t[n].call(o.exports, o, o.exports, r), (o.loaded = !0), o.exports;
+      }
 
-        class o extends Error {
-          constructor(t, e) {
-            super(t), (this.stack = e), (this.name = 'RASError'), Object.setPrototypeOf(this, o.prototype);
+      (r.n = t => {
+        var e = t && t.__esModule ? () => t.default : () => t;
+        return (
+          r.d(e, {
+            a: e,
+          }),
+          e
+        );
+      }),
+        (r.d = (t, e) => {
+          for (var n in e)
+            r.o(e, n) &&
+              !r.o(t, n) &&
+              Object.defineProperty(t, n, {
+                enumerable: !0,
+                get: e[n],
+              });
+        }),
+        (r.g = (function () {
+          if ('object' == typeof globalThis) return globalThis;
+          try {
+            return this || new Function('return this')();
+          } catch (t) {
+            if ('object' == typeof window) return window;
           }
-        }
-
-        var s = function (t, e) {
-          return (
-            (s =
-              Object.setPrototypeOf ||
-              ({
-                __proto__: [],
-              } instanceof Array &&
-                function (t, e) {
-                  t.__proto__ = e;
-                }) ||
-              function (t, e) {
-                for (var r in e) Object.prototype.hasOwnProperty.call(e, r) && (t[r] = e[r]);
-              }),
-            s(t, e)
-          );
-        };
-
-        function a(t, e) {
-          if ('function' != typeof e && null !== e)
-            throw new TypeError('Class extends value ' + String(e) + ' is not a constructor or null');
-
-          function r() {
-            this.constructor = t;
-          }
-
-          s(t, e), (t.prototype = null === e ? Object.create(e) : ((r.prototype = e.prototype), new r()));
-        }
-
-        function u(t, e) {
-          var r,
-            n,
-            i,
-            o,
-            s = {
-              label: 0,
-              sent: function () {
-                if (1 & i[0]) throw i[1];
-                return i[1];
-              },
-              trys: [],
-              ops: [],
-            };
-          return (
-            (o = {
-              next: a(0),
-              throw: a(1),
-              return: a(2),
+        })()),
+        (r.hmd = t => (
+          (t = Object.create(t)).children || (t.children = []),
+          Object.defineProperty(t, 'exports', {
+            enumerable: !0,
+            set: () => {
+              throw new Error(
+                'ES Modules may not assign module.exports or exports.*, Use ESM export syntax, instead: ' + t.id,
+              );
+            },
+          }),
+          t
+        )),
+        (r.o = (t, e) => Object.prototype.hasOwnProperty.call(t, e)),
+        (r.r = t => {
+          'undefined' != typeof Symbol &&
+            Symbol.toStringTag &&
+            Object.defineProperty(t, Symbol.toStringTag, {
+              value: 'Module',
             }),
-            'function' == typeof Symbol &&
+            Object.defineProperty(t, '__esModule', {
+              value: !0,
+            });
+        }),
+        (r.p = 'https://pubapi.ticketmaster.com/sdk/');
+      var n = {};
+      return (
+        (() => {
+          'use strict';
+
+          r.d(n, {
+            default: () => fi,
+          });
+          const t = 'MANIFEST_HTTP_ERROR',
+            e = 'VERSION_MISMATCH',
+            i = 'MANIFEST_REST_TIMEOUT_EXCEEDED';
+          new Error(i);
+
+          class o extends Error {
+            constructor(t, e) {
+              super(t), (this.stack = e), (this.name = 'RASError'), Object.setPrototypeOf(this, o.prototype);
+            }
+          }
+
+          var s = function (t, e) {
+            return (
+              (s =
+                Object.setPrototypeOf ||
+                ({
+                  __proto__: [],
+                } instanceof Array &&
+                  function (t, e) {
+                    t.__proto__ = e;
+                  }) ||
+                function (t, e) {
+                  for (var r in e) Object.prototype.hasOwnProperty.call(e, r) && (t[r] = e[r]);
+                }),
+              s(t, e)
+            );
+          };
+
+          function a(t, e) {
+            if ('function' != typeof e && null !== e)
+              throw new TypeError('Class extends value ' + String(e) + ' is not a constructor or null');
+
+            function r() {
+              this.constructor = t;
+            }
+
+            s(t, e), (t.prototype = null === e ? Object.create(e) : ((r.prototype = e.prototype), new r()));
+          }
+
+          function u(t, e) {
+            var r,
+              n,
+              i,
+              o,
+              s = {
+                label: 0,
+                sent: function () {
+                  if (1 & i[0]) throw i[1];
+                  return i[1];
+                },
+                trys: [],
+                ops: [],
+              };
+            return (
+              (o = {
+                next: a(0),
+                throw: a(1),
+                return: a(2),
+              }),
+              'function' == typeof Symbol &&
               (o[Symbol.iterator] = function () {
                 return this;
               }),
-            o
-          );
+              o
+            );
 
-          function a(o) {
-            return function (a) {
-              return (function (o) {
-                if (r) throw new TypeError('Generator is already executing.');
-                for (; s; )
-                  try {
-                    if (
-                      ((r = 1),
-                      n &&
-                        (i = 2 & o[0] ? n.return : o[0] ? n.throw || ((i = n.return) && i.call(n), 0) : n.next) &&
-                        !(i = i.call(n, o[1])).done)
-                    )
-                      return i;
-                    switch (((n = 0), i && (o = [2 & o[0], i.value]), o[0])) {
-                      case 0:
-                      case 1:
-                        i = o;
-                        break;
-                      case 4:
-                        return (
-                          s.label++,
-                          {
-                            value: o[1],
-                            done: !1,
-                          }
-                        );
-                      case 5:
-                        s.label++, (n = o[1]), (o = [0]);
-                        continue;
-                      case 7:
-                        (o = s.ops.pop()), s.trys.pop();
-                        continue;
-                      default:
-                        if (!((i = (i = s.trys).length > 0 && i[i.length - 1]) || (6 !== o[0] && 2 !== o[0]))) {
-                          s = 0;
+            function a(o) {
+              return function (a) {
+                return (function (o) {
+                  if (r) throw new TypeError('Generator is already executing.');
+                  for (; s;)
+                    try {
+                      if (
+                        ((r = 1),
+                          n &&
+                          (i = 2 & o[0] ? n.return : o[0] ? n.throw || ((i = n.return) && i.call(n), 0) : n.next) &&
+                          !(i = i.call(n, o[1])).done)
+                      )
+                        return i;
+                      switch (((n = 0), i && (o = [2 & o[0], i.value]), o[0])) {
+                        case 0:
+                        case 1:
+                          i = o;
+                          break;
+                        case 4:
+                          return (
+                            s.label++,
+                            {
+                              value: o[1],
+                              done: !1,
+                            }
+                          );
+                        case 5:
+                          s.label++, (n = o[1]), (o = [0]);
                           continue;
-                        }
-                        if (3 === o[0] && (!i || (o[1] > i[0] && o[1] < i[3]))) {
-                          s.label = o[1];
-                          break;
-                        }
-                        if (6 === o[0] && s.label < i[1]) {
-                          (s.label = i[1]), (i = o);
-                          break;
-                        }
-                        if (i && s.label < i[2]) {
-                          (s.label = i[2]), s.ops.push(o);
-                          break;
-                        }
-                        i[2] && s.ops.pop(), s.trys.pop();
-                        continue;
+                        case 7:
+                          (o = s.ops.pop()), s.trys.pop();
+                          continue;
+                        default:
+                          if (!((i = (i = s.trys).length > 0 && i[i.length - 1]) || (6 !== o[0] && 2 !== o[0]))) {
+                            s = 0;
+                            continue;
+                          }
+                          if (3 === o[0] && (!i || (o[1] > i[0] && o[1] < i[3]))) {
+                            s.label = o[1];
+                            break;
+                          }
+                          if (6 === o[0] && s.label < i[1]) {
+                            (s.label = i[1]), (i = o);
+                            break;
+                          }
+                          if (i && s.label < i[2]) {
+                            (s.label = i[2]), s.ops.push(o);
+                            break;
+                          }
+                          i[2] && s.ops.pop(), s.trys.pop();
+                          continue;
+                      }
+                      o = e.call(t, s);
+                    } catch (t) {
+                      (o = [6, t]), (n = 0);
+                    } finally {
+                      r = i = 0;
                     }
-                    o = e.call(t, s);
-                  } catch (t) {
-                    (o = [6, t]), (n = 0);
-                  } finally {
-                    r = i = 0;
-                  }
-                if (5 & o[0]) throw o[1];
-                return {
-                  value: o[0] ? o[1] : void 0,
-                  done: !0,
-                };
-              })([o, a]);
-            };
-          }
-        }
-
-        function c(t) {
-          var e = 'function' == typeof Symbol && Symbol.iterator,
-            r = e && t[e],
-            n = 0;
-          if (r) return r.call(t);
-          if (t && 'number' == typeof t.length)
-            return {
-              next: function () {
-                return (
-                  t && n >= t.length && (t = void 0),
-                  {
-                    value: t && t[n++],
-                    done: !t,
-                  }
-                );
-              },
-            };
-          throw new TypeError(e ? 'Object is not iterable.' : 'Symbol.iterator is not defined.');
-        }
-
-        function f(t, e) {
-          var r = 'function' == typeof Symbol && t[Symbol.iterator];
-          if (!r) return t;
-          var n,
-            i,
-            o = r.call(t),
-            s = [];
-          try {
-            for (; (void 0 === e || e-- > 0) && !(n = o.next()).done; ) s.push(n.value);
-          } catch (t) {
-            i = {
-              error: t,
-            };
-          } finally {
-            try {
-              n && !n.done && (r = o.return) && r.call(o);
-            } finally {
-              if (i) throw i.error;
+                  if (5 & o[0]) throw o[1];
+                  return {
+                    value: o[0] ? o[1] : void 0,
+                    done: !0,
+                  };
+                })([o, a]);
+              };
             }
-          }
-          return s;
-        }
-
-        function l(t, e, r) {
-          if (r || 2 === arguments.length)
-            for (var n, i = 0, o = e.length; i < o; i++)
-              (!n && i in e) || (n || (n = Array.prototype.slice.call(e, 0, i)), (n[i] = e[i]));
-          return t.concat(n || Array.prototype.slice.call(e));
-        }
-
-        function p(t) {
-          return this instanceof p ? ((this.v = t), this) : new p(t);
-        }
-
-        function h(t, e, r) {
-          if (!Symbol.asyncIterator) throw new TypeError('Symbol.asyncIterator is not defined.');
-          var n,
-            i = r.apply(t, e || []),
-            o = [];
-          return (
-            (n = {}),
-            s('next'),
-            s('throw'),
-            s('return'),
-            (n[Symbol.asyncIterator] = function () {
-              return this;
-            }),
-            n
-          );
-
-          function s(t) {
-            i[t] &&
-              (n[t] = function (e) {
-                return new Promise(function (r, n) {
-                  o.push([t, e, r, n]) > 1 || a(t, e);
-                });
-              });
-          }
-
-          function a(t, e) {
-            try {
-              (r = i[t](e)).value instanceof p ? Promise.resolve(r.value.v).then(u, c) : f(o[0][2], r);
-            } catch (t) {
-              f(o[0][3], t);
-            }
-            var r;
-          }
-
-          function u(t) {
-            a('next', t);
           }
 
           function c(t) {
-            a('throw', t);
+            var e = 'function' == typeof Symbol && Symbol.iterator,
+              r = e && t[e],
+              n = 0;
+            if (r) return r.call(t);
+            if (t && 'number' == typeof t.length)
+              return {
+                next: function () {
+                  return (
+                    t && n >= t.length && (t = void 0),
+                    {
+                      value: t && t[n++],
+                      done: !t,
+                    }
+                  );
+                },
+              };
+            throw new TypeError(e ? 'Object is not iterable.' : 'Symbol.iterator is not defined.');
           }
 
           function f(t, e) {
-            t(e), o.shift(), o.length && a(o[0][0], o[0][1]);
+            var r = 'function' == typeof Symbol && t[Symbol.iterator];
+            if (!r) return t;
+            var n,
+              i,
+              o = r.call(t),
+              s = [];
+            try {
+              for (; (void 0 === e || e-- > 0) && !(n = o.next()).done;) s.push(n.value);
+            } catch (t) {
+              i = {
+                error: t,
+              };
+            } finally {
+              try {
+                n && !n.done && (r = o.return) && r.call(o);
+              } finally {
+                if (i) throw i.error;
+              }
+            }
+            return s;
           }
-        }
 
-        function d(t) {
-          return 'function' == typeof t;
-        }
+          function l(t, e, r) {
+            if (r || 2 === arguments.length)
+              for (var n, i = 0, o = e.length; i < o; i++)
+                (!n && i in e) || (n || (n = Array.prototype.slice.call(e, 0, i)), (n[i] = e[i]));
+            return t.concat(n || Array.prototype.slice.call(e));
+          }
 
-        function b(t) {
-          var e = t(function (t) {
-            Error.call(t), (t.stack = new Error().stack);
-          });
-          return (e.prototype = Object.create(Error.prototype)), (e.prototype.constructor = e), e;
-        }
+          function p(t) {
+            return this instanceof p ? ((this.v = t), this) : new p(t);
+          }
 
-        Object.create, Object.create;
-        var y = b(function (t) {
-          return function (e) {
-            t(this),
-              (this.message = e
-                ? e.length +
+          function h(t, e, r) {
+            if (!Symbol.asyncIterator) throw new TypeError('Symbol.asyncIterator is not defined.');
+            var n,
+              i = r.apply(t, e || []),
+              o = [];
+            return (
+              (n = {}),
+              s('next'),
+              s('throw'),
+              s('return'),
+              (n[Symbol.asyncIterator] = function () {
+                return this;
+              }),
+              n
+            );
+
+            function s(t) {
+              i[t] &&
+                (n[t] = function (e) {
+                  return new Promise(function (r, n) {
+                    o.push([t, e, r, n]) > 1 || a(t, e);
+                  });
+                });
+            }
+
+            function a(t, e) {
+              try {
+                (r = i[t](e)).value instanceof p ? Promise.resolve(r.value.v).then(u, c) : f(o[0][2], r);
+              } catch (t) {
+                f(o[0][3], t);
+              }
+              var r;
+            }
+
+            function u(t) {
+              a('next', t);
+            }
+
+            function c(t) {
+              a('throw', t);
+            }
+
+            function f(t, e) {
+              t(e), o.shift(), o.length && a(o[0][0], o[0][1]);
+            }
+          }
+
+          function d(t) {
+            return 'function' == typeof t;
+          }
+
+          function b(t) {
+            var e = t(function (t) {
+              Error.call(t), (t.stack = new Error().stack);
+            });
+            return (e.prototype = Object.create(Error.prototype)), (e.prototype.constructor = e), e;
+          }
+
+          Object.create, Object.create;
+          var y = b(function (t) {
+            return function (e) {
+              t(this),
+                (this.message = e
+                  ? e.length +
                   ' errors occurred during unsubscription:\n' +
                   e
                     .map(function (t, e) {
                       return e + 1 + ') ' + t.toString();
                     })
                     .join('\n  ')
-                : ''),
-              (this.name = 'UnsubscriptionError'),
-              (this.errors = e);
-          };
-        });
+                  : ''),
+                (this.name = 'UnsubscriptionError'),
+                (this.errors = e);
+            };
+          });
 
-        function v(t, e) {
-          if (t) {
-            var r = t.indexOf(e);
-            0 <= r && t.splice(r, 1);
+          function v(t, e) {
+            if (t) {
+              var r = t.indexOf(e);
+              0 <= r && t.splice(r, 1);
+            }
           }
-        }
 
-        var _ = (function () {
+          var _ = (function () {
             function t(t) {
               (this.initialTeardown = t), (this.closed = !1), (this._parentage = null), (this._finalizers = null);
             }
@@ -7995,78 +7975,78 @@ const RASSDK = (function (t, e) {
             );
             var e;
           })(),
-          m = _.EMPTY;
+            m = _.EMPTY;
 
-        function g(t) {
-          return t instanceof _ || (t && 'closed' in t && d(t.remove) && d(t.add) && d(t.unsubscribe));
-        }
+          function g(t) {
+            return t instanceof _ || (t && 'closed' in t && d(t.remove) && d(t.add) && d(t.unsubscribe));
+          }
 
-        function w(t) {
-          d(t) ? t() : t.unsubscribe();
-        }
+          function w(t) {
+            d(t) ? t() : t.unsubscribe();
+          }
 
-        var I = null,
-          S = null,
-          E = void 0,
-          O = !1,
-          T = !1,
-          k = {
-            setTimeout: function (t, e) {
-              for (var r = [], n = 2; n < arguments.length; n++) r[n - 2] = arguments[n];
-              var i = k.delegate;
-              return (null == i ? void 0 : i.setTimeout)
-                ? i.setTimeout.apply(i, l([t, e], f(r)))
-                : setTimeout.apply(void 0, l([t, e], f(r)));
-            },
-            clearTimeout: function (t) {
-              var e = k.delegate;
-              return ((null == e ? void 0 : e.clearTimeout) || clearTimeout)(t);
-            },
-            delegate: void 0,
-          };
+          var I = null,
+            S = null,
+            E = void 0,
+            O = !1,
+            T = !1,
+            k = {
+              setTimeout: function (t, e) {
+                for (var r = [], n = 2; n < arguments.length; n++) r[n - 2] = arguments[n];
+                var i = k.delegate;
+                return (null == i ? void 0 : i.setTimeout)
+                  ? i.setTimeout.apply(i, l([t, e], f(r)))
+                  : setTimeout.apply(void 0, l([t, e], f(r)));
+              },
+              clearTimeout: function (t) {
+                var e = k.delegate;
+                return ((null == e ? void 0 : e.clearTimeout) || clearTimeout)(t);
+              },
+              delegate: void 0,
+            };
 
-        function A(t) {
-          k.setTimeout(function () {
-            if (!I) throw t;
-            I(t);
-          });
-        }
+          function A(t) {
+            k.setTimeout(function () {
+              if (!I) throw t;
+              I(t);
+            });
+          }
 
-        function R() {}
+          function R() { }
 
-        var F = x('C', void 0, void 0);
+          var F = x('C', void 0, void 0);
 
-        function x(t, e, r) {
-          return {
-            kind: t,
-            value: e,
-            error: r,
-          };
-        }
+          function x(t, e, r) {
+            return {
+              kind: t,
+              value: e,
+              error: r,
+            };
+          }
 
-        var P = null;
+          var P = null;
 
-        function C(t) {
-          if (O) {
-            var e = !P;
-            if (
-              (e &&
-                (P = {
-                  errorThrown: !1,
-                  error: null,
-                }),
-              t(),
-              e)
-            ) {
-              var r = P,
-                n = r.errorThrown,
-                i = r.error;
-              if (((P = null), n)) throw i;
-            }
-          } else t();
-        }
+          function C(t) {
+            if (O) {
+              var e = !P;
+              if (
+                (e &&
+                  (P = {
+                    errorThrown: !1,
+                    error: null,
+                  }),
+                  t(),
+                  e)
+              ) {
+                var r = P,
+                  n = r.errorThrown,
+                  i = r.error;
+                if (((P = null), n)) throw i;
+              }
+            } else t();
+          }
 
-        var V = (function (t) {
+          var V = (function (t) {
             function e(e) {
               var r = t.call(this) || this;
               return (r.isStopped = !1), e ? ((r.destination = e), g(e) && e.add(r)) : (r.destination = q), r;
@@ -8080,11 +8060,11 @@ const RASSDK = (function (t, e) {
               (e.prototype.next = function (t) {
                 this.isStopped
                   ? Q(
-                      (function (t) {
-                        return x('N', t, void 0);
-                      })(t),
-                      this,
-                    )
+                    (function (t) {
+                      return x('N', t, void 0);
+                    })(t),
+                    this,
+                  )
                   : this._next(t);
               }),
               (e.prototype.error = function (t) {
@@ -8116,13 +8096,13 @@ const RASSDK = (function (t, e) {
               e
             );
           })(_),
-          B = Function.prototype.bind;
+            B = Function.prototype.bind;
 
-        function N(t, e) {
-          return B.call(t, e);
-        }
+          function N(t, e) {
+            return B.call(t, e);
+          }
 
-        var L = (function () {
+          var L = (function () {
             function t(t) {
               this.partialObserver = t;
             }
@@ -8159,50 +8139,50 @@ const RASSDK = (function (t, e) {
               t
             );
           })(),
-          j = (function (t) {
-            function e(e, r, n) {
-              var i,
-                o,
-                s = t.call(this) || this;
-              return (
-                d(e) || !e
-                  ? (i = {
+            j = (function (t) {
+              function e(e, r, n) {
+                var i,
+                  o,
+                  s = t.call(this) || this;
+                return (
+                  d(e) || !e
+                    ? (i = {
                       next: null != e ? e : void 0,
                       error: null != r ? r : void 0,
                       complete: null != n ? n : void 0,
                     })
-                  : s && T
-                  ? (((o = Object.create(e)).unsubscribe = function () {
-                      return s.unsubscribe();
-                    }),
-                    (i = {
-                      next: e.next && N(e.next, o),
-                      error: e.error && N(e.error, o),
-                      complete: e.complete && N(e.complete, o),
-                    }))
-                  : (i = e),
-                (s.destination = new L(i)),
-                s
-              );
-            }
+                    : s && T
+                      ? (((o = Object.create(e)).unsubscribe = function () {
+                        return s.unsubscribe();
+                      }),
+                        (i = {
+                          next: e.next && N(e.next, o),
+                          error: e.error && N(e.error, o),
+                          complete: e.complete && N(e.complete, o),
+                        }))
+                      : (i = e),
+                  (s.destination = new L(i)),
+                  s
+                );
+              }
 
-            return a(e, t), e;
-          })(V);
+              return a(e, t), e;
+            })(V);
 
-        function M(t) {
-          var e;
-          O ? ((e = t), O && P && ((P.errorThrown = !0), (P.error = e))) : A(t);
-        }
+          function M(t) {
+            var e;
+            O ? ((e = t), O && P && ((P.errorThrown = !0), (P.error = e))) : A(t);
+          }
 
-        function Q(t, e) {
-          var r = S;
-          r &&
-            k.setTimeout(function () {
-              return r(t, e);
-            });
-        }
+          function Q(t, e) {
+            var r = S;
+            r &&
+              k.setTimeout(function () {
+                return r(t, e);
+              });
+          }
 
-        var q = {
+          var q = {
             closed: !0,
             next: R,
             error: function (t) {
@@ -8210,168 +8190,168 @@ const RASSDK = (function (t, e) {
             },
             complete: R,
           },
-          D = ('function' == typeof Symbol && Symbol.observable) || '@@observable';
+            D = ('function' == typeof Symbol && Symbol.observable) || '@@observable';
 
-        function U(t) {
-          return t;
-        }
-
-        function G(t) {
-          return 0 === t.length
-            ? U
-            : 1 === t.length
-            ? t[0]
-            : function (e) {
-                return t.reduce(function (t, e) {
-                  return e(t);
-                }, e);
-              };
-        }
-
-        var z = (function () {
-          function t(t) {
-            t && (this._subscribe = t);
+          function U(t) {
+            return t;
           }
 
-          return (
-            (t.prototype.lift = function (e) {
-              var r = new t();
-              return (r.source = this), (r.operator = e), r;
-            }),
-            (t.prototype.subscribe = function (t, e, r) {
-              var n,
-                i = this,
-                o =
-                  ((n = t) && n instanceof V) ||
-                  ((function (t) {
-                    return t && d(t.next) && d(t.error) && d(t.complete);
-                  })(n) &&
-                    g(n))
-                    ? t
-                    : new j(t, e, r);
-              return (
-                C(function () {
-                  var t = i,
-                    e = t.operator,
-                    r = t.source;
-                  o.add(e ? e.call(o, r) : r ? i._subscribe(o) : i._trySubscribe(o));
-                }),
-                o
-              );
-            }),
-            (t.prototype._trySubscribe = function (t) {
-              try {
-                return this._subscribe(t);
-              } catch (e) {
-                t.error(e);
-              }
-            }),
-            (t.prototype.forEach = function (t, e) {
-              var r = this;
-              return new (e = K(e))(function (e, n) {
-                var i = new j({
-                  next: function (e) {
-                    try {
-                      t(e);
-                    } catch (t) {
-                      n(t), i.unsubscribe();
-                    }
-                  },
-                  error: n,
-                  complete: e,
-                });
-                r.subscribe(i);
-              });
-            }),
-            (t.prototype._subscribe = function (t) {
-              var e;
-              return null === (e = this.source) || void 0 === e ? void 0 : e.subscribe(t);
-            }),
-            (t.prototype[D] = function () {
-              return this;
-            }),
-            (t.prototype.pipe = function () {
-              for (var t = [], e = 0; e < arguments.length; e++) t[e] = arguments[e];
-              return G(t)(this);
-            }),
-            (t.prototype.toPromise = function (t) {
-              var e = this;
-              return new (t = K(t))(function (t, r) {
-                var n;
-                e.subscribe(
-                  function (t) {
-                    return (n = t);
-                  },
-                  function (t) {
-                    return r(t);
-                  },
-                  function () {
-                    return t(n);
-                  },
-                );
-              });
-            }),
-            (t.create = function (e) {
-              return new t(e);
-            }),
-            t
-          );
-        })();
+          function G(t) {
+            return 0 === t.length
+              ? U
+              : 1 === t.length
+                ? t[0]
+                : function (e) {
+                  return t.reduce(function (t, e) {
+                    return e(t);
+                  }, e);
+                };
+          }
 
-        function K(t) {
-          var e;
-          return null !== (e = null != t ? t : E) && void 0 !== e ? e : Promise;
-        }
-
-        function $(t) {
-          return function (e) {
-            if (
-              (function (t) {
-                return d(null == t ? void 0 : t.lift);
-              })(e)
-            )
-              return e.lift(function (e) {
-                try {
-                  return t(e, this);
-                } catch (t) {
-                  this.error(t);
-                }
-              });
-            throw new TypeError('Unable to lift unknown Observable type');
-          };
-        }
-
-        function W(t) {
-          return $(function (e, r) {
-            try {
-              e.subscribe(r);
-            } finally {
-              r.add(t);
+          var z = (function () {
+            function t(t) {
+              t && (this._subscribe = t);
             }
-          });
-        }
 
-        function H(t, e, r, n, i) {
-          return new Y(t, e, r, n, i);
-        }
-
-        var Y = (function (t) {
-          function e(e, r, n, i, o, s) {
-            var a = t.call(this, e) || this;
             return (
-              (a.onFinalize = o),
-              (a.shouldUnsubscribe = s),
-              (a._next = r
-                ? function (t) {
+              (t.prototype.lift = function (e) {
+                var r = new t();
+                return (r.source = this), (r.operator = e), r;
+              }),
+              (t.prototype.subscribe = function (t, e, r) {
+                var n,
+                  i = this,
+                  o =
+                    ((n = t) && n instanceof V) ||
+                      ((function (t) {
+                        return t && d(t.next) && d(t.error) && d(t.complete);
+                      })(n) &&
+                        g(n))
+                      ? t
+                      : new j(t, e, r);
+                return (
+                  C(function () {
+                    var t = i,
+                      e = t.operator,
+                      r = t.source;
+                    o.add(e ? e.call(o, r) : r ? i._subscribe(o) : i._trySubscribe(o));
+                  }),
+                  o
+                );
+              }),
+              (t.prototype._trySubscribe = function (t) {
+                try {
+                  return this._subscribe(t);
+                } catch (e) {
+                  t.error(e);
+                }
+              }),
+              (t.prototype.forEach = function (t, e) {
+                var r = this;
+                return new (e = K(e))(function (e, n) {
+                  var i = new j({
+                    next: function (e) {
+                      try {
+                        t(e);
+                      } catch (t) {
+                        n(t), i.unsubscribe();
+                      }
+                    },
+                    error: n,
+                    complete: e,
+                  });
+                  r.subscribe(i);
+                });
+              }),
+              (t.prototype._subscribe = function (t) {
+                var e;
+                return null === (e = this.source) || void 0 === e ? void 0 : e.subscribe(t);
+              }),
+              (t.prototype[D] = function () {
+                return this;
+              }),
+              (t.prototype.pipe = function () {
+                for (var t = [], e = 0; e < arguments.length; e++) t[e] = arguments[e];
+                return G(t)(this);
+              }),
+              (t.prototype.toPromise = function (t) {
+                var e = this;
+                return new (t = K(t))(function (t, r) {
+                  var n;
+                  e.subscribe(
+                    function (t) {
+                      return (n = t);
+                    },
+                    function (t) {
+                      return r(t);
+                    },
+                    function () {
+                      return t(n);
+                    },
+                  );
+                });
+              }),
+              (t.create = function (e) {
+                return new t(e);
+              }),
+              t
+            );
+          })();
+
+          function K(t) {
+            var e;
+            return null !== (e = null != t ? t : E) && void 0 !== e ? e : Promise;
+          }
+
+          function $(t) {
+            return function (e) {
+              if (
+                (function (t) {
+                  return d(null == t ? void 0 : t.lift);
+                })(e)
+              )
+                return e.lift(function (e) {
+                  try {
+                    return t(e, this);
+                  } catch (t) {
+                    this.error(t);
+                  }
+                });
+              throw new TypeError('Unable to lift unknown Observable type');
+            };
+          }
+
+          function W(t) {
+            return $(function (e, r) {
+              try {
+                e.subscribe(r);
+              } finally {
+                r.add(t);
+              }
+            });
+          }
+
+          function H(t, e, r, n, i) {
+            return new Y(t, e, r, n, i);
+          }
+
+          var Y = (function (t) {
+            function e(e, r, n, i, o, s) {
+              var a = t.call(this, e) || this;
+              return (
+                (a.onFinalize = o),
+                (a.shouldUnsubscribe = s),
+                (a._next = r
+                  ? function (t) {
                     try {
                       r(t);
                     } catch (t) {
                       e.error(t);
                     }
                   }
-                : t.prototype._next),
-              (a._error = i
-                ? function (t) {
+                  : t.prototype._next),
+                (a._error = i
+                  ? function (t) {
                     try {
                       i(t);
                     } catch (t) {
@@ -8380,9 +8360,9 @@ const RASSDK = (function (t, e) {
                       this.unsubscribe();
                     }
                   }
-                : t.prototype._error),
-              (a._complete = n
-                ? function () {
+                  : t.prototype._error),
+                (a._complete = n
+                  ? function () {
                     try {
                       n();
                     } catch (t) {
@@ -8391,36 +8371,36 @@ const RASSDK = (function (t, e) {
                       this.unsubscribe();
                     }
                   }
-                : t.prototype._complete),
-              a
+                  : t.prototype._complete),
+                a
+              );
+            }
+
+            return (
+              a(e, t),
+              (e.prototype.unsubscribe = function () {
+                var e;
+                if (!this.shouldUnsubscribe || this.shouldUnsubscribe()) {
+                  var r = this.closed;
+                  t.prototype.unsubscribe.call(this),
+                    !r && (null === (e = this.onFinalize) || void 0 === e || e.call(this));
+                }
+              }),
+              e
             );
-          }
+          })(V);
 
-          return (
-            a(e, t),
-            (e.prototype.unsubscribe = function () {
-              var e;
-              if (!this.shouldUnsubscribe || this.shouldUnsubscribe()) {
-                var r = this.closed;
-                t.prototype.unsubscribe.call(this),
-                  !r && (null === (e = this.onFinalize) || void 0 === e || e.call(this));
-              }
-            }),
-            e
-          );
-        })(V);
-
-        function J(t, e, r) {
-          var n =
-            d(t) || e || r
-              ? {
+          function J(t, e, r) {
+            var n =
+              d(t) || e || r
+                ? {
                   next: t,
                   error: e,
                   complete: r,
                 }
-              : t;
-          return n
-            ? $(function (t, e) {
+                : t;
+            return n
+              ? $(function (t, e) {
                 var r;
                 null === (r = n.subscribe) || void 0 === r || r.call(n);
                 var i = !0;
@@ -8447,357 +8427,357 @@ const RASSDK = (function (t, e) {
                   ),
                 );
               })
-            : U;
-        }
+              : U;
+          }
 
-        function Z(t, e) {
-          return $(function (r, n) {
-            var i = 0;
-            r.subscribe(
-              H(n, function (r) {
-                n.next(t.call(e, r, i++));
-              }),
-            );
-          });
-        }
+          function Z(t, e) {
+            return $(function (r, n) {
+              var i = 0;
+              r.subscribe(
+                H(n, function (r) {
+                  n.next(t.call(e, r, i++));
+                }),
+              );
+            });
+          }
 
-        var X = function (t) {
-          return t && 'number' == typeof t.length && 'function' != typeof t;
-        };
+          var X = function (t) {
+            return t && 'number' == typeof t.length && 'function' != typeof t;
+          };
 
-        function tt(t) {
-          return d(null == t ? void 0 : t.then);
-        }
+          function tt(t) {
+            return d(null == t ? void 0 : t.then);
+          }
 
-        function et(t) {
-          return d(t[D]);
-        }
+          function et(t) {
+            return d(t[D]);
+          }
 
-        function rt(t) {
-          return Symbol.asyncIterator && d(null == t ? void 0 : t[Symbol.asyncIterator]);
-        }
+          function rt(t) {
+            return Symbol.asyncIterator && d(null == t ? void 0 : t[Symbol.asyncIterator]);
+          }
 
-        function nt(t) {
-          return new TypeError(
-            'You provided ' +
+          function nt(t) {
+            return new TypeError(
+              'You provided ' +
               (null !== t && 'object' == typeof t ? 'an invalid object' : "'" + t + "'") +
               ' where a stream was expected. You can provide an Observable, Promise, ReadableStream, Array, AsyncIterable, or Iterable.',
-          );
-        }
-
-        var it = 'function' == typeof Symbol && Symbol.iterator ? Symbol.iterator : '@@iterator';
-
-        function ot(t) {
-          return d(null == t ? void 0 : t[it]);
-        }
-
-        function st(t) {
-          return h(this, arguments, function () {
-            var e, r, n;
-            return u(this, function (i) {
-              switch (i.label) {
-                case 0:
-                  (e = t.getReader()), (i.label = 1);
-                case 1:
-                  i.trys.push([1, , 9, 10]), (i.label = 2);
-                case 2:
-                  return [4, p(e.read())];
-                case 3:
-                  return (r = i.sent()), (n = r.value), r.done ? [4, p(void 0)] : [3, 5];
-                case 4:
-                  return [2, i.sent()];
-                case 5:
-                  return [4, p(n)];
-                case 6:
-                  return [4, i.sent()];
-                case 7:
-                  return i.sent(), [3, 2];
-                case 8:
-                  return [3, 10];
-                case 9:
-                  return e.releaseLock(), [7];
-                case 10:
-                  return [2];
-              }
-            });
-          });
-        }
-
-        function at(t) {
-          return d(null == t ? void 0 : t.getReader);
-        }
-
-        function ut(t) {
-          if (t instanceof z) return t;
-          if (null != t) {
-            if (et(t))
-              return (
-                (i = t),
-                new z(function (t) {
-                  var e = i[D]();
-                  if (d(e.subscribe)) return e.subscribe(t);
-                  throw new TypeError('Provided object does not correctly implement Symbol.observable');
-                })
-              );
-            if (X(t))
-              return (
-                (n = t),
-                new z(function (t) {
-                  for (var e = 0; e < n.length && !t.closed; e++) t.next(n[e]);
-                  t.complete();
-                })
-              );
-            if (tt(t))
-              return (
-                (r = t),
-                new z(function (t) {
-                  r.then(
-                    function (e) {
-                      t.closed || (t.next(e), t.complete());
-                    },
-                    function (e) {
-                      return t.error(e);
-                    },
-                  ).then(null, A);
-                })
-              );
-            if (rt(t)) return ct(t);
-            if (ot(t))
-              return (
-                (e = t),
-                new z(function (t) {
-                  var r, n;
-                  try {
-                    for (var i = c(e), o = i.next(); !o.done; o = i.next()) {
-                      var s = o.value;
-                      if ((t.next(s), t.closed)) return;
-                    }
-                  } catch (t) {
-                    r = {
-                      error: t,
-                    };
-                  } finally {
-                    try {
-                      o && !o.done && (n = i.return) && n.call(i);
-                    } finally {
-                      if (r) throw r.error;
-                    }
-                  }
-                  t.complete();
-                })
-              );
-            if (at(t)) return ct(st(t));
+            );
           }
-          var e, r, n, i;
-          throw nt(t);
-        }
 
-        function ct(t) {
-          return new z(function (e) {
-            (function (t, e) {
-              var r, n, i, o, s, a, f, l;
-              return (
-                (s = this),
-                (a = void 0),
-                (l = function () {
-                  var s, a;
-                  return u(this, function (u) {
-                    switch (u.label) {
-                      case 0:
-                        u.trys.push([0, 5, 6, 11]),
-                          (r = (function (t) {
-                            if (!Symbol.asyncIterator) throw new TypeError('Symbol.asyncIterator is not defined.');
-                            var e,
-                              r = t[Symbol.asyncIterator];
-                            return r
-                              ? r.call(t)
-                              : ((t = c(t)),
-                                (e = {}),
-                                n('next'),
-                                n('throw'),
-                                n('return'),
-                                (e[Symbol.asyncIterator] = function () {
-                                  return this;
-                                }),
-                                e);
+          var it = 'function' == typeof Symbol && Symbol.iterator ? Symbol.iterator : '@@iterator';
 
-                            function n(r) {
-                              e[r] =
-                                t[r] &&
-                                function (e) {
-                                  return new Promise(function (n, i) {
-                                    !(function (t, e, r, n) {
-                                      Promise.resolve(n).then(function (e) {
-                                        t({
-                                          value: e,
-                                          done: r,
-                                        });
-                                      }, e);
-                                    })(n, i, (e = t[r](e)).done, e.value);
-                                  });
-                                };
-                            }
-                          })(t)),
-                          (u.label = 1);
-                      case 1:
-                        return [4, r.next()];
-                      case 2:
-                        if ((n = u.sent()).done) return [3, 4];
-                        if (((s = n.value), e.next(s), e.closed)) return [2];
-                        u.label = 3;
-                      case 3:
-                        return [3, 1];
-                      case 4:
-                        return [3, 11];
-                      case 5:
-                        return (
-                          (a = u.sent()),
-                          (i = {
-                            error: a,
-                          }),
-                          [3, 11]
-                        );
-                      case 6:
-                        return u.trys.push([6, , 9, 10]), n && !n.done && (o = r.return) ? [4, o.call(r)] : [3, 8];
-                      case 7:
-                        u.sent(), (u.label = 8);
-                      case 8:
-                        return [3, 10];
-                      case 9:
-                        if (i) throw i.error;
-                        return [7];
-                      case 10:
-                        return [7];
-                      case 11:
-                        return e.complete(), [2];
-                    }
-                  });
-                }),
-                new ((f = void 0) || (f = Promise))(function (t, e) {
-                  function r(t) {
+          function ot(t) {
+            return d(null == t ? void 0 : t[it]);
+          }
+
+          function st(t) {
+            return h(this, arguments, function () {
+              var e, r, n;
+              return u(this, function (i) {
+                switch (i.label) {
+                  case 0:
+                    (e = t.getReader()), (i.label = 1);
+                  case 1:
+                    i.trys.push([1, , 9, 10]), (i.label = 2);
+                  case 2:
+                    return [4, p(e.read())];
+                  case 3:
+                    return (r = i.sent()), (n = r.value), r.done ? [4, p(void 0)] : [3, 5];
+                  case 4:
+                    return [2, i.sent()];
+                  case 5:
+                    return [4, p(n)];
+                  case 6:
+                    return [4, i.sent()];
+                  case 7:
+                    return i.sent(), [3, 2];
+                  case 8:
+                    return [3, 10];
+                  case 9:
+                    return e.releaseLock(), [7];
+                  case 10:
+                    return [2];
+                }
+              });
+            });
+          }
+
+          function at(t) {
+            return d(null == t ? void 0 : t.getReader);
+          }
+
+          function ut(t) {
+            if (t instanceof z) return t;
+            if (null != t) {
+              if (et(t))
+                return (
+                  (i = t),
+                  new z(function (t) {
+                    var e = i[D]();
+                    if (d(e.subscribe)) return e.subscribe(t);
+                    throw new TypeError('Provided object does not correctly implement Symbol.observable');
+                  })
+                );
+              if (X(t))
+                return (
+                  (n = t),
+                  new z(function (t) {
+                    for (var e = 0; e < n.length && !t.closed; e++) t.next(n[e]);
+                    t.complete();
+                  })
+                );
+              if (tt(t))
+                return (
+                  (r = t),
+                  new z(function (t) {
+                    r.then(
+                      function (e) {
+                        t.closed || (t.next(e), t.complete());
+                      },
+                      function (e) {
+                        return t.error(e);
+                      },
+                    ).then(null, A);
+                  })
+                );
+              if (rt(t)) return ct(t);
+              if (ot(t))
+                return (
+                  (e = t),
+                  new z(function (t) {
+                    var r, n;
                     try {
-                      i(l.next(t));
+                      for (var i = c(e), o = i.next(); !o.done; o = i.next()) {
+                        var s = o.value;
+                        if ((t.next(s), t.closed)) return;
+                      }
                     } catch (t) {
-                      e(t);
+                      r = {
+                        error: t,
+                      };
+                    } finally {
+                      try {
+                        o && !o.done && (n = i.return) && n.call(i);
+                      } finally {
+                        if (r) throw r.error;
+                      }
                     }
-                  }
+                    t.complete();
+                  })
+                );
+              if (at(t)) return ct(st(t));
+            }
+            var e, r, n, i;
+            throw nt(t);
+          }
 
-                  function n(t) {
-                    try {
-                      i(l.throw(t));
-                    } catch (t) {
-                      e(t);
+          function ct(t) {
+            return new z(function (e) {
+              (function (t, e) {
+                var r, n, i, o, s, a, f, l;
+                return (
+                  (s = this),
+                  (a = void 0),
+                  (l = function () {
+                    var s, a;
+                    return u(this, function (u) {
+                      switch (u.label) {
+                        case 0:
+                          u.trys.push([0, 5, 6, 11]),
+                            (r = (function (t) {
+                              if (!Symbol.asyncIterator) throw new TypeError('Symbol.asyncIterator is not defined.');
+                              var e,
+                                r = t[Symbol.asyncIterator];
+                              return r
+                                ? r.call(t)
+                                : ((t = c(t)),
+                                  (e = {}),
+                                  n('next'),
+                                  n('throw'),
+                                  n('return'),
+                                  (e[Symbol.asyncIterator] = function () {
+                                    return this;
+                                  }),
+                                  e);
+
+                              function n(r) {
+                                e[r] =
+                                  t[r] &&
+                                  function (e) {
+                                    return new Promise(function (n, i) {
+                                      !(function (t, e, r, n) {
+                                        Promise.resolve(n).then(function (e) {
+                                          t({
+                                            value: e,
+                                            done: r,
+                                          });
+                                        }, e);
+                                      })(n, i, (e = t[r](e)).done, e.value);
+                                    });
+                                  };
+                              }
+                            })(t)),
+                            (u.label = 1);
+                        case 1:
+                          return [4, r.next()];
+                        case 2:
+                          if ((n = u.sent()).done) return [3, 4];
+                          if (((s = n.value), e.next(s), e.closed)) return [2];
+                          u.label = 3;
+                        case 3:
+                          return [3, 1];
+                        case 4:
+                          return [3, 11];
+                        case 5:
+                          return (
+                            (a = u.sent()),
+                            (i = {
+                              error: a,
+                            }),
+                            [3, 11]
+                          );
+                        case 6:
+                          return u.trys.push([6, , 9, 10]), n && !n.done && (o = r.return) ? [4, o.call(r)] : [3, 8];
+                        case 7:
+                          u.sent(), (u.label = 8);
+                        case 8:
+                          return [3, 10];
+                        case 9:
+                          if (i) throw i.error;
+                          return [7];
+                        case 10:
+                          return [7];
+                        case 11:
+                          return e.complete(), [2];
+                      }
+                    });
+                  }),
+                  new ((f = void 0) || (f = Promise))(function (t, e) {
+                    function r(t) {
+                      try {
+                        i(l.next(t));
+                      } catch (t) {
+                        e(t);
+                      }
                     }
-                  }
 
-                  function i(e) {
-                    var i;
-                    e.done
-                      ? t(e.value)
-                      : ((i = e.value),
-                        i instanceof f
-                          ? i
-                          : new f(function (t) {
+                    function n(t) {
+                      try {
+                        i(l.throw(t));
+                      } catch (t) {
+                        e(t);
+                      }
+                    }
+
+                    function i(e) {
+                      var i;
+                      e.done
+                        ? t(e.value)
+                        : ((i = e.value),
+                          i instanceof f
+                            ? i
+                            : new f(function (t) {
                               t(i);
                             })).then(r, n);
-                  }
+                    }
 
-                  i((l = l.apply(s, a || [])).next());
-                })
-              );
-            })(t, e).catch(function (t) {
-              return e.error(t);
+                    i((l = l.apply(s, a || [])).next());
+                  })
+                );
+              })(t, e).catch(function (t) {
+                return e.error(t);
+              });
             });
-          });
-        }
+          }
 
-        function ft(t, e, r, n, i) {
-          void 0 === n && (n = 0), void 0 === i && (i = !1);
-          var o = e.schedule(function () {
-            r(), i ? t.add(this.schedule(null, n)) : this.unsubscribe();
-          }, n);
-          if ((t.add(o), !i)) return o;
-        }
+          function ft(t, e, r, n, i) {
+            void 0 === n && (n = 0), void 0 === i && (i = !1);
+            var o = e.schedule(function () {
+              r(), i ? t.add(this.schedule(null, n)) : this.unsubscribe();
+            }, n);
+            if ((t.add(o), !i)) return o;
+          }
 
-        function lt(t, e) {
-          return (
-            void 0 === e && (e = 0),
-            $(function (r, n) {
-              r.subscribe(
-                H(
-                  n,
-                  function (r) {
-                    return ft(
-                      n,
-                      t,
-                      function () {
-                        return n.next(r);
-                      },
-                      e,
-                    );
-                  },
+          function lt(t, e) {
+            return (
+              void 0 === e && (e = 0),
+              $(function (r, n) {
+                r.subscribe(
+                  H(
+                    n,
+                    function (r) {
+                      return ft(
+                        n,
+                        t,
+                        function () {
+                          return n.next(r);
+                        },
+                        e,
+                      );
+                    },
+                    function () {
+                      return ft(
+                        n,
+                        t,
+                        function () {
+                          return n.complete();
+                        },
+                        e,
+                      );
+                    },
+                    function (r) {
+                      return ft(
+                        n,
+                        t,
+                        function () {
+                          return n.error(r);
+                        },
+                        e,
+                      );
+                    },
+                  ),
+                );
+              })
+            );
+          }
+
+          function pt(t, e) {
+            return (
+              void 0 === e && (e = 0),
+              $(function (r, n) {
+                n.add(
+                  t.schedule(function () {
+                    return r.subscribe(n);
+                  }, e),
+                );
+              })
+            );
+          }
+
+          function ht(t, e) {
+            if (!t) throw new Error('Iterable cannot be null');
+            return new z(function (r) {
+              ft(r, e, function () {
+                var n = t[Symbol.asyncIterator]();
+                ft(
+                  r,
+                  e,
                   function () {
-                    return ft(
-                      n,
-                      t,
-                      function () {
-                        return n.complete();
-                      },
-                      e,
-                    );
+                    n.next().then(function (t) {
+                      t.done ? r.complete() : r.next(t.value);
+                    });
                   },
-                  function (r) {
-                    return ft(
-                      n,
-                      t,
-                      function () {
-                        return n.error(r);
-                      },
-                      e,
-                    );
-                  },
-                ),
-              );
-            })
-          );
-        }
-
-        function pt(t, e) {
-          return (
-            void 0 === e && (e = 0),
-            $(function (r, n) {
-              n.add(
-                t.schedule(function () {
-                  return r.subscribe(n);
-                }, e),
-              );
-            })
-          );
-        }
-
-        function ht(t, e) {
-          if (!t) throw new Error('Iterable cannot be null');
-          return new z(function (r) {
-            ft(r, e, function () {
-              var n = t[Symbol.asyncIterator]();
-              ft(
-                r,
-                e,
-                function () {
-                  n.next().then(function (t) {
-                    t.done ? r.complete() : r.next(t.value);
-                  });
-                },
-                0,
-                !0,
-              );
+                  0,
+                  !0,
+                );
+              });
             });
-          });
-        }
+          }
 
-        function dt(t, e) {
-          return e
-            ? (function (t, e) {
+          function dt(t, e) {
+            return e
+              ? (function (t, e) {
                 if (null != t) {
                   if (et(t))
                     return (function (t, e) {
@@ -8853,19 +8833,19 @@ const RASSDK = (function (t, e) {
                 }
                 throw nt(t);
               })(t, e)
-            : ut(t);
-        }
+              : ut(t);
+          }
 
-        var bt = new z(function (t) {
-          return t.complete();
-        });
+          var bt = new z(function (t) {
+            return t.complete();
+          });
 
-        function yt(t) {
-          return t <= 0
-            ? function () {
+          function yt(t) {
+            return t <= 0
+              ? function () {
                 return bt;
               }
-            : $(function (e, r) {
+              : $(function (e, r) {
                 var n = 0;
                 e.subscribe(
                   H(r, function (e) {
@@ -8873,332 +8853,332 @@ const RASSDK = (function (t, e) {
                   }),
                 );
               });
-        }
+          }
 
-        var vt = b(function (t) {
+          var vt = b(function (t) {
             return function () {
               t(this), (this.name = 'ObjectUnsubscribedError'), (this.message = 'object unsubscribed');
             };
           }),
-          _t = (function (t) {
-            function e() {
-              var e = t.call(this) || this;
-              return (
-                (e.closed = !1),
-                (e.currentObservers = null),
-                (e.observers = []),
-                (e.isStopped = !1),
-                (e.hasError = !1),
-                (e.thrownError = null),
-                e
-              );
-            }
+            _t = (function (t) {
+              function e() {
+                var e = t.call(this) || this;
+                return (
+                  (e.closed = !1),
+                  (e.currentObservers = null),
+                  (e.observers = []),
+                  (e.isStopped = !1),
+                  (e.hasError = !1),
+                  (e.thrownError = null),
+                  e
+                );
+              }
 
-            return (
-              a(e, t),
-              (e.prototype.lift = function (t) {
-                var e = new mt(this, this);
-                return (e.operator = t), e;
-              }),
-              (e.prototype._throwIfClosed = function () {
-                if (this.closed) throw new vt();
-              }),
-              (e.prototype.next = function (t) {
-                var e = this;
-                C(function () {
-                  var r, n;
-                  if ((e._throwIfClosed(), !e.isStopped)) {
-                    e.currentObservers || (e.currentObservers = Array.from(e.observers));
-                    try {
-                      for (var i = c(e.currentObservers), o = i.next(); !o.done; o = i.next()) o.value.next(t);
-                    } catch (t) {
-                      r = {
-                        error: t,
-                      };
-                    } finally {
+              return (
+                a(e, t),
+                (e.prototype.lift = function (t) {
+                  var e = new mt(this, this);
+                  return (e.operator = t), e;
+                }),
+                (e.prototype._throwIfClosed = function () {
+                  if (this.closed) throw new vt();
+                }),
+                (e.prototype.next = function (t) {
+                  var e = this;
+                  C(function () {
+                    var r, n;
+                    if ((e._throwIfClosed(), !e.isStopped)) {
+                      e.currentObservers || (e.currentObservers = Array.from(e.observers));
                       try {
-                        o && !o.done && (n = i.return) && n.call(i);
+                        for (var i = c(e.currentObservers), o = i.next(); !o.done; o = i.next()) o.value.next(t);
+                      } catch (t) {
+                        r = {
+                          error: t,
+                        };
                       } finally {
-                        if (r) throw r.error;
+                        try {
+                          o && !o.done && (n = i.return) && n.call(i);
+                        } finally {
+                          if (r) throw r.error;
+                        }
                       }
                     }
-                  }
-                });
-              }),
-              (e.prototype.error = function (t) {
-                var e = this;
-                C(function () {
-                  if ((e._throwIfClosed(), !e.isStopped)) {
-                    (e.hasError = e.isStopped = !0), (e.thrownError = t);
-                    for (var r = e.observers; r.length; ) r.shift().error(t);
-                  }
-                });
-              }),
-              (e.prototype.complete = function () {
-                var t = this;
-                C(function () {
-                  if ((t._throwIfClosed(), !t.isStopped)) {
-                    t.isStopped = !0;
-                    for (var e = t.observers; e.length; ) e.shift().complete();
-                  }
-                });
-              }),
-              (e.prototype.unsubscribe = function () {
-                (this.isStopped = this.closed = !0), (this.observers = this.currentObservers = null);
-              }),
-              Object.defineProperty(e.prototype, 'observed', {
-                get: function () {
-                  var t;
-                  return (null === (t = this.observers) || void 0 === t ? void 0 : t.length) > 0;
-                },
-                enumerable: !1,
-                configurable: !0,
-              }),
-              (e.prototype._trySubscribe = function (e) {
-                return this._throwIfClosed(), t.prototype._trySubscribe.call(this, e);
-              }),
-              (e.prototype._subscribe = function (t) {
-                return this._throwIfClosed(), this._checkFinalizedStatuses(t), this._innerSubscribe(t);
-              }),
-              (e.prototype._innerSubscribe = function (t) {
-                var e = this,
-                  r = this,
-                  n = r.hasError,
-                  i = r.isStopped,
-                  o = r.observers;
-                return n || i
-                  ? m
-                  : ((this.currentObservers = null),
-                    o.push(t),
-                    new _(function () {
-                      (e.currentObservers = null), v(o, t);
-                    }));
-              }),
-              (e.prototype._checkFinalizedStatuses = function (t) {
-                var e = this,
-                  r = e.hasError,
-                  n = e.thrownError,
-                  i = e.isStopped;
-                r ? t.error(n) : i && t.complete();
-              }),
-              (e.prototype.asObservable = function () {
-                var t = new z();
-                return (t.source = this), t;
-              }),
-              (e.create = function (t, e) {
-                return new mt(t, e);
-              }),
-              e
-            );
-          })(z),
-          mt = (function (t) {
-            function e(e, r) {
-              var n = t.call(this) || this;
-              return (n.destination = e), (n.source = r), n;
-            }
+                  });
+                }),
+                (e.prototype.error = function (t) {
+                  var e = this;
+                  C(function () {
+                    if ((e._throwIfClosed(), !e.isStopped)) {
+                      (e.hasError = e.isStopped = !0), (e.thrownError = t);
+                      for (var r = e.observers; r.length;) r.shift().error(t);
+                    }
+                  });
+                }),
+                (e.prototype.complete = function () {
+                  var t = this;
+                  C(function () {
+                    if ((t._throwIfClosed(), !t.isStopped)) {
+                      t.isStopped = !0;
+                      for (var e = t.observers; e.length;) e.shift().complete();
+                    }
+                  });
+                }),
+                (e.prototype.unsubscribe = function () {
+                  (this.isStopped = this.closed = !0), (this.observers = this.currentObservers = null);
+                }),
+                Object.defineProperty(e.prototype, 'observed', {
+                  get: function () {
+                    var t;
+                    return (null === (t = this.observers) || void 0 === t ? void 0 : t.length) > 0;
+                  },
+                  enumerable: !1,
+                  configurable: !0,
+                }),
+                (e.prototype._trySubscribe = function (e) {
+                  return this._throwIfClosed(), t.prototype._trySubscribe.call(this, e);
+                }),
+                (e.prototype._subscribe = function (t) {
+                  return this._throwIfClosed(), this._checkFinalizedStatuses(t), this._innerSubscribe(t);
+                }),
+                (e.prototype._innerSubscribe = function (t) {
+                  var e = this,
+                    r = this,
+                    n = r.hasError,
+                    i = r.isStopped,
+                    o = r.observers;
+                  return n || i
+                    ? m
+                    : ((this.currentObservers = null),
+                      o.push(t),
+                      new _(function () {
+                        (e.currentObservers = null), v(o, t);
+                      }));
+                }),
+                (e.prototype._checkFinalizedStatuses = function (t) {
+                  var e = this,
+                    r = e.hasError,
+                    n = e.thrownError,
+                    i = e.isStopped;
+                  r ? t.error(n) : i && t.complete();
+                }),
+                (e.prototype.asObservable = function () {
+                  var t = new z();
+                  return (t.source = this), t;
+                }),
+                (e.create = function (t, e) {
+                  return new mt(t, e);
+                }),
+                e
+              );
+            })(z),
+            mt = (function (t) {
+              function e(e, r) {
+                var n = t.call(this) || this;
+                return (n.destination = e), (n.source = r), n;
+              }
 
-            return (
-              a(e, t),
-              (e.prototype.next = function (t) {
-                var e, r;
-                null === (r = null === (e = this.destination) || void 0 === e ? void 0 : e.next) ||
-                  void 0 === r ||
-                  r.call(e, t);
-              }),
-              (e.prototype.error = function (t) {
-                var e, r;
-                null === (r = null === (e = this.destination) || void 0 === e ? void 0 : e.error) ||
-                  void 0 === r ||
-                  r.call(e, t);
-              }),
-              (e.prototype.complete = function () {
-                var t, e;
-                null === (e = null === (t = this.destination) || void 0 === t ? void 0 : t.complete) ||
-                  void 0 === e ||
-                  e.call(t);
-              }),
-              (e.prototype._subscribe = function (t) {
-                var e, r;
-                return null !== (r = null === (e = this.source) || void 0 === e ? void 0 : e.subscribe(t)) &&
-                  void 0 !== r
-                  ? r
-                  : m;
-              }),
-              e
-            );
-          })(_t);
+              return (
+                a(e, t),
+                (e.prototype.next = function (t) {
+                  var e, r;
+                  null === (r = null === (e = this.destination) || void 0 === e ? void 0 : e.next) ||
+                    void 0 === r ||
+                    r.call(e, t);
+                }),
+                (e.prototype.error = function (t) {
+                  var e, r;
+                  null === (r = null === (e = this.destination) || void 0 === e ? void 0 : e.error) ||
+                    void 0 === r ||
+                    r.call(e, t);
+                }),
+                (e.prototype.complete = function () {
+                  var t, e;
+                  null === (e = null === (t = this.destination) || void 0 === t ? void 0 : t.complete) ||
+                    void 0 === e ||
+                    e.call(t);
+                }),
+                (e.prototype._subscribe = function (t) {
+                  var e, r;
+                  return null !== (r = null === (e = this.source) || void 0 === e ? void 0 : e.subscribe(t)) &&
+                    void 0 !== r
+                    ? r
+                    : m;
+                }),
+                e
+              );
+            })(_t);
 
-        function gt(t, e) {
-          for (var r = [], n = 2; n < arguments.length; n++) r[n - 2] = arguments[n];
-          return !0 === e
-            ? (t(), null)
-            : !1 === e
-            ? null
-            : e
-                .apply(void 0, l([], f(r)))
-                .pipe(yt(1))
-                .subscribe(function () {
-                  return t();
-                });
-        }
+          function gt(t, e) {
+            for (var r = [], n = 2; n < arguments.length; n++) r[n - 2] = arguments[n];
+            return !0 === e
+              ? (t(), null)
+              : !1 === e
+                ? null
+                : e
+                  .apply(void 0, l([], f(r)))
+                  .pipe(yt(1))
+                  .subscribe(function () {
+                    return t();
+                  });
+          }
 
-        function wt(t, e) {
-          var r = d(t)
+          function wt(t, e) {
+            var r = d(t)
               ? t
               : function () {
-                  return t;
-                },
-            n = function (t) {
-              return t.error(r());
-            };
-          return new z(
-            e
-              ? function (t) {
+                return t;
+              },
+              n = function (t) {
+                return t.error(r());
+              };
+            return new z(
+              e
+                ? function (t) {
                   return e.schedule(n, 0, t);
                 }
-              : n,
-          );
-        }
+                : n,
+            );
+          }
 
-        function It(t) {
-          return t && d(t.schedule);
-        }
+          function It(t) {
+            return t && d(t.schedule);
+          }
 
-        function St(t) {
-          return t[t.length - 1];
-        }
+          function St(t) {
+            return t[t.length - 1];
+          }
 
-        function Et(t) {
-          return It(St(t)) ? t.pop() : void 0;
-        }
+          function Et(t) {
+            return It(St(t)) ? t.pop() : void 0;
+          }
 
-        function Ot(t, e) {
-          return 'number' == typeof St(t) ? t.pop() : e;
-        }
+          function Ot(t, e) {
+            return 'number' == typeof St(t) ? t.pop() : e;
+          }
 
-        function Tt() {
-          for (var t = [], e = 0; e < arguments.length; e++) t[e] = arguments[e];
-          var r = Et(t);
-          return dt(t, r);
-        }
+          function Tt() {
+            for (var t = [], e = 0; e < arguments.length; e++) t[e] = arguments[e];
+            var r = Et(t);
+            return dt(t, r);
+          }
 
-        var kt = Array.isArray;
+          var kt = Array.isArray;
 
-        function At(t) {
-          return 1 === t.length && kt(t[0]) ? t[0] : t;
-        }
+          function At(t) {
+            return 1 === t.length && kt(t[0]) ? t[0] : t;
+          }
 
-        function Rt(t, e, r) {
-          return (
-            void 0 === r && (r = 1 / 0),
-            d(e)
-              ? Rt(function (r, n) {
+          function Rt(t, e, r) {
+            return (
+              void 0 === r && (r = 1 / 0),
+              d(e)
+                ? Rt(function (r, n) {
                   return Z(function (t, i) {
                     return e(r, t, n, i);
                   })(ut(t(r, n)));
                 }, r)
-              : ('number' == typeof e && (r = e),
-                $(function (e, n) {
-                  return (function (t, e, r, n, i, o, s, a) {
-                    var u = [],
-                      c = 0,
-                      f = 0,
-                      l = !1,
-                      p = function () {
-                        !l || u.length || c || e.complete();
-                      },
-                      h = function (t) {
-                        return c < n ? d(t) : u.push(t);
-                      },
-                      d = function (t) {
-                        c++;
-                        var i = !1;
-                        ut(r(t, f++)).subscribe(
-                          H(
-                            e,
-                            function (t) {
-                              e.next(t);
-                            },
-                            function () {
-                              i = !0;
-                            },
-                            void 0,
-                            function () {
-                              if (i)
-                                try {
-                                  c--;
-                                  for (; u.length && c < n; ) (t = void 0), (t = u.shift()), d(t);
-                                  p();
-                                } catch (t) {
-                                  e.error(t);
-                                }
-                              var t;
-                            },
-                          ),
-                        );
-                      };
-                    return (
-                      t.subscribe(
-                        H(e, h, function () {
-                          (l = !0), p();
-                        }),
-                      ),
-                      function () {}
-                    );
-                  })(e, n, t, r);
-                }))
-          );
-        }
-
-        function Ft(t) {
-          return void 0 === t && (t = 1 / 0), Rt(U, t);
-        }
-
-        function xt() {
-          for (var t = [], e = 0; e < arguments.length; e++) t[e] = arguments[e];
-          var r = Et(t),
-            n = Ot(t, 1 / 0);
-          return (
-            (t = At(t)),
-            $(function (e, i) {
-              Ft(n)(dt(l([e], f(t)), r)).subscribe(i);
-            })
-          );
-        }
-
-        function Pt(t) {
-          return $(function (e, r) {
-            var n,
-              i = null,
-              o = !1;
-            (i = e.subscribe(
-              H(r, void 0, void 0, function (s) {
-                (n = ut(t(s, Pt(t)(e)))), i ? (i.unsubscribe(), (i = null), n.subscribe(r)) : (o = !0);
-              }),
-            )),
-              o && (i.unsubscribe(), (i = null), n.subscribe(r));
-          });
-        }
-
-        var Ct = r(52),
-          Vt = r.n(Ct);
-        const Bt = r.p + 'static/wasm/roar-0.8.1.wasm';
-
-        class Nt {
-          constructor() {
-            (this.noExitRuntime = !0),
-              (this.wasmMemory = new WebAssembly.Memory({
-                initial: 256,
-                maximum: 256,
-              }));
+                : ('number' == typeof e && (r = e),
+                  $(function (e, n) {
+                    return (function (t, e, r, n, i, o, s, a) {
+                      var u = [],
+                        c = 0,
+                        f = 0,
+                        l = !1,
+                        p = function () {
+                          !l || u.length || c || e.complete();
+                        },
+                        h = function (t) {
+                          return c < n ? d(t) : u.push(t);
+                        },
+                        d = function (t) {
+                          c++;
+                          var i = !1;
+                          ut(r(t, f++)).subscribe(
+                            H(
+                              e,
+                              function (t) {
+                                e.next(t);
+                              },
+                              function () {
+                                i = !0;
+                              },
+                              void 0,
+                              function () {
+                                if (i)
+                                  try {
+                                    c--;
+                                    for (; u.length && c < n;) (t = void 0), (t = u.shift()), d(t);
+                                    p();
+                                  } catch (t) {
+                                    e.error(t);
+                                  }
+                                var t;
+                              },
+                            ),
+                          );
+                        };
+                      return (
+                        t.subscribe(
+                          H(e, h, function () {
+                            (l = !0), p();
+                          }),
+                        ),
+                        function () { }
+                      );
+                    })(e, n, t, r);
+                  }))
+            );
           }
 
-          locateFile(t) {
-            return t.match('roaring-wasm-module.wasm') ? Bt : t;
+          function Ft(t) {
+            return void 0 === t && (t = 1 / 0), Rt(U, t);
           }
-        }
 
-        var Lt = function (t) {
+          function xt() {
+            for (var t = [], e = 0; e < arguments.length; e++) t[e] = arguments[e];
+            var r = Et(t),
+              n = Ot(t, 1 / 0);
+            return (
+              (t = At(t)),
+              $(function (e, i) {
+                Ft(n)(dt(l([e], f(t)), r)).subscribe(i);
+              })
+            );
+          }
+
+          function Pt(t) {
+            return $(function (e, r) {
+              var n,
+                i = null,
+                o = !1;
+              (i = e.subscribe(
+                H(r, void 0, void 0, function (s) {
+                  (n = ut(t(s, Pt(t)(e)))), i ? (i.unsubscribe(), (i = null), n.subscribe(r)) : (o = !0);
+                }),
+              )),
+                o && (i.unsubscribe(), (i = null), n.subscribe(r));
+            });
+          }
+
+          var Ct = r(52),
+            Vt = r.n(Ct);
+          const Bt = r.p + 'static/wasm/roar-0.8.1.wasm';
+
+          class Nt {
+            constructor() {
+              (this.noExitRuntime = !0),
+                (this.wasmMemory = new WebAssembly.Memory({
+                  initial: 256,
+                  maximum: 256,
+                }));
+            }
+
+            locateFile(t) {
+              return t.match('roaring-wasm-module.wasm') ? Bt : t;
+            }
+          }
+
+          var Lt = function (t) {
             Vt()(new Nt())
               .then(e => {
                 (e.roaring_bitmap_temp_offset = e._get_sizeof_roaring_bitmap_t()),
@@ -9519,11 +9499,11 @@ const RASSDK = (function (t, e) {
                       return (
                         null == e && M(),
                         0 === e &&
-                          ((e = r(0) >>> 0),
+                        ((e = r(0) >>> 0),
                           e ||
-                            (function () {
-                              throw new Error('Failed to allocate RoaringBitmap32');
-                            })(),
+                          (function () {
+                            throw new Error('Failed to allocate RoaringBitmap32');
+                          })(),
                           (t._ptr = e)),
                         e
                       );
@@ -9795,750 +9775,750 @@ const RASSDK = (function (t, e) {
               })
               .catch(e => t(null, e));
           },
-          jt = function (t, e) {
-            return (
-              (jt =
-                Object.setPrototypeOf ||
-                ({
-                  __proto__: [],
-                } instanceof Array &&
+            jt = function (t, e) {
+              return (
+                (jt =
+                  Object.setPrototypeOf ||
+                  ({
+                    __proto__: [],
+                  } instanceof Array &&
+                    function (t, e) {
+                      t.__proto__ = e;
+                    }) ||
                   function (t, e) {
-                    t.__proto__ = e;
-                  }) ||
-                function (t, e) {
-                  for (var r in e) e.hasOwnProperty(r) && (t[r] = e[r]);
+                    for (var r in e) e.hasOwnProperty(r) && (t[r] = e[r]);
+                  }),
+                jt(t, e)
+              );
+            };
+
+          function Mt(t, e) {
+            function r() {
+              this.constructor = t;
+            }
+
+            jt(t, e), (t.prototype = null === e ? Object.create(e) : ((r.prototype = e.prototype), new r()));
+          }
+
+          var Qt = function () {
+            return (
+              (Qt =
+                Object.assign ||
+                function (t) {
+                  for (var e, r = 1, n = arguments.length; r < n; r++)
+                    for (var i in (e = arguments[r])) Object.prototype.hasOwnProperty.call(e, i) && (t[i] = e[i]);
+                  return t;
                 }),
-              jt(t, e)
+              Qt.apply(this, arguments)
             );
           };
 
-        function Mt(t, e) {
-          function r() {
-            this.constructor = t;
-          }
-
-          jt(t, e), (t.prototype = null === e ? Object.create(e) : ((r.prototype = e.prototype), new r()));
-        }
-
-        var Qt = function () {
-          return (
-            (Qt =
-              Object.assign ||
-              function (t) {
-                for (var e, r = 1, n = arguments.length; r < n; r++)
-                  for (var i in (e = arguments[r])) Object.prototype.hasOwnProperty.call(e, i) && (t[i] = e[i]);
-                return t;
-              }),
-            Qt.apply(this, arguments)
-          );
-        };
-
-        function qt(t, e, r, n) {
-          return new (r || (r = Promise))(function (i, o) {
-            function s(t) {
-              try {
-                u(n.next(t));
-              } catch (t) {
-                o(t);
+          function qt(t, e, r, n) {
+            return new (r || (r = Promise))(function (i, o) {
+              function s(t) {
+                try {
+                  u(n.next(t));
+                } catch (t) {
+                  o(t);
+                }
               }
-            }
 
-            function a(t) {
-              try {
-                u(n.throw(t));
-              } catch (t) {
-                o(t);
+              function a(t) {
+                try {
+                  u(n.throw(t));
+                } catch (t) {
+                  o(t);
+                }
               }
-            }
 
-            function u(t) {
-              var e;
-              t.done
-                ? i(t.value)
-                : ((e = t.value),
-                  e instanceof r
-                    ? e
-                    : new r(function (t) {
+              function u(t) {
+                var e;
+                t.done
+                  ? i(t.value)
+                  : ((e = t.value),
+                    e instanceof r
+                      ? e
+                      : new r(function (t) {
                         t(e);
                       })).then(s, a);
-            }
+              }
 
-            u((n = n.apply(t, e || [])).next());
-          });
-        }
+              u((n = n.apply(t, e || [])).next());
+            });
+          }
 
-        function Dt(t, e) {
-          var r,
-            n,
-            i,
-            o,
-            s = {
-              label: 0,
-              sent: function () {
-                if (1 & i[0]) throw i[1];
-                return i[1];
-              },
-              trys: [],
-              ops: [],
-            };
-          return (
-            (o = {
-              next: a(0),
-              throw: a(1),
-              return: a(2),
-            }),
-            'function' == typeof Symbol &&
+          function Dt(t, e) {
+            var r,
+              n,
+              i,
+              o,
+              s = {
+                label: 0,
+                sent: function () {
+                  if (1 & i[0]) throw i[1];
+                  return i[1];
+                },
+                trys: [],
+                ops: [],
+              };
+            return (
+              (o = {
+                next: a(0),
+                throw: a(1),
+                return: a(2),
+              }),
+              'function' == typeof Symbol &&
               (o[Symbol.iterator] = function () {
                 return this;
               }),
-            o
-          );
+              o
+            );
 
-          function a(o) {
-            return function (a) {
-              return (function (o) {
-                if (r) throw new TypeError('Generator is already executing.');
-                for (; s; )
-                  try {
-                    if (
-                      ((r = 1),
-                      n &&
-                        (i = 2 & o[0] ? n.return : o[0] ? n.throw || ((i = n.return) && i.call(n), 0) : n.next) &&
-                        !(i = i.call(n, o[1])).done)
-                    )
-                      return i;
-                    switch (((n = 0), i && (o = [2 & o[0], i.value]), o[0])) {
-                      case 0:
-                      case 1:
-                        i = o;
-                        break;
-                      case 4:
-                        return (
-                          s.label++,
-                          {
-                            value: o[1],
-                            done: !1,
-                          }
-                        );
-                      case 5:
-                        s.label++, (n = o[1]), (o = [0]);
-                        continue;
-                      case 7:
-                        (o = s.ops.pop()), s.trys.pop();
-                        continue;
-                      default:
-                        if (!((i = (i = s.trys).length > 0 && i[i.length - 1]) || (6 !== o[0] && 2 !== o[0]))) {
-                          s = 0;
+            function a(o) {
+              return function (a) {
+                return (function (o) {
+                  if (r) throw new TypeError('Generator is already executing.');
+                  for (; s;)
+                    try {
+                      if (
+                        ((r = 1),
+                          n &&
+                          (i = 2 & o[0] ? n.return : o[0] ? n.throw || ((i = n.return) && i.call(n), 0) : n.next) &&
+                          !(i = i.call(n, o[1])).done)
+                      )
+                        return i;
+                      switch (((n = 0), i && (o = [2 & o[0], i.value]), o[0])) {
+                        case 0:
+                        case 1:
+                          i = o;
+                          break;
+                        case 4:
+                          return (
+                            s.label++,
+                            {
+                              value: o[1],
+                              done: !1,
+                            }
+                          );
+                        case 5:
+                          s.label++, (n = o[1]), (o = [0]);
                           continue;
-                        }
-                        if (3 === o[0] && (!i || (o[1] > i[0] && o[1] < i[3]))) {
-                          s.label = o[1];
-                          break;
-                        }
-                        if (6 === o[0] && s.label < i[1]) {
-                          (s.label = i[1]), (i = o);
-                          break;
-                        }
-                        if (i && s.label < i[2]) {
-                          (s.label = i[2]), s.ops.push(o);
-                          break;
-                        }
-                        i[2] && s.ops.pop(), s.trys.pop();
-                        continue;
+                        case 7:
+                          (o = s.ops.pop()), s.trys.pop();
+                          continue;
+                        default:
+                          if (!((i = (i = s.trys).length > 0 && i[i.length - 1]) || (6 !== o[0] && 2 !== o[0]))) {
+                            s = 0;
+                            continue;
+                          }
+                          if (3 === o[0] && (!i || (o[1] > i[0] && o[1] < i[3]))) {
+                            s.label = o[1];
+                            break;
+                          }
+                          if (6 === o[0] && s.label < i[1]) {
+                            (s.label = i[1]), (i = o);
+                            break;
+                          }
+                          if (i && s.label < i[2]) {
+                            (s.label = i[2]), s.ops.push(o);
+                            break;
+                          }
+                          i[2] && s.ops.pop(), s.trys.pop();
+                          continue;
+                      }
+                      o = e.call(t, s);
+                    } catch (t) {
+                      (o = [6, t]), (n = 0);
+                    } finally {
+                      r = i = 0;
                     }
-                    o = e.call(t, s);
-                  } catch (t) {
-                    (o = [6, t]), (n = 0);
-                  } finally {
-                    r = i = 0;
-                  }
-                if (5 & o[0]) throw o[1];
-                return {
-                  value: o[0] ? o[1] : void 0,
-                  done: !0,
-                };
-              })([o, a]);
-            };
+                  if (5 & o[0]) throw o[1];
+                  return {
+                    value: o[0] ? o[1] : void 0,
+                    done: !0,
+                  };
+                })([o, a]);
+              };
+            }
           }
-        }
 
-        function Ut() {
-          for (var t = 0, e = 0, r = arguments.length; e < r; e++) t += arguments[e].length;
-          var n = Array(t),
-            i = 0;
-          for (e = 0; e < r; e++) for (var o = arguments[e], s = 0, a = o.length; s < a; s++, i++) n[i] = o[s];
-          return n;
-        }
+          function Ut() {
+            for (var t = 0, e = 0, r = arguments.length; e < r; e++) t += arguments[e].length;
+            var n = Array(t),
+              i = 0;
+            for (e = 0; e < r; e++) for (var o = arguments[e], s = 0, a = o.length; s < a; s++, i++) n[i] = o[s];
+            return n;
+          }
 
-        var Gt,
-          zt = r(285),
-          Kt = 'Invariant Violation',
-          $t = Object.setPrototypeOf,
-          Wt =
-            void 0 === $t
-              ? function (t, e) {
+          var Gt,
+            zt = r(285),
+            Kt = 'Invariant Violation',
+            $t = Object.setPrototypeOf,
+            Wt =
+              void 0 === $t
+                ? function (t, e) {
                   return (t.__proto__ = e), t;
                 }
-              : $t,
-          Ht = (function (t) {
-            function e(r) {
-              void 0 === r && (r = Kt);
-              var n =
-                t.call(
-                  this,
-                  'number' == typeof r
-                    ? Kt + ': ' + r + ' (see https://github.com/apollographql/invariant-packages)'
-                    : r,
-                ) || this;
-              return (n.framesToPop = 1), (n.name = Kt), Wt(n, e.prototype), n;
-            }
+                : $t,
+            Ht = (function (t) {
+              function e(r) {
+                void 0 === r && (r = Kt);
+                var n =
+                  t.call(
+                    this,
+                    'number' == typeof r
+                      ? Kt + ': ' + r + ' (see https://github.com/apollographql/invariant-packages)'
+                      : r,
+                  ) || this;
+                return (n.framesToPop = 1), (n.name = Kt), Wt(n, e.prototype), n;
+              }
 
-            return Mt(e, t), e;
-          })(Error);
+              return Mt(e, t), e;
+            })(Error);
 
-        function Yt(t, e) {
-          if (!t) throw new Ht(e);
-        }
+          function Yt(t, e) {
+            if (!t) throw new Ht(e);
+          }
 
-        function Jt(t) {
-          return function () {
-            return console[t].apply(console, arguments);
+          function Jt(t) {
+            return function () {
+              return console[t].apply(console, arguments);
+            };
+          }
+
+          ((Gt = Yt || (Yt = {})).warn = Jt('warn')), (Gt.error = Jt('error'));
+          var Zt = {
+            env: {},
           };
-        }
+          if ('object' == typeof process) Zt = process;
+          else
+            try {
+              Function('stub', 'process = stub')(Zt);
+            } catch (t) { }
+          var Xt = r(35),
+            te = r.n(Xt),
+            ee = Object.prototype,
+            re = ee.toString,
+            ne = ee.hasOwnProperty,
+            ie = new Map();
 
-        ((Gt = Yt || (Yt = {})).warn = Jt('warn')), (Gt.error = Jt('error'));
-        var Zt = {
-          env: {},
-        };
-        if ('object' == typeof process) Zt = process;
-        else
-          try {
-            Function('stub', 'process = stub')(Zt);
-          } catch (t) {}
-        var Xt = r(35),
-          te = r.n(Xt),
-          ee = Object.prototype,
-          re = ee.toString,
-          ne = ee.hasOwnProperty,
-          ie = new Map();
-
-        function oe(t, e) {
-          try {
-            return se(t, e);
-          } finally {
-            ie.clear();
+          function oe(t, e) {
+            try {
+              return se(t, e);
+            } finally {
+              ie.clear();
+            }
           }
-        }
 
-        function se(t, e) {
-          if (t === e) return !0;
-          var r = re.call(t);
-          if (r !== re.call(e)) return !1;
-          switch (r) {
-            case '[object Array]':
-              if (t.length !== e.length) return !1;
-            case '[object Object]':
-              if (ae(t, e)) return !0;
-              var n = Object.keys(t),
-                i = Object.keys(e),
-                o = n.length;
-              if (o !== i.length) return !1;
-              for (var s = 0; s < o; ++s) if (!ne.call(e, n[s])) return !1;
-              for (s = 0; s < o; ++s) {
-                var a = n[s];
-                if (!se(t[a], e[a])) return !1;
-              }
-              return !0;
-            case '[object Error]':
-              return t.name === e.name && t.message === e.message;
-            case '[object Number]':
-              if (t != t) return e != e;
-            case '[object Boolean]':
-            case '[object Date]':
-              return +t == +e;
-            case '[object RegExp]':
-            case '[object String]':
-              return t == '' + e;
-            case '[object Map]':
-            case '[object Set]':
-              if (t.size !== e.size) return !1;
-              if (ae(t, e)) return !0;
-              for (var u = t.entries(), c = '[object Map]' === r; ; ) {
-                var f = u.next();
-                if (f.done) break;
-                var l = f.value,
-                  p = l[0],
-                  h = l[1];
-                if (!e.has(p)) return !1;
-                if (c && !se(h, e.get(p))) return !1;
-              }
-              return !0;
+          function se(t, e) {
+            if (t === e) return !0;
+            var r = re.call(t);
+            if (r !== re.call(e)) return !1;
+            switch (r) {
+              case '[object Array]':
+                if (t.length !== e.length) return !1;
+              case '[object Object]':
+                if (ae(t, e)) return !0;
+                var n = Object.keys(t),
+                  i = Object.keys(e),
+                  o = n.length;
+                if (o !== i.length) return !1;
+                for (var s = 0; s < o; ++s) if (!ne.call(e, n[s])) return !1;
+                for (s = 0; s < o; ++s) {
+                  var a = n[s];
+                  if (!se(t[a], e[a])) return !1;
+                }
+                return !0;
+              case '[object Error]':
+                return t.name === e.name && t.message === e.message;
+              case '[object Number]':
+                if (t != t) return e != e;
+              case '[object Boolean]':
+              case '[object Date]':
+                return +t == +e;
+              case '[object RegExp]':
+              case '[object String]':
+                return t == '' + e;
+              case '[object Map]':
+              case '[object Set]':
+                if (t.size !== e.size) return !1;
+                if (ae(t, e)) return !0;
+                for (var u = t.entries(), c = '[object Map]' === r; ;) {
+                  var f = u.next();
+                  if (f.done) break;
+                  var l = f.value,
+                    p = l[0],
+                    h = l[1];
+                  if (!e.has(p)) return !1;
+                  if (c && !se(h, e.get(p))) return !1;
+                }
+                return !0;
+            }
+            return !1;
           }
-          return !1;
-        }
 
-        function ae(t, e) {
-          var r = ie.get(t);
-          if (r) {
-            if (r.has(e)) return !0;
-          } else ie.set(t, (r = new Set()));
-          return r.add(e), !1;
-        }
+          function ae(t, e) {
+            var r = ie.get(t);
+            if (r) {
+              if (r.has(e)) return !0;
+            } else ie.set(t, (r = new Set()));
+            return r.add(e), !1;
+          }
 
-        function ue(t, e, r, n) {
-          if (
-            (function (t) {
-              return 'IntValue' === t.kind;
-            })(r) ||
-            (function (t) {
-              return 'FloatValue' === t.kind;
-            })(r)
-          )
-            t[e.value] = Number(r.value);
-          else if (
-            (function (t) {
-              return 'BooleanValue' === t.kind;
-            })(r) ||
-            (function (t) {
-              return 'StringValue' === t.kind;
-            })(r)
-          )
-            t[e.value] = r.value;
-          else if (
-            (function (t) {
-              return 'ObjectValue' === t.kind;
-            })(r)
-          ) {
-            var i = {};
-            r.fields.map(function (t) {
-              return ue(i, t.name, t.value, n);
-            }),
-              (t[e.value] = i);
-          } else if (
-            (function (t) {
-              return 'Variable' === t.kind;
-            })(r)
-          ) {
-            var o = (n || {})[r.name.value];
-            t[e.value] = o;
-          } else if (
-            (function (t) {
-              return 'ListValue' === t.kind;
-            })(r)
-          )
-            t[e.value] = r.values.map(function (t) {
-              var r = {};
-              return ue(r, e, t, n), r[e.value];
-            });
-          else if (
-            (function (t) {
-              return 'EnumValue' === t.kind;
-            })(r)
-          )
-            t[e.value] = r.value;
-          else {
+          function ue(t, e, r, n) {
             if (
-              !(function (t) {
-                return 'NullValue' === t.kind;
+              (function (t) {
+                return 'IntValue' === t.kind;
+              })(r) ||
+              (function (t) {
+                return 'FloatValue' === t.kind;
               })(r)
             )
-              throw new Ht(17);
-            t[e.value] = null;
-          }
-        }
-
-        var ce = ['connection', 'include', 'skip', 'client', 'rest', 'export'];
-
-        function fe(t, e, r) {
-          if (r && r.connection && r.connection.key) {
-            if (r.connection.filter && r.connection.filter.length > 0) {
-              var n = r.connection.filter ? r.connection.filter : [];
-              n.sort();
-              var i = e,
-                o = {};
-              return (
-                n.forEach(function (t) {
-                  o[t] = i[t];
-                }),
-                r.connection.key + '(' + JSON.stringify(o) + ')'
-              );
+              t[e.value] = Number(r.value);
+            else if (
+              (function (t) {
+                return 'BooleanValue' === t.kind;
+              })(r) ||
+              (function (t) {
+                return 'StringValue' === t.kind;
+              })(r)
+            )
+              t[e.value] = r.value;
+            else if (
+              (function (t) {
+                return 'ObjectValue' === t.kind;
+              })(r)
+            ) {
+              var i = {};
+              r.fields.map(function (t) {
+                return ue(i, t.name, t.value, n);
+              }),
+                (t[e.value] = i);
+            } else if (
+              (function (t) {
+                return 'Variable' === t.kind;
+              })(r)
+            ) {
+              var o = (n || {})[r.name.value];
+              t[e.value] = o;
+            } else if (
+              (function (t) {
+                return 'ListValue' === t.kind;
+              })(r)
+            )
+              t[e.value] = r.values.map(function (t) {
+                var r = {};
+                return ue(r, e, t, n), r[e.value];
+              });
+            else if (
+              (function (t) {
+                return 'EnumValue' === t.kind;
+              })(r)
+            )
+              t[e.value] = r.value;
+            else {
+              if (
+                !(function (t) {
+                  return 'NullValue' === t.kind;
+                })(r)
+              )
+                throw new Ht(17);
+              t[e.value] = null;
             }
-            return r.connection.key;
           }
-          var s = t;
-          if (e) {
-            var a = te()(e);
-            s += '(' + a + ')';
-          }
-          return (
-            r &&
+
+          var ce = ['connection', 'include', 'skip', 'client', 'rest', 'export'];
+
+          function fe(t, e, r) {
+            if (r && r.connection && r.connection.key) {
+              if (r.connection.filter && r.connection.filter.length > 0) {
+                var n = r.connection.filter ? r.connection.filter : [];
+                n.sort();
+                var i = e,
+                  o = {};
+                return (
+                  n.forEach(function (t) {
+                    o[t] = i[t];
+                  }),
+                  r.connection.key + '(' + JSON.stringify(o) + ')'
+                );
+              }
+              return r.connection.key;
+            }
+            var s = t;
+            if (e) {
+              var a = te()(e);
+              s += '(' + a + ')';
+            }
+            return (
+              r &&
               Object.keys(r).forEach(function (t) {
                 -1 === ce.indexOf(t) &&
                   (r[t] && Object.keys(r[t]).length
                     ? (s += '@' + t + '(' + JSON.stringify(r[t]) + ')')
                     : (s += '@' + t));
               }),
-            s
-          );
-        }
-
-        function le(t, e) {
-          if (t.arguments && t.arguments.length) {
-            var r = {};
-            return (
-              t.arguments.forEach(function (t) {
-                var n = t.name,
-                  i = t.value;
-                return ue(r, n, i, e);
-              }),
-              r
+              s
             );
           }
-          return null;
-        }
 
-        function pe(t) {
-          return t.alias ? t.alias.value : t.name.value;
-        }
+          function le(t, e) {
+            if (t.arguments && t.arguments.length) {
+              var r = {};
+              return (
+                t.arguments.forEach(function (t) {
+                  var n = t.name,
+                    i = t.value;
+                  return ue(r, n, i, e);
+                }),
+                r
+              );
+            }
+            return null;
+          }
 
-        function he(t) {
-          return 'Field' === t.kind;
-        }
+          function pe(t) {
+            return t.alias ? t.alias.value : t.name.value;
+          }
 
-        function de(t) {
-          return 'InlineFragment' === t.kind;
-        }
+          function he(t) {
+            return 'Field' === t.kind;
+          }
 
-        function be(t) {
-          return t && 'id' === t.type && 'boolean' == typeof t.generated;
-        }
+          function de(t) {
+            return 'InlineFragment' === t.kind;
+          }
 
-        function ye(t, e) {
-          return (
-            void 0 === e && (e = !1),
-            Qt(
-              {
-                type: 'id',
-                generated: e,
-              },
-              'string' == typeof t
-                ? {
+          function be(t) {
+            return t && 'id' === t.type && 'boolean' == typeof t.generated;
+          }
+
+          function ye(t, e) {
+            return (
+              void 0 === e && (e = !1),
+              Qt(
+                {
+                  type: 'id',
+                  generated: e,
+                },
+                'string' == typeof t
+                  ? {
                     id: t,
                     typename: void 0,
                   }
-                : t,
-            )
-          );
-        }
-
-        function ve(t, e) {
-          if (t.directives && t.directives.length) {
-            var r = {};
-            return (
-              t.directives.forEach(function (t) {
-                r[t.name.value] = le(t, e);
-              }),
-              r
+                  : t,
+              )
             );
           }
-          return null;
-        }
 
-        function _e(t, e) {
-          return (
-            void 0 === e && (e = {}),
-            ((r = t.directives),
-            r
-              ? r.filter(we).map(function (t) {
-                  var e = t.arguments;
-                  t.name.value, Yt(e && 1 === e.length, 14);
-                  var r = e[0];
-                  Yt(r.name && 'if' === r.name.value, 15);
-                  var n = r.value;
-                  return (
-                    Yt(n && ('Variable' === n.kind || 'BooleanValue' === n.kind), 16),
-                    {
-                      directive: t,
-                      ifArgument: r,
-                    }
-                  );
-                })
-              : []).every(function (t) {
-              var r = t.directive,
-                n = t.ifArgument,
-                i = !1;
+          function ve(t, e) {
+            if (t.directives && t.directives.length) {
+              var r = {};
               return (
-                'Variable' === n.value.kind ? Yt(void 0 !== (i = e[n.value.name.value]), 13) : (i = n.value.value),
-                'skip' === r.name.value ? !i : i
+                t.directives.forEach(function (t) {
+                  r[t.name.value] = le(t, e);
+                }),
+                r
               );
-            })
-          );
-          var r;
-        }
+            }
+            return null;
+          }
 
-        function me(t, e) {
-          return (function (t) {
-            var e = [];
+          function _e(t, e) {
             return (
-              (0, zt.visit)(t, {
-                Directive: function (t) {
-                  e.push(t.name.value);
-                },
+              void 0 === e && (e = {}),
+              ((r = t.directives),
+                r
+                  ? r.filter(we).map(function (t) {
+                    var e = t.arguments;
+                    t.name.value, Yt(e && 1 === e.length, 14);
+                    var r = e[0];
+                    Yt(r.name && 'if' === r.name.value, 15);
+                    var n = r.value;
+                    return (
+                      Yt(n && ('Variable' === n.kind || 'BooleanValue' === n.kind), 16),
+                      {
+                        directive: t,
+                        ifArgument: r,
+                      }
+                    );
+                  })
+                  : []).every(function (t) {
+                    var r = t.directive,
+                      n = t.ifArgument,
+                      i = !1;
+                    return (
+                      'Variable' === n.value.kind ? Yt(void 0 !== (i = e[n.value.name.value]), 13) : (i = n.value.value),
+                      'skip' === r.name.value ? !i : i
+                    );
+                  })
+            );
+            var r;
+          }
+
+          function me(t, e) {
+            return (function (t) {
+              var e = [];
+              return (
+                (0, zt.visit)(t, {
+                  Directive: function (t) {
+                    e.push(t.name.value);
+                  },
+                }),
+                e
+              );
+            })(e).some(function (e) {
+              return t.indexOf(e) > -1;
+            });
+          }
+
+          function ge(t) {
+            return t && me(['client'], t) && me(['export'], t);
+          }
+
+          function we(t) {
+            var e = t.name.value;
+            return 'skip' === e || 'include' === e;
+          }
+
+          function Ie(t, e) {
+            var r = e,
+              n = [];
+            return (
+              t.definitions.forEach(function (t) {
+                if ('OperationDefinition' === t.kind) throw new Ht(11);
+                'FragmentDefinition' === t.kind && n.push(t);
+              }),
+              void 0 === r && (Yt(1 === n.length, 12), (r = n[0].name.value)),
+              Qt(Qt({}, t), {
+                definitions: Ut(
+                  [
+                    {
+                      kind: 'OperationDefinition',
+                      operation: 'query',
+                      selectionSet: {
+                        kind: 'SelectionSet',
+                        selections: [
+                          {
+                            kind: 'FragmentSpread',
+                            name: {
+                              kind: 'Name',
+                              value: r,
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  ],
+                  t.definitions,
+                ),
+              })
+            );
+          }
+
+          function Se(t) {
+            for (var e = [], r = 1; r < arguments.length; r++) e[r - 1] = arguments[r];
+            return (
+              e.forEach(function (e) {
+                null != e &&
+                  Object.keys(e).forEach(function (r) {
+                    t[r] = e[r];
+                  });
+              }),
+              t
+            );
+          }
+
+          function Ee(t) {
+            return (
+              Yt(t && 'Document' === t.kind, 2),
+              Yt(
+                t.definitions
+                  .filter(function (t) {
+                    return 'FragmentDefinition' !== t.kind;
+                  })
+                  .map(function (t) {
+                    if ('OperationDefinition' !== t.kind) throw new Ht(3);
+                    return t;
+                  }).length <= 1,
+                4,
+              ),
+              t
+            );
+          }
+
+          function Oe(t) {
+            return (
+              Ee(t),
+              t.definitions.filter(function (t) {
+                return 'OperationDefinition' === t.kind;
+              })[0]
+            );
+          }
+
+          function Te(t) {
+            return (
+              t.definitions
+                .filter(function (t) {
+                  return 'OperationDefinition' === t.kind && t.name;
+                })
+                .map(function (t) {
+                  return t.name.value;
+                })[0] || null
+            );
+          }
+
+          function ke(t) {
+            return t.definitions.filter(function (t) {
+              return 'FragmentDefinition' === t.kind;
+            });
+          }
+
+          function Ae(t) {
+            var e;
+            Ee(t);
+            for (var r = 0, n = t.definitions; r < n.length; r++) {
+              var i = n[r];
+              if ('OperationDefinition' === i.kind) {
+                var o = i.operation;
+                if ('query' === o || 'mutation' === o || 'subscription' === o) return i;
+              }
+              'FragmentDefinition' !== i.kind || e || (e = i);
+            }
+            if (e) return e;
+            throw new Ht(10);
+          }
+
+          function Re(t) {
+            void 0 === t && (t = []);
+            var e = {};
+            return (
+              t.forEach(function (t) {
+                e[t.name.value] = t;
               }),
               e
             );
-          })(e).some(function (e) {
-            return t.indexOf(e) > -1;
-          });
-        }
+          }
 
-        function ge(t) {
-          return t && me(['client'], t) && me(['export'], t);
-        }
-
-        function we(t) {
-          var e = t.name.value;
-          return 'skip' === e || 'include' === e;
-        }
-
-        function Ie(t, e) {
-          var r = e,
-            n = [];
-          return (
-            t.definitions.forEach(function (t) {
-              if ('OperationDefinition' === t.kind) throw new Ht(11);
-              'FragmentDefinition' === t.kind && n.push(t);
-            }),
-            void 0 === r && (Yt(1 === n.length, 12), (r = n[0].name.value)),
-            Qt(Qt({}, t), {
-              definitions: Ut(
-                [
-                  {
-                    kind: 'OperationDefinition',
-                    operation: 'query',
-                    selectionSet: {
-                      kind: 'SelectionSet',
-                      selections: [
-                        {
-                          kind: 'FragmentSpread',
-                          name: {
-                            kind: 'Name',
-                            value: r,
-                          },
-                        },
-                      ],
-                    },
-                  },
-                ],
-                t.definitions,
-              ),
-            })
-          );
-        }
-
-        function Se(t) {
-          for (var e = [], r = 1; r < arguments.length; r++) e[r - 1] = arguments[r];
-          return (
-            e.forEach(function (e) {
-              null != e &&
-                Object.keys(e).forEach(function (r) {
-                  t[r] = e[r];
-                });
-            }),
-            t
-          );
-        }
-
-        function Ee(t) {
-          return (
-            Yt(t && 'Document' === t.kind, 2),
-            Yt(
-              t.definitions
+          function Fe(t) {
+            if (t && t.variableDefinitions && t.variableDefinitions.length) {
+              var e = t.variableDefinitions
                 .filter(function (t) {
-                  return 'FragmentDefinition' !== t.kind;
+                  return t.defaultValue;
                 })
                 .map(function (t) {
-                  if ('OperationDefinition' !== t.kind) throw new Ht(3);
-                  return t;
-                }).length <= 1,
-              4,
-            ),
-            t
-          );
-        }
-
-        function Oe(t) {
-          return (
-            Ee(t),
-            t.definitions.filter(function (t) {
-              return 'OperationDefinition' === t.kind;
-            })[0]
-          );
-        }
-
-        function Te(t) {
-          return (
-            t.definitions
-              .filter(function (t) {
-                return 'OperationDefinition' === t.kind && t.name;
-              })
-              .map(function (t) {
-                return t.name.value;
-              })[0] || null
-          );
-        }
-
-        function ke(t) {
-          return t.definitions.filter(function (t) {
-            return 'FragmentDefinition' === t.kind;
-          });
-        }
-
-        function Ae(t) {
-          var e;
-          Ee(t);
-          for (var r = 0, n = t.definitions; r < n.length; r++) {
-            var i = n[r];
-            if ('OperationDefinition' === i.kind) {
-              var o = i.operation;
-              if ('query' === o || 'mutation' === o || 'subscription' === o) return i;
+                  var e = t.variable,
+                    r = t.defaultValue,
+                    n = {};
+                  return ue(n, e.name, r), n;
+                });
+              return Se.apply(void 0, Ut([{}], e));
             }
-            'FragmentDefinition' !== i.kind || e || (e = i);
+            return {};
           }
-          if (e) return e;
-          throw new Ht(10);
-        }
 
-        function Re(t) {
-          void 0 === t && (t = []);
-          var e = {};
-          return (
-            t.forEach(function (t) {
-              e[t.name.value] = t;
-            }),
-            e
-          );
-        }
-
-        function Fe(t) {
-          if (t && t.variableDefinitions && t.variableDefinitions.length) {
-            var e = t.variableDefinitions
-              .filter(function (t) {
-                return t.defaultValue;
-              })
-              .map(function (t) {
-                var e = t.variable,
-                  r = t.defaultValue,
-                  n = {};
-                return ue(n, e.name, r), n;
-              });
-            return Se.apply(void 0, Ut([{}], e));
+          function xe(t, e, r) {
+            var n = 0;
+            return (
+              t.forEach(function (r, i) {
+                e.call(this, r, i, t) && (t[n++] = r);
+              }, r),
+              (t.length = n),
+              t
+            );
           }
-          return {};
-        }
 
-        function xe(t, e, r) {
-          var n = 0;
-          return (
-            t.forEach(function (r, i) {
-              e.call(this, r, i, t) && (t[n++] = r);
-            }, r),
-            (t.length = n),
-            t
-          );
-        }
+          var Pe = {
+            kind: 'Field',
+            name: {
+              kind: 'Name',
+              value: '__typename',
+            },
+          };
 
-        var Pe = {
-          kind: 'Field',
-          name: {
-            kind: 'Name',
-            value: '__typename',
-          },
-        };
+          function Ce(t, e) {
+            return t.selectionSet.selections.every(function (t) {
+              return 'FragmentSpread' === t.kind && Ce(e[t.name.value], e);
+            });
+          }
 
-        function Ce(t, e) {
-          return t.selectionSet.selections.every(function (t) {
-            return 'FragmentSpread' === t.kind && Ce(e[t.name.value], e);
-          });
-        }
-
-        function Ve(t) {
-          return Ce(
-            Oe(t) ||
+          function Ve(t) {
+            return Ce(
+              Oe(t) ||
               (function (t) {
                 Yt('Document' === t.kind, 7), Yt(t.definitions.length <= 1, 8);
                 var e = t.definitions[0];
                 return Yt('FragmentDefinition' === e.kind, 9), e;
               })(t),
-            Re(ke(t)),
-          )
-            ? null
-            : t;
-        }
+              Re(ke(t)),
+            )
+              ? null
+              : t;
+          }
 
-        function Be(t) {
-          return function (e) {
-            return t.some(function (t) {
-              return (t.name && t.name === e.name.value) || (t.test && t.test(e));
-            });
-          };
-        }
+          function Be(t) {
+            return function (e) {
+              return t.some(function (t) {
+                return (t.name && t.name === e.name.value) || (t.test && t.test(e));
+              });
+            };
+          }
 
-        function Ne(t, e) {
-          var r = Object.create(null),
-            n = [],
-            i = Object.create(null),
-            o = [],
-            s = Ve(
-              (0, zt.visit)(e, {
-                Variable: {
-                  enter: function (t, e, n) {
-                    'VariableDefinition' !== n.kind && (r[t.name.value] = !0);
+          function Ne(t, e) {
+            var r = Object.create(null),
+              n = [],
+              i = Object.create(null),
+              o = [],
+              s = Ve(
+                (0, zt.visit)(e, {
+                  Variable: {
+                    enter: function (t, e, n) {
+                      'VariableDefinition' !== n.kind && (r[t.name.value] = !0);
+                    },
                   },
-                },
-                Field: {
-                  enter: function (e) {
-                    if (
-                      t &&
-                      e.directives &&
-                      t.some(function (t) {
-                        return t.remove;
-                      }) &&
-                      e.directives &&
-                      e.directives.some(Be(t))
-                    )
-                      return (
-                        e.arguments &&
+                  Field: {
+                    enter: function (e) {
+                      if (
+                        t &&
+                        e.directives &&
+                        t.some(function (t) {
+                          return t.remove;
+                        }) &&
+                        e.directives &&
+                        e.directives.some(Be(t))
+                      )
+                        return (
+                          e.arguments &&
                           e.arguments.forEach(function (t) {
                             'Variable' === t.value.kind &&
                               n.push({
                                 name: t.value.name.value,
                               });
                           }),
-                        e.selectionSet &&
+                          e.selectionSet &&
                           je(e.selectionSet).forEach(function (t) {
                             o.push({
                               name: t.name.value,
                             });
                           }),
-                        null
-                      );
+                          null
+                        );
+                    },
                   },
-                },
-                FragmentSpread: {
-                  enter: function (t) {
-                    i[t.name.value] = !0;
+                  FragmentSpread: {
+                    enter: function (t) {
+                      i[t.name.value] = !0;
+                    },
                   },
-                },
-                Directive: {
-                  enter: function (e) {
-                    if (Be(t)(e)) return null;
+                  Directive: {
+                    enter: function (e) {
+                      if (Be(t)(e)) return null;
+                    },
                   },
-                },
-              }),
-            );
-          return (
-            s &&
+                }),
+              );
+            return (
+              s &&
               xe(n, function (t) {
                 return !r[t.name];
               }).length &&
@@ -10580,7 +10560,7 @@ const RASSDK = (function (t, e) {
                             (e.arguments.forEach(function (t) {
                               r(t) && (n += 1);
                             }),
-                            1 === n)
+                              1 === n)
                           )
                             return null;
                         }
@@ -10594,7 +10574,7 @@ const RASSDK = (function (t, e) {
                   }),
                 );
               })(n, s)),
-            s &&
+              s &&
               xe(o, function (t) {
                 return !i[t.name];
               }).length &&
@@ -10619,42 +10599,42 @@ const RASSDK = (function (t, e) {
                   }),
                 );
               })(o, s)),
-            s
-          );
-        }
+              s
+            );
+          }
 
-        var Le = {
-          test: function (t) {
-            var e = 'connection' === t.name.value;
-            return (
-              e &&
+          var Le = {
+            test: function (t) {
+              var e = 'connection' === t.name.value;
+              return (
+                e &&
                 (!t.arguments ||
                   t.arguments.some(function (t) {
                     return 'key' === t.name.value;
                   })),
-              e
-            );
-          },
-        };
+                e
+              );
+            },
+          };
 
-        function je(t) {
-          var e = [];
-          return (
-            t.selections.forEach(function (t) {
-              (he(t) || de(t)) && t.selectionSet
-                ? je(t.selectionSet).forEach(function (t) {
+          function je(t) {
+            var e = [];
+            return (
+              t.selections.forEach(function (t) {
+                (he(t) || de(t)) && t.selectionSet
+                  ? je(t.selectionSet).forEach(function (t) {
                     return e.push(t);
                   })
-                : 'FragmentSpread' === t.kind && e.push(t);
-            }),
-            e
-          );
-        }
+                  : 'FragmentSpread' === t.kind && e.push(t);
+              }),
+              e
+            );
+          }
 
-        function Me(t) {
-          return 'query' === Ae(t).operation
-            ? t
-            : (0, zt.visit)(t, {
+          function Me(t) {
+            return 'query' === Ae(t).operation
+              ? t
+              : (0, zt.visit)(t, {
                 OperationDefinition: {
                   enter: function (t) {
                     return Qt(Qt({}, t), {
@@ -10663,361 +10643,361 @@ const RASSDK = (function (t, e) {
                   },
                 },
               });
-        }
+          }
 
-        var Qe = 'function' == typeof WeakMap && !('object' == typeof navigator && 'ReactNative' === navigator.product),
-          qe = Object.prototype.toString;
+          var Qe = 'function' == typeof WeakMap && !('object' == typeof navigator && 'ReactNative' === navigator.product),
+            qe = Object.prototype.toString;
 
-        function De(t) {
-          return Ue(t, new Map());
-        }
+          function De(t) {
+            return Ue(t, new Map());
+          }
 
-        function Ue(t, e) {
-          switch (qe.call(t)) {
-            case '[object Array]':
-              if (e.has(t)) return e.get(t);
-              var r = t.slice(0);
-              return (
-                e.set(t, r),
-                r.forEach(function (t, n) {
-                  r[n] = Ue(t, e);
+          function Ue(t, e) {
+            switch (qe.call(t)) {
+              case '[object Array]':
+                if (e.has(t)) return e.get(t);
+                var r = t.slice(0);
+                return (
+                  e.set(t, r),
+                  r.forEach(function (t, n) {
+                    r[n] = Ue(t, e);
+                  }),
+                  r
+                );
+              case '[object Object]':
+                if (e.has(t)) return e.get(t);
+                var n = Object.create(Object.getPrototypeOf(t));
+                return (
+                  e.set(t, n),
+                  Object.keys(t).forEach(function (r) {
+                    n[r] = Ue(t[r], e);
+                  }),
+                  n
+                );
+              default:
+                return t;
+            }
+          }
+
+          function Ge(t) {
+            return ('undefined' != typeof process ? 'production' : 'development') === t;
+          }
+
+          function ze(t) {
+            try {
+              return t();
+            } catch (t) {
+              console.error && console.error(t);
+            }
+          }
+
+          function Ke(t) {
+            return t.errors && t.errors.length;
+          }
+
+          var $e = Object.prototype.hasOwnProperty;
+
+          function We() {
+            for (var t = [], e = 0; e < arguments.length; e++) t[e] = arguments[e];
+            return He(t);
+          }
+
+          function He(t) {
+            var e = t[0] || {},
+              r = t.length;
+            if (r > 1) {
+              var n = [];
+              e = Ze(e, n);
+              for (var i = 1; i < r; ++i) e = Je(e, t[i], n);
+            }
+            return e;
+          }
+
+          function Ye(t) {
+            return null !== t && 'object' == typeof t;
+          }
+
+          function Je(t, e, r) {
+            return Ye(e) && Ye(t)
+              ? (Object.isExtensible && !Object.isExtensible(t) && (t = Ze(t, r)),
+                Object.keys(e).forEach(function (n) {
+                  var i = e[n];
+                  if ($e.call(t, n)) {
+                    var o = t[n];
+                    i !== o && (t[n] = Je(Ze(o, r), i, r));
+                  } else t[n] = i;
                 }),
-                r
-              );
-            case '[object Object]':
-              if (e.has(t)) return e.get(t);
-              var n = Object.create(Object.getPrototypeOf(t));
-              return (
-                e.set(t, n),
-                Object.keys(t).forEach(function (r) {
-                  n[r] = Ue(t[r], e);
-                }),
-                n
-              );
-            default:
-              return t;
+                t)
+              : e;
           }
-        }
 
-        function Ge(t) {
-          return ('undefined' != typeof process ? 'production' : 'development') === t;
-        }
-
-        function ze(t) {
-          try {
-            return t();
-          } catch (t) {
-            console.error && console.error(t);
-          }
-        }
-
-        function Ke(t) {
-          return t.errors && t.errors.length;
-        }
-
-        var $e = Object.prototype.hasOwnProperty;
-
-        function We() {
-          for (var t = [], e = 0; e < arguments.length; e++) t[e] = arguments[e];
-          return He(t);
-        }
-
-        function He(t) {
-          var e = t[0] || {},
-            r = t.length;
-          if (r > 1) {
-            var n = [];
-            e = Ze(e, n);
-            for (var i = 1; i < r; ++i) e = Je(e, t[i], n);
-          }
-          return e;
-        }
-
-        function Ye(t) {
-          return null !== t && 'object' == typeof t;
-        }
-
-        function Je(t, e, r) {
-          return Ye(e) && Ye(t)
-            ? (Object.isExtensible && !Object.isExtensible(t) && (t = Ze(t, r)),
-              Object.keys(e).forEach(function (n) {
-                var i = e[n];
-                if ($e.call(t, n)) {
-                  var o = t[n];
-                  i !== o && (t[n] = Je(Ze(o, r), i, r));
-                } else t[n] = i;
-              }),
-              t)
-            : e;
-        }
-
-        function Ze(t, e) {
-          return (
-            null !== t &&
+          function Ze(t, e) {
+            return (
+              null !== t &&
               'object' == typeof t &&
               e.indexOf(t) < 0 &&
               ((t = Array.isArray(t)
                 ? t.slice(0)
                 : Qt(
-                    {
-                      __proto__: Object.getPrototypeOf(t),
-                    },
-                    t,
-                  )),
-              e.push(t)),
-            t
-          );
-        }
+                  {
+                    __proto__: Object.getPrototypeOf(t),
+                  },
+                  t,
+                )),
+                e.push(t)),
+              t
+            );
+          }
 
-        Object.create({});
-        var Xe = r(329);
-        const tr = r.n(Xe)();
-        var er;
+          Object.create({});
+          var Xe = r(329);
+          const tr = r.n(Xe)();
+          var er;
 
-        function rr(t) {
-          return t.request.length <= 1;
-        }
+          function rr(t) {
+            return t.request.length <= 1;
+          }
 
-        function nr(t, e) {
-          return e ? e(t) : tr.of();
-        }
+          function nr(t, e) {
+            return e ? e(t) : tr.of();
+          }
 
-        function ir(t) {
-          return 'function' == typeof t ? new cr(t) : t;
-        }
+          function ir(t) {
+            return 'function' == typeof t ? new cr(t) : t;
+          }
 
-        function or() {
-          return new cr(function () {
-            return tr.of();
-          });
-        }
+          function or() {
+            return new cr(function () {
+              return tr.of();
+            });
+          }
 
-        function sr(t) {
-          return 0 === t.length
-            ? or()
-            : t.map(ir).reduce(function (t, e) {
+          function sr(t) {
+            return 0 === t.length
+              ? or()
+              : t.map(ir).reduce(function (t, e) {
                 return t.concat(e);
               });
-        }
+          }
 
-        function ar(t, e, r) {
-          var n = ir(e),
-            i = ir(r || new cr(nr));
-          return rr(n) && rr(i)
-            ? new cr(function (e) {
+          function ar(t, e, r) {
+            var n = ir(e),
+              i = ir(r || new cr(nr));
+            return rr(n) && rr(i)
+              ? new cr(function (e) {
                 return t(e) ? n.request(e) || tr.of() : i.request(e) || tr.of();
               })
-            : new cr(function (e, r) {
+              : new cr(function (e, r) {
                 return t(e) ? n.request(e, r) || tr.of() : i.request(e, r) || tr.of();
               });
-        }
+          }
 
-        Mt(function (t, e) {
-          var r = er.call(this, t) || this;
-          return (r.link = e), r;
-        }, (er = Error));
-        var ur = function (t, e) {
+          Mt(function (t, e) {
+            var r = er.call(this, t) || this;
+            return (r.link = e), r;
+          }, (er = Error));
+          var ur = function (t, e) {
             var r = ir(t);
             if (rr(r)) return r;
             var n = ir(e);
             return rr(n)
               ? new cr(function (t) {
-                  return (
-                    r.request(t, function (t) {
-                      return n.request(t) || tr.of();
-                    }) || tr.of()
-                  );
-                })
+                return (
+                  r.request(t, function (t) {
+                    return n.request(t) || tr.of();
+                  }) || tr.of()
+                );
+              })
               : new cr(function (t, e) {
-                  return (
-                    r.request(t, function (t) {
-                      return n.request(t, e) || tr.of();
-                    }) || tr.of()
-                  );
-                });
+                return (
+                  r.request(t, function (t) {
+                    return n.request(t, e) || tr.of();
+                  }) || tr.of()
+                );
+              });
           },
-          cr = (function () {
-            function t(t) {
-              t && (this.request = t);
+            cr = (function () {
+              function t(t) {
+                t && (this.request = t);
+              }
+
+              return (
+                (t.prototype.split = function (e, r, n) {
+                  return this.concat(ar(e, r, n || new t(nr)));
+                }),
+                (t.prototype.concat = function (t) {
+                  return ur(this, t);
+                }),
+                (t.prototype.request = function (t, e) {
+                  throw new Ht(1);
+                }),
+                (t.empty = or),
+                (t.from = sr),
+                (t.split = ar),
+                (t.execute = fr),
+                t
+              );
+            })();
+
+          function fr(t, e) {
+            return (
+              t.request(
+                (function (t, e) {
+                  var r = Qt({}, t);
+                  return (
+                    Object.defineProperty(e, 'setContext', {
+                      enumerable: !1,
+                      value: function (t) {
+                        r = Qt({}, r, 'function' == typeof t ? t(r) : t);
+                      },
+                    }),
+                    Object.defineProperty(e, 'getContext', {
+                      enumerable: !1,
+                      value: function () {
+                        return Qt({}, r);
+                      },
+                    }),
+                    Object.defineProperty(e, 'toKey', {
+                      enumerable: !1,
+                      value: function () {
+                        return (function (t) {
+                          var e = t.query,
+                            r = t.variables,
+                            n = t.operationName;
+                          return JSON.stringify([n, e, r]);
+                        })(e);
+                      },
+                    }),
+                    e
+                  );
+                })(
+                  e.context,
+                  (function (t) {
+                    var e = {
+                      variables: t.variables || {},
+                      extensions: t.extensions || {},
+                      operationName: t.operationName,
+                      query: t.query,
+                    };
+                    return e.operationName || (e.operationName = 'string' != typeof e.query ? Te(e.query) : ''), e;
+                  })(
+                    (function (t) {
+                      for (
+                        var e = ['query', 'operationName', 'variables', 'extensions', 'context'],
+                        r = 0,
+                        n = Object.keys(t);
+                        r < n.length;
+                        r++
+                      ) {
+                        var i = n[r];
+                        if (e.indexOf(i) < 0) throw new Ht(2);
+                      }
+                      return t;
+                    })(e),
+                  ),
+                ),
+              ) || tr.of()
+            );
+          }
+
+          var lr,
+            pr = r(121);
+
+          function hr(t) {
+            return t < 7;
+          }
+
+          !(function (t) {
+            (t[(t.loading = 1)] = 'loading'),
+              (t[(t.setVariables = 2)] = 'setVariables'),
+              (t[(t.fetchMore = 3)] = 'fetchMore'),
+              (t[(t.refetch = 4)] = 'refetch'),
+              (t[(t.poll = 6)] = 'poll'),
+              (t[(t.ready = 7)] = 'ready'),
+              (t[(t.error = 8)] = 'error');
+          })(lr || (lr = {}));
+          var dr = (function (t) {
+            function e() {
+              return (null !== t && t.apply(this, arguments)) || this;
             }
 
             return (
-              (t.prototype.split = function (e, r, n) {
-                return this.concat(ar(e, r, n || new t(nr)));
+              Mt(e, t),
+              (e.prototype[pr.default] = function () {
+                return this;
               }),
-              (t.prototype.concat = function (t) {
-                return ur(this, t);
+              (e.prototype['@@observable'] = function () {
+                return this;
               }),
-              (t.prototype.request = function (t, e) {
-                throw new Ht(1);
-              }),
-              (t.empty = or),
-              (t.from = sr),
-              (t.split = ar),
-              (t.execute = fr),
-              t
+              e
             );
-          })();
+          })(tr);
 
-        function fr(t, e) {
-          return (
-            t.request(
-              (function (t, e) {
-                var r = Qt({}, t);
-                return (
-                  Object.defineProperty(e, 'setContext', {
-                    enumerable: !1,
-                    value: function (t) {
-                      r = Qt({}, r, 'function' == typeof t ? t(r) : t);
-                    },
-                  }),
-                  Object.defineProperty(e, 'getContext', {
-                    enumerable: !1,
-                    value: function () {
-                      return Qt({}, r);
-                    },
-                  }),
-                  Object.defineProperty(e, 'toKey', {
-                    enumerable: !1,
-                    value: function () {
-                      return (function (t) {
-                        var e = t.query,
-                          r = t.variables,
-                          n = t.operationName;
-                        return JSON.stringify([n, e, r]);
-                      })(e);
-                    },
-                  }),
-                  e
-                );
-              })(
-                e.context,
-                (function (t) {
-                  var e = {
-                    variables: t.variables || {},
-                    extensions: t.extensions || {},
-                    operationName: t.operationName,
-                    query: t.query,
-                  };
-                  return e.operationName || (e.operationName = 'string' != typeof e.query ? Te(e.query) : ''), e;
-                })(
-                  (function (t) {
-                    for (
-                      var e = ['query', 'operationName', 'variables', 'extensions', 'context'],
-                        r = 0,
-                        n = Object.keys(t);
-                      r < n.length;
-                      r++
-                    ) {
-                      var i = n[r];
-                      if (e.indexOf(i) < 0) throw new Ht(2);
-                    }
-                    return t;
-                  })(e),
-                ),
-              ),
-            ) || tr.of()
-          );
-        }
-
-        var lr,
-          pr = r(121);
-
-        function hr(t) {
-          return t < 7;
-        }
-
-        !(function (t) {
-          (t[(t.loading = 1)] = 'loading'),
-            (t[(t.setVariables = 2)] = 'setVariables'),
-            (t[(t.fetchMore = 3)] = 'fetchMore'),
-            (t[(t.refetch = 4)] = 'refetch'),
-            (t[(t.poll = 6)] = 'poll'),
-            (t[(t.ready = 7)] = 'ready'),
-            (t[(t.error = 8)] = 'error');
-        })(lr || (lr = {}));
-        var dr = (function (t) {
-          function e() {
-            return (null !== t && t.apply(this, arguments)) || this;
+          function br(t) {
+            return Array.isArray(t) && t.length > 0;
           }
 
-          return (
-            Mt(e, t),
-            (e.prototype[pr.default] = function () {
-              return this;
-            }),
-            (e.prototype['@@observable'] = function () {
-              return this;
-            }),
-            e
-          );
-        })(tr);
+          var yr,
+            vr = (function (t) {
+              function e(r) {
+                var n,
+                  i,
+                  o = r.graphQLErrors,
+                  s = r.networkError,
+                  a = r.errorMessage,
+                  u = r.extraInfo,
+                  c = t.call(this, a) || this;
+                return (
+                  (c.graphQLErrors = o || []),
+                  (c.networkError = s || null),
+                  (c.message =
+                    a ||
+                    ((i = ''),
+                      br((n = c).graphQLErrors) &&
+                      n.graphQLErrors.forEach(function (t) {
+                        var e = t ? t.message : 'Error message not found.';
+                        i += 'GraphQL error: ' + e + '\n';
+                      }),
+                      n.networkError && (i += 'Network error: ' + n.networkError.message + '\n'),
+                      (i = i.replace(/\n$/, '')))),
+                  (c.extraInfo = u),
+                  (c.__proto__ = e.prototype),
+                  c
+                );
+              }
 
-        function br(t) {
-          return Array.isArray(t) && t.length > 0;
-        }
-
-        var yr,
-          vr = (function (t) {
-            function e(r) {
-              var n,
-                i,
-                o = r.graphQLErrors,
-                s = r.networkError,
-                a = r.errorMessage,
-                u = r.extraInfo,
-                c = t.call(this, a) || this;
-              return (
-                (c.graphQLErrors = o || []),
-                (c.networkError = s || null),
-                (c.message =
-                  a ||
-                  ((i = ''),
-                  br((n = c).graphQLErrors) &&
-                    n.graphQLErrors.forEach(function (t) {
-                      var e = t ? t.message : 'Error message not found.';
-                      i += 'GraphQL error: ' + e + '\n';
-                    }),
-                  n.networkError && (i += 'Network error: ' + n.networkError.message + '\n'),
-                  (i = i.replace(/\n$/, '')))),
-                (c.extraInfo = u),
-                (c.__proto__ = e.prototype),
-                c
-              );
+              return Mt(e, t), e;
+            })(Error);
+          !(function (t) {
+            (t[(t.normal = 1)] = 'normal'), (t[(t.refetch = 2)] = 'refetch'), (t[(t.poll = 3)] = 'poll');
+          })(yr || (yr = {}));
+          var _r = (function (t) {
+            function e(e) {
+              var r = e.queryManager,
+                n = e.options,
+                i = e.shouldSubscribe,
+                o = void 0 === i || i,
+                s =
+                  t.call(this, function (t) {
+                    return s.onSubscribe(t);
+                  }) || this;
+              (s.observers = new Set()),
+                (s.subscriptions = new Set()),
+                (s.isTornDown = !1),
+                (s.options = n),
+                (s.variables = n.variables || {}),
+                (s.queryId = r.generateQueryId()),
+                (s.shouldSubscribe = o);
+              var a = Oe(n.query);
+              return (s.queryName = a && a.name && a.name.value), (s.queryManager = r), s;
             }
 
-            return Mt(e, t), e;
-          })(Error);
-        !(function (t) {
-          (t[(t.normal = 1)] = 'normal'), (t[(t.refetch = 2)] = 'refetch'), (t[(t.poll = 3)] = 'poll');
-        })(yr || (yr = {}));
-        var _r = (function (t) {
-          function e(e) {
-            var r = e.queryManager,
-              n = e.options,
-              i = e.shouldSubscribe,
-              o = void 0 === i || i,
-              s =
-                t.call(this, function (t) {
-                  return s.onSubscribe(t);
-                }) || this;
-            (s.observers = new Set()),
-              (s.subscriptions = new Set()),
-              (s.isTornDown = !1),
-              (s.options = n),
-              (s.variables = n.variables || {}),
-              (s.queryId = r.generateQueryId()),
-              (s.shouldSubscribe = o);
-            var a = Oe(n.query);
-            return (s.queryName = a && a.name && a.name.value), (s.queryManager = r), s;
-          }
-
-          return (
-            Mt(e, t),
-            (e.prototype.result = function () {
-              var t = this;
-              return new Promise(function (e, r) {
-                var n = {
+            return (
+              Mt(e, t),
+              (e.prototype.result = function () {
+                var t = this;
+                return new Promise(function (e, r) {
+                  var n = {
                     next: function (r) {
                       e(r),
                         t.observers.delete(n),
@@ -11028,272 +11008,272 @@ const RASSDK = (function (t, e) {
                     },
                     error: r,
                   },
-                  i = t.subscribe(n);
-              });
-            }),
-            (e.prototype.currentResult = function () {
-              var t = this.getCurrentResult();
-              return void 0 === t.data && (t.data = {}), t;
-            }),
-            (e.prototype.getCurrentResult = function () {
-              if (this.isTornDown) {
-                var t = this.lastResult;
-                return {
-                  data: (!this.lastError && t && t.data) || void 0,
-                  error: this.lastError,
-                  loading: !1,
-                  networkStatus: lr.error,
-                };
-              }
-              var e,
-                r,
-                n,
-                i = this.queryManager.getCurrentQueryResult(this),
-                o = i.data,
-                s = i.partial,
-                a = this.queryManager.queryStore.get(this.queryId),
-                u = this.options.fetchPolicy,
-                c = 'network-only' === u || 'no-cache' === u;
-              if (a) {
-                var f = a.networkStatus;
-                if (
-                  ((r = a),
-                  void 0 === (n = this.options.errorPolicy) && (n = 'none'),
-                  r && (r.networkError || ('none' === n && br(r.graphQLErrors))))
-                )
+                    i = t.subscribe(n);
+                });
+              }),
+              (e.prototype.currentResult = function () {
+                var t = this.getCurrentResult();
+                return void 0 === t.data && (t.data = {}), t;
+              }),
+              (e.prototype.getCurrentResult = function () {
+                if (this.isTornDown) {
+                  var t = this.lastResult;
                   return {
-                    data: void 0,
+                    data: (!this.lastError && t && t.data) || void 0,
+                    error: this.lastError,
                     loading: !1,
-                    networkStatus: f,
-                    error: new vr({
-                      graphQLErrors: a.graphQLErrors,
-                      networkError: a.networkError,
-                    }),
+                    networkStatus: lr.error,
                   };
-                a.variables &&
-                  ((this.options.variables = Qt(Qt({}, this.options.variables), a.variables)),
-                  (this.variables = this.options.variables)),
-                  (e = {
+                }
+                var e,
+                  r,
+                  n,
+                  i = this.queryManager.getCurrentQueryResult(this),
+                  o = i.data,
+                  s = i.partial,
+                  a = this.queryManager.queryStore.get(this.queryId),
+                  u = this.options.fetchPolicy,
+                  c = 'network-only' === u || 'no-cache' === u;
+                if (a) {
+                  var f = a.networkStatus;
+                  if (
+                    ((r = a),
+                      void 0 === (n = this.options.errorPolicy) && (n = 'none'),
+                      r && (r.networkError || ('none' === n && br(r.graphQLErrors))))
+                  )
+                    return {
+                      data: void 0,
+                      loading: !1,
+                      networkStatus: f,
+                      error: new vr({
+                        graphQLErrors: a.graphQLErrors,
+                        networkError: a.networkError,
+                      }),
+                    };
+                  a.variables &&
+                    ((this.options.variables = Qt(Qt({}, this.options.variables), a.variables)),
+                      (this.variables = this.options.variables)),
+                    (e = {
+                      data: o,
+                      loading: hr(f),
+                      networkStatus: f,
+                    }),
+                    a.graphQLErrors && 'all' === this.options.errorPolicy && (e.errors = a.graphQLErrors);
+                } else {
+                  var l = c || (s && 'cache-only' !== u);
+                  e = {
                     data: o,
-                    loading: hr(f),
-                    networkStatus: f,
-                  }),
-                  a.graphQLErrors && 'all' === this.options.errorPolicy && (e.errors = a.graphQLErrors);
-              } else {
-                var l = c || (s && 'cache-only' !== u);
-                e = {
-                  data: o,
-                  loading: l,
-                  networkStatus: l ? lr.loading : lr.ready,
-                };
-              }
-              return (
-                s ||
+                    loading: l,
+                    networkStatus: l ? lr.loading : lr.ready,
+                  };
+                }
+                return (
+                  s ||
                   this.updateLastResult(
                     Qt(Qt({}, e), {
                       stale: !1,
                     }),
                   ),
-                Qt(Qt({}, e), {
-                  partial: s,
-                })
-              );
-            }),
-            (e.prototype.isDifferentFromLastResult = function (t) {
-              var e = this.lastResultSnapshot;
-              return !(e && t && e.networkStatus === t.networkStatus && e.stale === t.stale && oe(e.data, t.data));
-            }),
-            (e.prototype.getLastResult = function () {
-              return this.lastResult;
-            }),
-            (e.prototype.getLastError = function () {
-              return this.lastError;
-            }),
-            (e.prototype.resetLastResults = function () {
-              delete this.lastResult, delete this.lastResultSnapshot, delete this.lastError, (this.isTornDown = !1);
-            }),
-            (e.prototype.resetQueryStoreErrors = function () {
-              var t = this.queryManager.queryStore.get(this.queryId);
-              t && ((t.networkError = null), (t.graphQLErrors = []));
-            }),
-            (e.prototype.refetch = function (t) {
-              var e = this.options.fetchPolicy;
-              return 'cache-only' === e
-                ? Promise.reject(new Ht(1))
-                : ('no-cache' !== e && 'cache-and-network' !== e && (e = 'network-only'),
-                  oe(this.variables, t) || (this.variables = Qt(Qt({}, this.variables), t)),
-                  oe(this.options.variables, this.variables) ||
+                  Qt(Qt({}, e), {
+                    partial: s,
+                  })
+                );
+              }),
+              (e.prototype.isDifferentFromLastResult = function (t) {
+                var e = this.lastResultSnapshot;
+                return !(e && t && e.networkStatus === t.networkStatus && e.stale === t.stale && oe(e.data, t.data));
+              }),
+              (e.prototype.getLastResult = function () {
+                return this.lastResult;
+              }),
+              (e.prototype.getLastError = function () {
+                return this.lastError;
+              }),
+              (e.prototype.resetLastResults = function () {
+                delete this.lastResult, delete this.lastResultSnapshot, delete this.lastError, (this.isTornDown = !1);
+              }),
+              (e.prototype.resetQueryStoreErrors = function () {
+                var t = this.queryManager.queryStore.get(this.queryId);
+                t && ((t.networkError = null), (t.graphQLErrors = []));
+              }),
+              (e.prototype.refetch = function (t) {
+                var e = this.options.fetchPolicy;
+                return 'cache-only' === e
+                  ? Promise.reject(new Ht(1))
+                  : ('no-cache' !== e && 'cache-and-network' !== e && (e = 'network-only'),
+                    oe(this.variables, t) || (this.variables = Qt(Qt({}, this.variables), t)),
+                    oe(this.options.variables, this.variables) ||
                     (this.options.variables = Qt(Qt({}, this.options.variables), this.variables)),
-                  this.queryManager.fetchQuery(
-                    this.queryId,
-                    Qt(Qt({}, this.options), {
-                      fetchPolicy: e,
-                    }),
-                    yr.refetch,
-                  ));
-            }),
-            (e.prototype.fetchMore = function (t) {
-              var e = this;
-              Yt(t.updateQuery, 2);
-              var r = Qt(
+                    this.queryManager.fetchQuery(
+                      this.queryId,
+                      Qt(Qt({}, this.options), {
+                        fetchPolicy: e,
+                      }),
+                      yr.refetch,
+                    ));
+              }),
+              (e.prototype.fetchMore = function (t) {
+                var e = this;
+                Yt(t.updateQuery, 2);
+                var r = Qt(
                   Qt(
                     {},
                     t.query
                       ? t
                       : Qt(Qt(Qt({}, this.options), t), {
-                          variables: Qt(Qt({}, this.variables), t.variables),
-                        }),
+                        variables: Qt(Qt({}, this.variables), t.variables),
+                      }),
                   ),
                   {
                     fetchPolicy: 'network-only',
                   },
                 ),
-                n = this.queryManager.generateQueryId();
-              return this.queryManager.fetchQuery(n, r, yr.normal, this.queryId).then(
-                function (i) {
-                  return (
-                    e.updateQuery(function (e) {
-                      return t.updateQuery(e, {
-                        fetchMoreResult: i.data,
-                        variables: r.variables,
-                      });
-                    }),
-                    e.queryManager.stopQuery(n),
-                    i
-                  );
-                },
-                function (t) {
-                  throw (e.queryManager.stopQuery(n), t);
-                },
-              );
-            }),
-            (e.prototype.subscribeToMore = function (t) {
-              var e = this,
-                r = this.queryManager
-                  .startGraphQLSubscription({
-                    query: t.document,
-                    variables: t.variables,
-                  })
-                  .subscribe({
-                    next: function (r) {
-                      var n = t.updateQuery;
-                      n &&
-                        e.updateQuery(function (t, e) {
-                          var i = e.variables;
-                          return n(t, {
-                            subscriptionData: r,
-                            variables: i,
-                          });
+                  n = this.queryManager.generateQueryId();
+                return this.queryManager.fetchQuery(n, r, yr.normal, this.queryId).then(
+                  function (i) {
+                    return (
+                      e.updateQuery(function (e) {
+                        return t.updateQuery(e, {
+                          fetchMoreResult: i.data,
+                          variables: r.variables,
                         });
-                    },
-                    error: function (e) {
-                      t.onError && t.onError(e);
-                    },
+                      }),
+                      e.queryManager.stopQuery(n),
+                      i
+                    );
+                  },
+                  function (t) {
+                    throw (e.queryManager.stopQuery(n), t);
+                  },
+                );
+              }),
+              (e.prototype.subscribeToMore = function (t) {
+                var e = this,
+                  r = this.queryManager
+                    .startGraphQLSubscription({
+                      query: t.document,
+                      variables: t.variables,
+                    })
+                    .subscribe({
+                      next: function (r) {
+                        var n = t.updateQuery;
+                        n &&
+                          e.updateQuery(function (t, e) {
+                            var i = e.variables;
+                            return n(t, {
+                              subscriptionData: r,
+                              variables: i,
+                            });
+                          });
+                      },
+                      error: function (e) {
+                        t.onError && t.onError(e);
+                      },
+                    });
+                return (
+                  this.subscriptions.add(r),
+                  function () {
+                    e.subscriptions.delete(r) && r.unsubscribe();
+                  }
+                );
+              }),
+              (e.prototype.setOptions = function (t) {
+                var e = this.options.fetchPolicy;
+                (this.options = Qt(Qt({}, this.options), t)),
+                  t.pollInterval ? this.startPolling(t.pollInterval) : 0 === t.pollInterval && this.stopPolling();
+                var r = t.fetchPolicy;
+                return this.setVariables(
+                  this.options.variables,
+                  e !== r && ('cache-only' === e || 'standby' === e || 'network-only' === r),
+                  t.fetchResults,
+                );
+              }),
+              (e.prototype.setVariables = function (t, e, r) {
+                return (
+                  void 0 === e && (e = !1),
+                  void 0 === r && (r = !0),
+                  (this.isTornDown = !1),
+                  (t = t || this.variables),
+                  !e && oe(t, this.variables)
+                    ? this.observers.size && r
+                      ? this.result()
+                      : Promise.resolve()
+                    : ((this.variables = this.options.variables = t),
+                      this.observers.size ? this.queryManager.fetchQuery(this.queryId, this.options) : Promise.resolve())
+                );
+              }),
+              (e.prototype.updateQuery = function (t) {
+                var e = this.queryManager,
+                  r = e.getQueryWithPreviousResult(this.queryId),
+                  n = r.previousResult,
+                  i = r.variables,
+                  o = r.document,
+                  s = ze(function () {
+                    return t(n, {
+                      variables: i,
+                    });
                   });
-              return (
-                this.subscriptions.add(r),
-                function () {
-                  e.subscriptions.delete(r) && r.unsubscribe();
-                }
-              );
-            }),
-            (e.prototype.setOptions = function (t) {
-              var e = this.options.fetchPolicy;
-              (this.options = Qt(Qt({}, this.options), t)),
-                t.pollInterval ? this.startPolling(t.pollInterval) : 0 === t.pollInterval && this.stopPolling();
-              var r = t.fetchPolicy;
-              return this.setVariables(
-                this.options.variables,
-                e !== r && ('cache-only' === e || 'standby' === e || 'network-only' === r),
-                t.fetchResults,
-              );
-            }),
-            (e.prototype.setVariables = function (t, e, r) {
-              return (
-                void 0 === e && (e = !1),
-                void 0 === r && (r = !0),
-                (this.isTornDown = !1),
-                (t = t || this.variables),
-                !e && oe(t, this.variables)
-                  ? this.observers.size && r
-                    ? this.result()
-                    : Promise.resolve()
-                  : ((this.variables = this.options.variables = t),
-                    this.observers.size ? this.queryManager.fetchQuery(this.queryId, this.options) : Promise.resolve())
-              );
-            }),
-            (e.prototype.updateQuery = function (t) {
-              var e = this.queryManager,
-                r = e.getQueryWithPreviousResult(this.queryId),
-                n = r.previousResult,
-                i = r.variables,
-                o = r.document,
-                s = ze(function () {
-                  return t(n, {
-                    variables: i,
-                  });
-                });
-              s && (e.dataStore.markUpdateQueryResult(o, i, s), e.broadcastQueries());
-            }),
-            (e.prototype.stopPolling = function () {
-              this.queryManager.stopPollingQuery(this.queryId), (this.options.pollInterval = void 0);
-            }),
-            (e.prototype.startPolling = function (t) {
-              wr(this),
-                (this.options.pollInterval = t),
-                this.queryManager.startPollingQuery(this.options, this.queryId);
-            }),
-            (e.prototype.updateLastResult = function (t) {
-              var e = this.lastResult;
-              return (
-                (this.lastResult = t),
-                (this.lastResultSnapshot = this.queryManager.assumeImmutableResults ? t : De(t)),
-                e
-              );
-            }),
-            (e.prototype.onSubscribe = function (t) {
-              var e = this;
-              try {
-                var r = t._subscription._observer;
-                r && !r.error && (r.error = mr);
-              } catch (t) {}
-              var n = !this.observers.size;
-              return (
-                this.observers.add(t),
-                t.next && this.lastResult && t.next(this.lastResult),
-                t.error && this.lastError && t.error(this.lastError),
-                n && this.setUpQuery(),
-                function () {
-                  e.observers.delete(t) && !e.observers.size && e.tearDownQuery();
-                }
-              );
-            }),
-            (e.prototype.setUpQuery = function () {
-              var t = this,
-                e = this.queryManager,
-                r = this.queryId;
-              this.shouldSubscribe && e.addObservableQuery(r, this),
-                this.options.pollInterval && (wr(this), e.startPollingQuery(this.options, r));
-              var n = function (e) {
-                t.updateLastResult(
-                  Qt(Qt({}, t.lastResult), {
-                    errors: e.graphQLErrors,
-                    networkStatus: lr.error,
-                    loading: !1,
-                  }),
-                ),
-                  gr(t.observers, 'error', (t.lastError = e));
-              };
-              e.observeQuery(r, this.options, {
-                next: function (r) {
-                  if (t.lastError || t.isDifferentFromLastResult(r)) {
-                    var n = t.updateLastResult(r),
-                      i = t.options,
-                      o = i.query,
-                      s = i.variables,
-                      a = i.fetchPolicy;
-                    e.transform(o).hasClientExports
-                      ? e
+                s && (e.dataStore.markUpdateQueryResult(o, i, s), e.broadcastQueries());
+              }),
+              (e.prototype.stopPolling = function () {
+                this.queryManager.stopPollingQuery(this.queryId), (this.options.pollInterval = void 0);
+              }),
+              (e.prototype.startPolling = function (t) {
+                wr(this),
+                  (this.options.pollInterval = t),
+                  this.queryManager.startPollingQuery(this.options, this.queryId);
+              }),
+              (e.prototype.updateLastResult = function (t) {
+                var e = this.lastResult;
+                return (
+                  (this.lastResult = t),
+                  (this.lastResultSnapshot = this.queryManager.assumeImmutableResults ? t : De(t)),
+                  e
+                );
+              }),
+              (e.prototype.onSubscribe = function (t) {
+                var e = this;
+                try {
+                  var r = t._subscription._observer;
+                  r && !r.error && (r.error = mr);
+                } catch (t) { }
+                var n = !this.observers.size;
+                return (
+                  this.observers.add(t),
+                  t.next && this.lastResult && t.next(this.lastResult),
+                  t.error && this.lastError && t.error(this.lastError),
+                  n && this.setUpQuery(),
+                  function () {
+                    e.observers.delete(t) && !e.observers.size && e.tearDownQuery();
+                  }
+                );
+              }),
+              (e.prototype.setUpQuery = function () {
+                var t = this,
+                  e = this.queryManager,
+                  r = this.queryId;
+                this.shouldSubscribe && e.addObservableQuery(r, this),
+                  this.options.pollInterval && (wr(this), e.startPollingQuery(this.options, r));
+                var n = function (e) {
+                  t.updateLastResult(
+                    Qt(Qt({}, t.lastResult), {
+                      errors: e.graphQLErrors,
+                      networkStatus: lr.error,
+                      loading: !1,
+                    }),
+                  ),
+                    gr(t.observers, 'error', (t.lastError = e));
+                };
+                e.observeQuery(r, this.options, {
+                  next: function (r) {
+                    if (t.lastError || t.isDifferentFromLastResult(r)) {
+                      var n = t.updateLastResult(r),
+                        i = t.options,
+                        o = i.query,
+                        s = i.variables,
+                        a = i.fetchPolicy;
+                      e.transform(o).hasClientExports
+                        ? e
                           .getLocalState()
                           .addExportedVariables(o, s)
                           .then(function (i) {
@@ -11303,46 +11283,46 @@ const RASSDK = (function (t, e) {
                                 ? t.refetch()
                                 : gr(t.observers, 'next', r);
                           })
-                      : gr(t.observers, 'next', r);
-                  }
-                },
-                error: n,
-              }).catch(n);
+                        : gr(t.observers, 'next', r);
+                    }
+                  },
+                  error: n,
+                }).catch(n);
+              }),
+              (e.prototype.tearDownQuery = function () {
+                var t = this.queryManager;
+                (this.isTornDown = !0),
+                  t.stopPollingQuery(this.queryId),
+                  this.subscriptions.forEach(function (t) {
+                    return t.unsubscribe();
+                  }),
+                  this.subscriptions.clear(),
+                  t.removeObservableQuery(this.queryId),
+                  t.stopQuery(this.queryId),
+                  this.observers.clear();
+              }),
+              e
+            );
+          })(dr);
+
+          function mr(t) { }
+
+          function gr(t, e, r) {
+            var n = [];
+            t.forEach(function (t) {
+              return t[e] && n.push(t);
             }),
-            (e.prototype.tearDownQuery = function () {
-              var t = this.queryManager;
-              (this.isTornDown = !0),
-                t.stopPollingQuery(this.queryId),
-                this.subscriptions.forEach(function (t) {
-                  return t.unsubscribe();
-                }),
-                this.subscriptions.clear(),
-                t.removeObservableQuery(this.queryId),
-                t.stopQuery(this.queryId),
-                this.observers.clear();
-            }),
-            e
-          );
-        })(dr);
+              n.forEach(function (t) {
+                return t[e](r);
+              });
+          }
 
-        function mr(t) {}
+          function wr(t) {
+            var e = t.options.fetchPolicy;
+            Yt('cache-first' !== e && 'cache-only' !== e, 3);
+          }
 
-        function gr(t, e, r) {
-          var n = [];
-          t.forEach(function (t) {
-            return t[e] && n.push(t);
-          }),
-            n.forEach(function (t) {
-              return t[e](r);
-            });
-        }
-
-        function wr(t) {
-          var e = t.options.fetchPolicy;
-          Yt('cache-first' !== e && 'cache-only' !== e, 3);
-        }
-
-        var Ir = (function () {
+          var Ir = (function () {
             function t() {
               this.store = {};
             }
@@ -11376,112 +11356,112 @@ const RASSDK = (function (t, e) {
               t
             );
           })(),
-          Sr = (function () {
-            function t() {
-              this.store = {};
-            }
+            Sr = (function () {
+              function t() {
+                this.store = {};
+              }
 
-            return (
-              (t.prototype.getStore = function () {
-                return this.store;
-              }),
-              (t.prototype.get = function (t) {
-                return this.store[t];
-              }),
-              (t.prototype.initQuery = function (t) {
-                var e = this.store[t.queryId];
-                Yt(!e || e.document === t.document || oe(e.document, t.document), 19);
-                var r,
-                  n = !1,
-                  i = null;
-                t.storePreviousVariables &&
-                  e &&
-                  e.networkStatus !== lr.loading &&
-                  (oe(e.variables, t.variables) || ((n = !0), (i = e.variables))),
-                  (r = n ? lr.setVariables : t.isPoll ? lr.poll : t.isRefetch ? lr.refetch : lr.loading);
-                var o = [];
-                e && e.graphQLErrors && (o = e.graphQLErrors),
-                  (this.store[t.queryId] = {
-                    document: t.document,
-                    variables: t.variables,
-                    previousVariables: i,
-                    networkError: null,
-                    graphQLErrors: o,
-                    networkStatus: r,
-                    metadata: t.metadata,
-                  }),
-                  'string' == typeof t.fetchMoreForQueryId &&
+              return (
+                (t.prototype.getStore = function () {
+                  return this.store;
+                }),
+                (t.prototype.get = function (t) {
+                  return this.store[t];
+                }),
+                (t.prototype.initQuery = function (t) {
+                  var e = this.store[t.queryId];
+                  Yt(!e || e.document === t.document || oe(e.document, t.document), 19);
+                  var r,
+                    n = !1,
+                    i = null;
+                  t.storePreviousVariables &&
+                    e &&
+                    e.networkStatus !== lr.loading &&
+                    (oe(e.variables, t.variables) || ((n = !0), (i = e.variables))),
+                    (r = n ? lr.setVariables : t.isPoll ? lr.poll : t.isRefetch ? lr.refetch : lr.loading);
+                  var o = [];
+                  e && e.graphQLErrors && (o = e.graphQLErrors),
+                    (this.store[t.queryId] = {
+                      document: t.document,
+                      variables: t.variables,
+                      previousVariables: i,
+                      networkError: null,
+                      graphQLErrors: o,
+                      networkStatus: r,
+                      metadata: t.metadata,
+                    }),
+                    'string' == typeof t.fetchMoreForQueryId &&
                     this.store[t.fetchMoreForQueryId] &&
                     (this.store[t.fetchMoreForQueryId].networkStatus = lr.fetchMore);
-              }),
-              (t.prototype.markQueryResult = function (t, e, r) {
-                this.store &&
-                  this.store[t] &&
-                  ((this.store[t].networkError = null),
-                  (this.store[t].graphQLErrors = br(e.errors) ? e.errors : []),
-                  (this.store[t].previousVariables = null),
-                  (this.store[t].networkStatus = lr.ready),
-                  'string' == typeof r && this.store[r] && (this.store[r].networkStatus = lr.ready));
-              }),
-              (t.prototype.markQueryError = function (t, e, r) {
-                this.store &&
-                  this.store[t] &&
-                  ((this.store[t].networkError = e),
-                  (this.store[t].networkStatus = lr.error),
-                  'string' == typeof r && this.markQueryResultClient(r, !0));
-              }),
-              (t.prototype.markQueryResultClient = function (t, e) {
-                var r = this.store && this.store[t];
-                r && ((r.networkError = null), (r.previousVariables = null), e && (r.networkStatus = lr.ready));
-              }),
-              (t.prototype.stopQuery = function (t) {
-                delete this.store[t];
-              }),
-              (t.prototype.reset = function (t) {
-                var e = this;
-                Object.keys(this.store).forEach(function (r) {
-                  t.indexOf(r) < 0 ? e.stopQuery(r) : (e.store[r].networkStatus = lr.loading);
-                });
-              }),
-              t
-            );
-          })(),
-          Er = (function () {
-            function t(t) {
-              var e = t.cache,
-                r = t.client,
-                n = t.resolvers,
-                i = t.fragmentMatcher;
-              (this.cache = e), r && (this.client = r), n && this.addResolvers(n), i && this.setFragmentMatcher(i);
-            }
+                }),
+                (t.prototype.markQueryResult = function (t, e, r) {
+                  this.store &&
+                    this.store[t] &&
+                    ((this.store[t].networkError = null),
+                      (this.store[t].graphQLErrors = br(e.errors) ? e.errors : []),
+                      (this.store[t].previousVariables = null),
+                      (this.store[t].networkStatus = lr.ready),
+                      'string' == typeof r && this.store[r] && (this.store[r].networkStatus = lr.ready));
+                }),
+                (t.prototype.markQueryError = function (t, e, r) {
+                  this.store &&
+                    this.store[t] &&
+                    ((this.store[t].networkError = e),
+                      (this.store[t].networkStatus = lr.error),
+                      'string' == typeof r && this.markQueryResultClient(r, !0));
+                }),
+                (t.prototype.markQueryResultClient = function (t, e) {
+                  var r = this.store && this.store[t];
+                  r && ((r.networkError = null), (r.previousVariables = null), e && (r.networkStatus = lr.ready));
+                }),
+                (t.prototype.stopQuery = function (t) {
+                  delete this.store[t];
+                }),
+                (t.prototype.reset = function (t) {
+                  var e = this;
+                  Object.keys(this.store).forEach(function (r) {
+                    t.indexOf(r) < 0 ? e.stopQuery(r) : (e.store[r].networkStatus = lr.loading);
+                  });
+                }),
+                t
+              );
+            })(),
+            Er = (function () {
+              function t(t) {
+                var e = t.cache,
+                  r = t.client,
+                  n = t.resolvers,
+                  i = t.fragmentMatcher;
+                (this.cache = e), r && (this.client = r), n && this.addResolvers(n), i && this.setFragmentMatcher(i);
+              }
 
-            return (
-              (t.prototype.addResolvers = function (t) {
-                var e = this;
-                (this.resolvers = this.resolvers || {}),
-                  Array.isArray(t)
-                    ? t.forEach(function (t) {
+              return (
+                (t.prototype.addResolvers = function (t) {
+                  var e = this;
+                  (this.resolvers = this.resolvers || {}),
+                    Array.isArray(t)
+                      ? t.forEach(function (t) {
                         e.resolvers = We(e.resolvers, t);
                       })
-                    : (this.resolvers = We(this.resolvers, t));
-              }),
-              (t.prototype.setResolvers = function (t) {
-                (this.resolvers = {}), this.addResolvers(t);
-              }),
-              (t.prototype.getResolvers = function () {
-                return this.resolvers || {};
-              }),
-              (t.prototype.runResolvers = function (t) {
-                var e = t.document,
-                  r = t.remoteResult,
-                  n = t.context,
-                  i = t.variables,
-                  o = t.onlyRunForcedResolvers,
-                  s = void 0 !== o && o;
-                return qt(this, void 0, void 0, function () {
-                  return Dt(this, function (t) {
-                    return e
-                      ? [
+                      : (this.resolvers = We(this.resolvers, t));
+                }),
+                (t.prototype.setResolvers = function (t) {
+                  (this.resolvers = {}), this.addResolvers(t);
+                }),
+                (t.prototype.getResolvers = function () {
+                  return this.resolvers || {};
+                }),
+                (t.prototype.runResolvers = function (t) {
+                  var e = t.document,
+                    r = t.remoteResult,
+                    n = t.context,
+                    i = t.variables,
+                    o = t.onlyRunForcedResolvers,
+                    s = void 0 !== o && o;
+                  return qt(this, void 0, void 0, function () {
+                    return Dt(this, function (t) {
+                      return e
+                        ? [
                           2,
                           this.resolveDocument(e, r.data, n, i, this.fragmentMatcher, s).then(function (t) {
                             return Qt(Qt({}, r), {
@@ -11489,22 +11469,22 @@ const RASSDK = (function (t, e) {
                             });
                           }),
                         ]
-                      : [2, r];
+                        : [2, r];
+                    });
                   });
-                });
-              }),
-              (t.prototype.setFragmentMatcher = function (t) {
-                this.fragmentMatcher = t;
-              }),
-              (t.prototype.getFragmentMatcher = function () {
-                return this.fragmentMatcher;
-              }),
-              (t.prototype.clientQuery = function (t) {
-                return me(['client'], t) && this.resolvers ? t : null;
-              }),
-              (t.prototype.serverQuery = function (t) {
-                return this.resolvers
-                  ? (function (t) {
+                }),
+                (t.prototype.setFragmentMatcher = function (t) {
+                  this.fragmentMatcher = t;
+                }),
+                (t.prototype.getFragmentMatcher = function () {
+                  return this.fragmentMatcher;
+                }),
+                (t.prototype.clientQuery = function (t) {
+                  return me(['client'], t) && this.resolvers ? t : null;
+                }),
+                (t.prototype.serverQuery = function (t) {
+                  return this.resolvers
+                    ? (function (t) {
                       Ee(t);
                       var e = Ne(
                         [
@@ -11519,43 +11499,43 @@ const RASSDK = (function (t, e) {
                       );
                       return (
                         e &&
-                          (e = (0, zt.visit)(e, {
-                            FragmentDefinition: {
-                              enter: function (t) {
-                                if (
-                                  t.selectionSet &&
-                                  t.selectionSet.selections.every(function (t) {
-                                    return he(t) && '__typename' === t.name.value;
-                                  })
-                                )
-                                  return null;
-                              },
+                        (e = (0, zt.visit)(e, {
+                          FragmentDefinition: {
+                            enter: function (t) {
+                              if (
+                                t.selectionSet &&
+                                t.selectionSet.selections.every(function (t) {
+                                  return he(t) && '__typename' === t.name.value;
+                                })
+                              )
+                                return null;
                             },
-                          })),
+                          },
+                        })),
                         e
                       );
                     })(t)
-                  : t;
-              }),
-              (t.prototype.prepareContext = function (t) {
-                void 0 === t && (t = {});
-                var e = this.cache;
-                return Qt(Qt({}, t), {
-                  cache: e,
-                  getCacheKey: function (t) {
-                    if (e.config) return e.config.dataIdFromObject(t);
-                    Yt(!1, 6);
-                  },
-                });
-              }),
-              (t.prototype.addExportedVariables = function (t, e, r) {
-                return (
-                  void 0 === e && (e = {}),
-                  void 0 === r && (r = {}),
-                  qt(this, void 0, void 0, function () {
-                    return Dt(this, function (n) {
-                      return t
-                        ? [
+                    : t;
+                }),
+                (t.prototype.prepareContext = function (t) {
+                  void 0 === t && (t = {});
+                  var e = this.cache;
+                  return Qt(Qt({}, t), {
+                    cache: e,
+                    getCacheKey: function (t) {
+                      if (e.config) return e.config.dataIdFromObject(t);
+                      Yt(!1, 6);
+                    },
+                  });
+                }),
+                (t.prototype.addExportedVariables = function (t, e, r) {
+                  return (
+                    void 0 === e && (e = {}),
+                    void 0 === r && (r = {}),
+                    qt(this, void 0, void 0, function () {
+                      return Dt(this, function (n) {
+                        return t
+                          ? [
                             2,
                             this.resolveDocument(
                               t,
@@ -11566,159 +11546,159 @@ const RASSDK = (function (t, e) {
                               return Qt(Qt({}, e), t.exportedVariables);
                             }),
                           ]
-                        : [2, Qt({}, e)];
-                    });
-                  })
-                );
-              }),
-              (t.prototype.shouldForceResolvers = function (t) {
-                var e = !1;
-                return (
-                  (0, zt.visit)(t, {
-                    Directive: {
-                      enter: function (t) {
-                        if (
-                          'client' === t.name.value &&
-                          t.arguments &&
-                          (e = t.arguments.some(function (t) {
-                            return 'always' === t.name.value && 'BooleanValue' === t.value.kind && !0 === t.value.value;
-                          }))
-                        )
-                          return zt.BREAK;
+                          : [2, Qt({}, e)];
+                      });
+                    })
+                  );
+                }),
+                (t.prototype.shouldForceResolvers = function (t) {
+                  var e = !1;
+                  return (
+                    (0, zt.visit)(t, {
+                      Directive: {
+                        enter: function (t) {
+                          if (
+                            'client' === t.name.value &&
+                            t.arguments &&
+                            (e = t.arguments.some(function (t) {
+                              return 'always' === t.name.value && 'BooleanValue' === t.value.kind && !0 === t.value.value;
+                            }))
+                          )
+                            return zt.BREAK;
+                        },
                       },
-                    },
-                  }),
-                  e
-                );
-              }),
-              (t.prototype.buildRootValueFromCache = function (t, e) {
-                return this.cache.diff({
-                  query: Me(t),
-                  variables: e,
-                  returnPartialData: !0,
-                  optimistic: !1,
-                }).result;
-              }),
-              (t.prototype.resolveDocument = function (t, e, r, n, i, o) {
-                return (
-                  void 0 === r && (r = {}),
-                  void 0 === n && (n = {}),
-                  void 0 === i &&
+                    }),
+                    e
+                  );
+                }),
+                (t.prototype.buildRootValueFromCache = function (t, e) {
+                  return this.cache.diff({
+                    query: Me(t),
+                    variables: e,
+                    returnPartialData: !0,
+                    optimistic: !1,
+                  }).result;
+                }),
+                (t.prototype.resolveDocument = function (t, e, r, n, i, o) {
+                  return (
+                    void 0 === r && (r = {}),
+                    void 0 === n && (n = {}),
+                    void 0 === i &&
                     (i = function () {
                       return !0;
                     }),
-                  void 0 === o && (o = !1),
-                  qt(this, void 0, void 0, function () {
-                    var s, a, u, c, f, l, p, h, d;
-                    return Dt(this, function (b) {
-                      var y;
+                    void 0 === o && (o = !1),
+                    qt(this, void 0, void 0, function () {
+                      var s, a, u, c, f, l, p, h, d;
+                      return Dt(this, function (b) {
+                        var y;
+                        return (
+                          (s = Ae(t)),
+                          (a = ke(t)),
+                          (u = Re(a)),
+                          (c = s.operation),
+                          (f = c ? (y = c).charAt(0).toUpperCase() + y.slice(1) : 'Query'),
+                          (p = (l = this).cache),
+                          (h = l.client),
+                          (d = {
+                            fragmentMap: u,
+                            context: Qt(Qt({}, r), {
+                              cache: p,
+                              client: h,
+                            }),
+                            variables: n,
+                            fragmentMatcher: i,
+                            defaultOperationType: f,
+                            exportedVariables: {},
+                            onlyRunForcedResolvers: o,
+                          }),
+                          [
+                            2,
+                            this.resolveSelectionSet(s.selectionSet, e, d).then(function (t) {
+                              return {
+                                result: t,
+                                exportedVariables: d.exportedVariables,
+                              };
+                            }),
+                          ]
+                        );
+                      });
+                    })
+                  );
+                }),
+                (t.prototype.resolveSelectionSet = function (t, e, r) {
+                  return qt(this, void 0, void 0, function () {
+                    var n,
+                      i,
+                      o,
+                      s,
+                      a,
+                      u = this;
+                    return Dt(this, function (c) {
                       return (
-                        (s = Ae(t)),
-                        (a = ke(t)),
-                        (u = Re(a)),
-                        (c = s.operation),
-                        (f = c ? (y = c).charAt(0).toUpperCase() + y.slice(1) : 'Query'),
-                        (p = (l = this).cache),
-                        (h = l.client),
-                        (d = {
-                          fragmentMap: u,
-                          context: Qt(Qt({}, r), {
-                            cache: p,
-                            client: h,
-                          }),
-                          variables: n,
-                          fragmentMatcher: i,
-                          defaultOperationType: f,
-                          exportedVariables: {},
-                          onlyRunForcedResolvers: o,
-                        }),
-                        [
-                          2,
-                          this.resolveSelectionSet(s.selectionSet, e, d).then(function (t) {
-                            return {
-                              result: t,
-                              exportedVariables: d.exportedVariables,
-                            };
-                          }),
-                        ]
-                      );
-                    });
-                  })
-                );
-              }),
-              (t.prototype.resolveSelectionSet = function (t, e, r) {
-                return qt(this, void 0, void 0, function () {
-                  var n,
-                    i,
-                    o,
-                    s,
-                    a,
-                    u = this;
-                  return Dt(this, function (c) {
-                    return (
-                      (n = r.fragmentMap),
-                      (i = r.context),
-                      (o = r.variables),
-                      (s = [e]),
-                      (a = function (t) {
-                        return qt(u, void 0, void 0, function () {
-                          var a, u;
-                          return Dt(this, function (c) {
-                            return _e(t, o)
-                              ? he(t)
-                                ? [
+                        (n = r.fragmentMap),
+                        (i = r.context),
+                        (o = r.variables),
+                        (s = [e]),
+                        (a = function (t) {
+                          return qt(u, void 0, void 0, function () {
+                            var a, u;
+                            return Dt(this, function (c) {
+                              return _e(t, o)
+                                ? he(t)
+                                  ? [
                                     2,
                                     this.resolveField(t, e, r).then(function (e) {
                                       var r;
                                       void 0 !== e && s.push((((r = {})[pe(t)] = e), r));
                                     }),
                                   ]
-                                : (de(t) ? (a = t) : Yt((a = n[t.name.value]), 7),
-                                  a && a.typeCondition && ((u = a.typeCondition.name.value), r.fragmentMatcher(e, u, i))
-                                    ? [
+                                  : (de(t) ? (a = t) : Yt((a = n[t.name.value]), 7),
+                                    a && a.typeCondition && ((u = a.typeCondition.name.value), r.fragmentMatcher(e, u, i))
+                                      ? [
                                         2,
                                         this.resolveSelectionSet(a.selectionSet, e, r).then(function (t) {
                                           s.push(t);
                                         }),
                                       ]
-                                    : [2])
-                              : [2];
+                                      : [2])
+                                : [2];
+                            });
                           });
-                        });
-                      }),
-                      [
-                        2,
-                        Promise.all(t.selections.map(a)).then(function () {
-                          return He(s);
                         }),
-                      ]
-                    );
+                        [
+                          2,
+                          Promise.all(t.selections.map(a)).then(function () {
+                            return He(s);
+                          }),
+                        ]
+                      );
+                    });
                   });
-                });
-              }),
-              (t.prototype.resolveField = function (t, e, r) {
-                return qt(this, void 0, void 0, function () {
-                  var n,
-                    i,
-                    o,
-                    s,
-                    a,
-                    u,
-                    c,
-                    f,
-                    l,
-                    p = this;
-                  return Dt(this, function (h) {
-                    return (
-                      (n = r.variables),
-                      (i = t.name.value),
-                      (o = pe(t)),
-                      (s = i !== o),
-                      (a = e[o] || e[i]),
-                      (u = Promise.resolve(a)),
-                      (r.onlyRunForcedResolvers && !this.shouldForceResolvers(t)) ||
+                }),
+                (t.prototype.resolveField = function (t, e, r) {
+                  return qt(this, void 0, void 0, function () {
+                    var n,
+                      i,
+                      o,
+                      s,
+                      a,
+                      u,
+                      c,
+                      f,
+                      l,
+                      p = this;
+                    return Dt(this, function (h) {
+                      return (
+                        (n = r.variables),
+                        (i = t.name.value),
+                        (o = pe(t)),
+                        (s = i !== o),
+                        (a = e[o] || e[i]),
+                        (u = Promise.resolve(a)),
+                        (r.onlyRunForcedResolvers && !this.shouldForceResolvers(t)) ||
                         ((c = e.__typename || r.defaultOperationType),
-                        (f = this.resolvers && this.resolvers[c]) &&
+                          (f = this.resolvers && this.resolvers[c]) &&
                           (l = f[s ? i : o]) &&
                           (u = Promise.resolve(
                             l(e, le(t, n), r.context, {
@@ -11726,12 +11706,12 @@ const RASSDK = (function (t, e) {
                               fragmentMap: r.fragmentMap,
                             }),
                           ))),
-                      [
-                        2,
-                        u.then(function (e) {
-                          return (
-                            void 0 === e && (e = a),
-                            t.directives &&
+                        [
+                          2,
+                          u.then(function (e) {
+                            return (
+                              void 0 === e && (e = a),
+                              t.directives &&
                               t.directives.forEach(function (t) {
                                 'export' === t.name.value &&
                                   t.arguments &&
@@ -11741,166 +11721,166 @@ const RASSDK = (function (t, e) {
                                       (r.exportedVariables[t.value.value] = e);
                                   });
                               }),
-                            t.selectionSet
-                              ? null == e
-                                ? e
-                                : Array.isArray(e)
-                                ? p.resolveSubSelectedArray(t, e, r)
-                                : t.selectionSet
-                                ? p.resolveSelectionSet(t.selectionSet, e, r)
-                                : void 0
-                              : e
-                          );
-                        }),
-                      ]
-                    );
-                  });
-                });
-              }),
-              (t.prototype.resolveSubSelectedArray = function (t, e, r) {
-                var n = this;
-                return Promise.all(
-                  e.map(function (e) {
-                    return null === e
-                      ? null
-                      : Array.isArray(e)
-                      ? n.resolveSubSelectedArray(t, e, r)
-                      : t.selectionSet
-                      ? n.resolveSelectionSet(t.selectionSet, e, r)
-                      : void 0;
-                  }),
-                );
-              }),
-              t
-            );
-          })();
-
-        function Or(t) {
-          var e = new Set(),
-            r = null;
-          return new dr(function (n) {
-            return (
-              e.add(n),
-              (r =
-                r ||
-                t.subscribe({
-                  next: function (t) {
-                    e.forEach(function (e) {
-                      return e.next && e.next(t);
-                    });
-                  },
-                  error: function (t) {
-                    e.forEach(function (e) {
-                      return e.error && e.error(t);
-                    });
-                  },
-                  complete: function () {
-                    e.forEach(function (t) {
-                      return t.complete && t.complete();
-                    });
-                  },
-                })),
-              function () {
-                e.delete(n) && !e.size && r && (r.unsubscribe(), (r = null));
-              }
-            );
-          });
-        }
-
-        var Tr = Object.prototype.hasOwnProperty,
-          kr = (function () {
-            function t(t) {
-              var e = t.link,
-                r = t.queryDeduplication,
-                n = void 0 !== r && r,
-                i = t.store,
-                o = t.onBroadcast,
-                s = void 0 === o ? function () {} : o,
-                a = t.ssrMode,
-                u = void 0 !== a && a,
-                c = t.clientAwareness,
-                f = void 0 === c ? {} : c,
-                l = t.localState,
-                p = t.assumeImmutableResults;
-              (this.mutationStore = new Ir()),
-                (this.queryStore = new Sr()),
-                (this.clientAwareness = {}),
-                (this.idCounter = 1),
-                (this.queries = new Map()),
-                (this.fetchQueryRejectFns = new Map()),
-                (this.transformCache = new (Qe ? WeakMap : Map)()),
-                (this.inFlightLinkObservables = new Map()),
-                (this.pollingInfoByQueryId = new Map()),
-                (this.link = e),
-                (this.queryDeduplication = n),
-                (this.dataStore = i),
-                (this.onBroadcast = s),
-                (this.clientAwareness = f),
-                (this.localState =
-                  l ||
-                  new Er({
-                    cache: i.getCache(),
-                  })),
-                (this.ssrMode = u),
-                (this.assumeImmutableResults = !!p);
-            }
-
-            return (
-              (t.prototype.stop = function () {
-                var t = this;
-                this.queries.forEach(function (e, r) {
-                  t.stopQueryNoBroadcast(r);
-                }),
-                  this.fetchQueryRejectFns.forEach(function (t) {
-                    t(new Ht(8));
-                  });
-              }),
-              (t.prototype.mutate = function (t) {
-                var e = t.mutation,
-                  r = t.variables,
-                  n = t.optimisticResponse,
-                  i = t.updateQueries,
-                  o = t.refetchQueries,
-                  s = void 0 === o ? [] : o,
-                  a = t.awaitRefetchQueries,
-                  u = void 0 !== a && a,
-                  c = t.update,
-                  f = t.errorPolicy,
-                  l = void 0 === f ? 'none' : f,
-                  p = t.fetchPolicy,
-                  h = t.context,
-                  d = void 0 === h ? {} : h;
-                return qt(this, void 0, void 0, function () {
-                  var t,
-                    o,
-                    a,
-                    f = this;
-                  return Dt(this, function (h) {
-                    switch (h.label) {
-                      case 0:
-                        return (
-                          Yt(e, 9),
-                          Yt(!p || 'no-cache' === p, 10),
-                          (t = this.generateQueryId()),
-                          (e = this.transform(e).document),
-                          this.setQuery(t, function () {
-                            return {
-                              document: e,
-                            };
+                              t.selectionSet
+                                ? null == e
+                                  ? e
+                                  : Array.isArray(e)
+                                    ? p.resolveSubSelectedArray(t, e, r)
+                                    : t.selectionSet
+                                      ? p.resolveSelectionSet(t.selectionSet, e, r)
+                                      : void 0
+                                : e
+                            );
                           }),
-                          (r = this.getVariables(e, r)),
-                          this.transform(e).hasClientExports
-                            ? [4, this.localState.addExportedVariables(e, r, d)]
-                            : [3, 2]
-                        );
-                      case 1:
-                        (r = h.sent()), (h.label = 2);
-                      case 2:
-                        return (
-                          (o = function () {
-                            var t = {};
-                            return (
-                              i &&
+                        ]
+                      );
+                    });
+                  });
+                }),
+                (t.prototype.resolveSubSelectedArray = function (t, e, r) {
+                  var n = this;
+                  return Promise.all(
+                    e.map(function (e) {
+                      return null === e
+                        ? null
+                        : Array.isArray(e)
+                          ? n.resolveSubSelectedArray(t, e, r)
+                          : t.selectionSet
+                            ? n.resolveSelectionSet(t.selectionSet, e, r)
+                            : void 0;
+                    }),
+                  );
+                }),
+                t
+              );
+            })();
+
+          function Or(t) {
+            var e = new Set(),
+              r = null;
+            return new dr(function (n) {
+              return (
+                e.add(n),
+                (r =
+                  r ||
+                  t.subscribe({
+                    next: function (t) {
+                      e.forEach(function (e) {
+                        return e.next && e.next(t);
+                      });
+                    },
+                    error: function (t) {
+                      e.forEach(function (e) {
+                        return e.error && e.error(t);
+                      });
+                    },
+                    complete: function () {
+                      e.forEach(function (t) {
+                        return t.complete && t.complete();
+                      });
+                    },
+                  })),
+                function () {
+                  e.delete(n) && !e.size && r && (r.unsubscribe(), (r = null));
+                }
+              );
+            });
+          }
+
+          var Tr = Object.prototype.hasOwnProperty,
+            kr = (function () {
+              function t(t) {
+                var e = t.link,
+                  r = t.queryDeduplication,
+                  n = void 0 !== r && r,
+                  i = t.store,
+                  o = t.onBroadcast,
+                  s = void 0 === o ? function () { } : o,
+                  a = t.ssrMode,
+                  u = void 0 !== a && a,
+                  c = t.clientAwareness,
+                  f = void 0 === c ? {} : c,
+                  l = t.localState,
+                  p = t.assumeImmutableResults;
+                (this.mutationStore = new Ir()),
+                  (this.queryStore = new Sr()),
+                  (this.clientAwareness = {}),
+                  (this.idCounter = 1),
+                  (this.queries = new Map()),
+                  (this.fetchQueryRejectFns = new Map()),
+                  (this.transformCache = new (Qe ? WeakMap : Map)()),
+                  (this.inFlightLinkObservables = new Map()),
+                  (this.pollingInfoByQueryId = new Map()),
+                  (this.link = e),
+                  (this.queryDeduplication = n),
+                  (this.dataStore = i),
+                  (this.onBroadcast = s),
+                  (this.clientAwareness = f),
+                  (this.localState =
+                    l ||
+                    new Er({
+                      cache: i.getCache(),
+                    })),
+                  (this.ssrMode = u),
+                  (this.assumeImmutableResults = !!p);
+              }
+
+              return (
+                (t.prototype.stop = function () {
+                  var t = this;
+                  this.queries.forEach(function (e, r) {
+                    t.stopQueryNoBroadcast(r);
+                  }),
+                    this.fetchQueryRejectFns.forEach(function (t) {
+                      t(new Ht(8));
+                    });
+                }),
+                (t.prototype.mutate = function (t) {
+                  var e = t.mutation,
+                    r = t.variables,
+                    n = t.optimisticResponse,
+                    i = t.updateQueries,
+                    o = t.refetchQueries,
+                    s = void 0 === o ? [] : o,
+                    a = t.awaitRefetchQueries,
+                    u = void 0 !== a && a,
+                    c = t.update,
+                    f = t.errorPolicy,
+                    l = void 0 === f ? 'none' : f,
+                    p = t.fetchPolicy,
+                    h = t.context,
+                    d = void 0 === h ? {} : h;
+                  return qt(this, void 0, void 0, function () {
+                    var t,
+                      o,
+                      a,
+                      f = this;
+                    return Dt(this, function (h) {
+                      switch (h.label) {
+                        case 0:
+                          return (
+                            Yt(e, 9),
+                            Yt(!p || 'no-cache' === p, 10),
+                            (t = this.generateQueryId()),
+                            (e = this.transform(e).document),
+                            this.setQuery(t, function () {
+                              return {
+                                document: e,
+                              };
+                            }),
+                            (r = this.getVariables(e, r)),
+                            this.transform(e).hasClientExports
+                              ? [4, this.localState.addExportedVariables(e, r, d)]
+                              : [3, 2]
+                          );
+                        case 1:
+                          (r = h.sent()), (h.label = 2);
+                        case 2:
+                          return (
+                            (o = function () {
+                              var t = {};
+                              return (
+                                i &&
                                 f.queries.forEach(function (e, r) {
                                   var n = e.observableQuery;
                                   if (n) {
@@ -11913,39 +11893,39 @@ const RASSDK = (function (t, e) {
                                       });
                                   }
                                 }),
-                              t
-                            );
-                          }),
-                          this.mutationStore.initMutation(t, e, r),
-                          this.dataStore.markMutationInit({
-                            mutationId: t,
-                            document: e,
-                            variables: r,
-                            updateQueries: o(),
-                            update: c,
-                            optimisticResponse: n,
-                          }),
-                          this.broadcastQueries(),
-                          (a = this),
-                          [
-                            2,
-                            new Promise(function (i, f) {
-                              var h, b;
-                              a.getObservableFromLink(
-                                e,
-                                Qt(Qt({}, d), {
-                                  optimisticResponse: n,
-                                }),
-                                r,
-                                !1,
-                              ).subscribe({
-                                next: function (n) {
-                                  Ke(n) && 'none' === l
-                                    ? (b = new vr({
+                                t
+                              );
+                            }),
+                            this.mutationStore.initMutation(t, e, r),
+                            this.dataStore.markMutationInit({
+                              mutationId: t,
+                              document: e,
+                              variables: r,
+                              updateQueries: o(),
+                              update: c,
+                              optimisticResponse: n,
+                            }),
+                            this.broadcastQueries(),
+                            (a = this),
+                            [
+                              2,
+                              new Promise(function (i, f) {
+                                var h, b;
+                                a.getObservableFromLink(
+                                  e,
+                                  Qt(Qt({}, d), {
+                                    optimisticResponse: n,
+                                  }),
+                                  r,
+                                  !1,
+                                ).subscribe({
+                                  next: function (n) {
+                                    Ke(n) && 'none' === l
+                                      ? (b = new vr({
                                         graphQLErrors: n.errors,
                                       }))
-                                    : (a.mutationStore.markMutationResult(t),
-                                      'no-cache' !== p &&
+                                      : (a.mutationStore.markMutationResult(t),
+                                        'no-cache' !== p &&
                                         a.dataStore.markMutationResult({
                                           mutationId: t,
                                           result: n,
@@ -11954,187 +11934,187 @@ const RASSDK = (function (t, e) {
                                           updateQueries: o(),
                                           update: c,
                                         }),
-                                      (h = n));
-                                },
-                                error: function (e) {
-                                  a.mutationStore.markMutationError(t, e),
-                                    a.dataStore.markMutationComplete({
-                                      mutationId: t,
-                                      optimisticResponse: n,
-                                    }),
-                                    a.broadcastQueries(),
-                                    a.setQuery(t, function () {
-                                      return {
-                                        document: null,
-                                      };
-                                    }),
-                                    f(
-                                      new vr({
-                                        networkError: e,
+                                        (h = n));
+                                  },
+                                  error: function (e) {
+                                    a.mutationStore.markMutationError(t, e),
+                                      a.dataStore.markMutationComplete({
+                                        mutationId: t,
+                                        optimisticResponse: n,
                                       }),
-                                    );
-                                },
-                                complete: function () {
-                                  if (
-                                    (b && a.mutationStore.markMutationError(t, b),
-                                    a.dataStore.markMutationComplete({
-                                      mutationId: t,
-                                      optimisticResponse: n,
-                                    }),
-                                    a.broadcastQueries(),
-                                    b)
-                                  )
-                                    f(b);
-                                  else {
-                                    'function' == typeof s && (s = s(h));
-                                    var e = [];
-                                    br(s) &&
-                                      s.forEach(function (t) {
-                                        if ('string' == typeof t)
-                                          a.queries.forEach(function (r) {
-                                            var n = r.observableQuery;
-                                            n && n.queryName === t && e.push(n.refetch());
-                                          });
-                                        else {
-                                          var r = {
-                                            query: t.query,
-                                            variables: t.variables,
-                                            fetchPolicy: 'network-only',
-                                          };
-                                          t.context && (r.context = t.context), e.push(a.query(r));
-                                        }
+                                      a.broadcastQueries(),
+                                      a.setQuery(t, function () {
+                                        return {
+                                          document: null,
+                                        };
                                       }),
-                                      Promise.all(u ? e : []).then(function () {
-                                        a.setQuery(t, function () {
-                                          return {
-                                            document: null,
-                                          };
+                                      f(
+                                        new vr({
+                                          networkError: e,
                                         }),
-                                          'ignore' === l && h && Ke(h) && delete h.errors,
-                                          i(h);
-                                      });
-                                  }
-                                },
-                              });
-                            }),
-                          ]
-                        );
-                    }
+                                      );
+                                  },
+                                  complete: function () {
+                                    if (
+                                      (b && a.mutationStore.markMutationError(t, b),
+                                        a.dataStore.markMutationComplete({
+                                          mutationId: t,
+                                          optimisticResponse: n,
+                                        }),
+                                        a.broadcastQueries(),
+                                        b)
+                                    )
+                                      f(b);
+                                    else {
+                                      'function' == typeof s && (s = s(h));
+                                      var e = [];
+                                      br(s) &&
+                                        s.forEach(function (t) {
+                                          if ('string' == typeof t)
+                                            a.queries.forEach(function (r) {
+                                              var n = r.observableQuery;
+                                              n && n.queryName === t && e.push(n.refetch());
+                                            });
+                                          else {
+                                            var r = {
+                                              query: t.query,
+                                              variables: t.variables,
+                                              fetchPolicy: 'network-only',
+                                            };
+                                            t.context && (r.context = t.context), e.push(a.query(r));
+                                          }
+                                        }),
+                                        Promise.all(u ? e : []).then(function () {
+                                          a.setQuery(t, function () {
+                                            return {
+                                              document: null,
+                                            };
+                                          }),
+                                            'ignore' === l && h && Ke(h) && delete h.errors,
+                                            i(h);
+                                        });
+                                    }
+                                  },
+                                });
+                              }),
+                            ]
+                          );
+                      }
+                    });
                   });
-                });
-              }),
-              (t.prototype.fetchQuery = function (t, e, r, n) {
-                return qt(this, void 0, void 0, function () {
-                  var i,
-                    o,
-                    s,
-                    a,
-                    u,
-                    c,
-                    f,
-                    l,
-                    p,
-                    h,
-                    d,
-                    b,
-                    y,
-                    v,
-                    _,
-                    m,
-                    g,
-                    w,
-                    I = this;
-                  return Dt(this, function (S) {
-                    switch (S.label) {
-                      case 0:
-                        return (
-                          (i = e.metadata),
-                          (o = void 0 === i ? null : i),
-                          (s = e.fetchPolicy),
-                          (a = void 0 === s ? 'cache-first' : s),
-                          (u = e.context),
-                          (c = void 0 === u ? {} : u),
-                          (f = this.transform(e.query).document),
-                          (l = this.getVariables(f, e.variables)),
-                          this.transform(f).hasClientExports
-                            ? [4, this.localState.addExportedVariables(f, l, c)]
-                            : [3, 2]
-                        );
-                      case 1:
-                        (l = S.sent()), (S.label = 2);
-                      case 2:
-                        if (
-                          ((e = Qt(Qt({}, e), {
-                            variables: l,
-                          })),
-                          (d = h = 'network-only' === a || 'no-cache' === a),
-                          h ||
-                            ((b = this.dataStore.getCache().diff({
-                              query: f,
-                              variables: l,
-                              returnPartialData: !0,
-                              optimistic: !1,
-                            })),
-                            (y = b.complete),
-                            (v = b.result),
-                            (d = !y || 'cache-and-network' === a),
-                            (p = v)),
-                          (_ = d && 'cache-only' !== a && 'standby' !== a),
-                          me(['live'], f) && (_ = !0),
-                          (m = this.idCounter++),
-                          (g = 'no-cache' !== a ? this.updateQueryWatch(t, f, e) : void 0),
-                          this.setQuery(t, function () {
-                            return {
-                              document: f,
-                              lastRequestId: m,
-                              invalidated: !0,
-                              cancel: g,
-                            };
-                          }),
-                          this.invalidate(n),
-                          this.queryStore.initQuery({
-                            queryId: t,
-                            document: f,
-                            storePreviousVariables: _,
-                            variables: l,
-                            isPoll: r === yr.poll,
-                            isRefetch: r === yr.refetch,
-                            metadata: o,
-                            fetchMoreForQueryId: n,
-                          }),
-                          this.broadcastQueries(),
-                          _)
-                        ) {
+                }),
+                (t.prototype.fetchQuery = function (t, e, r, n) {
+                  return qt(this, void 0, void 0, function () {
+                    var i,
+                      o,
+                      s,
+                      a,
+                      u,
+                      c,
+                      f,
+                      l,
+                      p,
+                      h,
+                      d,
+                      b,
+                      y,
+                      v,
+                      _,
+                      m,
+                      g,
+                      w,
+                      I = this;
+                    return Dt(this, function (S) {
+                      switch (S.label) {
+                        case 0:
+                          return (
+                            (i = e.metadata),
+                            (o = void 0 === i ? null : i),
+                            (s = e.fetchPolicy),
+                            (a = void 0 === s ? 'cache-first' : s),
+                            (u = e.context),
+                            (c = void 0 === u ? {} : u),
+                            (f = this.transform(e.query).document),
+                            (l = this.getVariables(f, e.variables)),
+                            this.transform(f).hasClientExports
+                              ? [4, this.localState.addExportedVariables(f, l, c)]
+                              : [3, 2]
+                          );
+                        case 1:
+                          (l = S.sent()), (S.label = 2);
+                        case 2:
                           if (
-                            ((w = this.fetchRequest({
-                              requestId: m,
-                              queryId: t,
-                              document: f,
-                              options: e,
-                              fetchMoreForQueryId: n,
-                            }).catch(function (e) {
-                              throw e.hasOwnProperty('graphQLErrors')
-                                ? e
-                                : (m >= I.getQuery(t).lastRequestId &&
-                                    (I.queryStore.markQueryError(t, e, n),
-                                    I.invalidate(t),
-                                    I.invalidate(n),
-                                    I.broadcastQueries()),
-                                  new vr({
-                                    networkError: e,
-                                  }));
+                            ((e = Qt(Qt({}, e), {
+                              variables: l,
                             })),
-                            'cache-and-network' !== a)
-                          )
-                            return [2, w];
-                          w.catch(function () {});
-                        }
-                        return (
-                          this.queryStore.markQueryResultClient(t, !_),
-                          this.invalidate(t),
-                          this.invalidate(n),
-                          this.transform(f).hasForcedResolvers
-                            ? [
+                              (d = h = 'network-only' === a || 'no-cache' === a),
+                              h ||
+                              ((b = this.dataStore.getCache().diff({
+                                query: f,
+                                variables: l,
+                                returnPartialData: !0,
+                                optimistic: !1,
+                              })),
+                                (y = b.complete),
+                                (v = b.result),
+                                (d = !y || 'cache-and-network' === a),
+                                (p = v)),
+                              (_ = d && 'cache-only' !== a && 'standby' !== a),
+                              me(['live'], f) && (_ = !0),
+                              (m = this.idCounter++),
+                              (g = 'no-cache' !== a ? this.updateQueryWatch(t, f, e) : void 0),
+                              this.setQuery(t, function () {
+                                return {
+                                  document: f,
+                                  lastRequestId: m,
+                                  invalidated: !0,
+                                  cancel: g,
+                                };
+                              }),
+                              this.invalidate(n),
+                              this.queryStore.initQuery({
+                                queryId: t,
+                                document: f,
+                                storePreviousVariables: _,
+                                variables: l,
+                                isPoll: r === yr.poll,
+                                isRefetch: r === yr.refetch,
+                                metadata: o,
+                                fetchMoreForQueryId: n,
+                              }),
+                              this.broadcastQueries(),
+                              _)
+                          ) {
+                            if (
+                              ((w = this.fetchRequest({
+                                requestId: m,
+                                queryId: t,
+                                document: f,
+                                options: e,
+                                fetchMoreForQueryId: n,
+                              }).catch(function (e) {
+                                throw e.hasOwnProperty('graphQLErrors')
+                                  ? e
+                                  : (m >= I.getQuery(t).lastRequestId &&
+                                    (I.queryStore.markQueryError(t, e, n),
+                                      I.invalidate(t),
+                                      I.invalidate(n),
+                                      I.broadcastQueries()),
+                                    new vr({
+                                      networkError: e,
+                                    }));
+                              })),
+                                'cache-and-network' !== a)
+                            )
+                              return [2, w];
+                            w.catch(function () { });
+                          }
+                          return (
+                            this.queryStore.markQueryResultClient(t, !_),
+                            this.invalidate(t),
+                            this.invalidate(n),
+                            this.transform(f).hasForcedResolvers
+                              ? [
                                 2,
                                 this.localState
                                   .runResolvers({
@@ -12150,24 +12130,24 @@ const RASSDK = (function (t, e) {
                                     return I.markQueryResult(t, r, e, n), I.broadcastQueries(), r;
                                   }),
                               ]
-                            : (this.broadcastQueries(),
-                              [
-                                2,
-                                {
-                                  data: p,
-                                },
-                              ])
-                        );
-                    }
+                              : (this.broadcastQueries(),
+                                [
+                                  2,
+                                  {
+                                    data: p,
+                                  },
+                                ])
+                          );
+                      }
+                    });
                   });
-                });
-              }),
-              (t.prototype.markQueryResult = function (t, e, r, n) {
-                var i = r.fetchPolicy,
-                  o = r.variables,
-                  s = r.errorPolicy;
-                'no-cache' === i
-                  ? this.setQuery(t, function () {
+                }),
+                (t.prototype.markQueryResult = function (t, e, r, n) {
+                  var i = r.fetchPolicy,
+                    o = r.variables,
+                    s = r.errorPolicy;
+                  'no-cache' === i
+                    ? this.setQuery(t, function () {
                       return {
                         newData: {
                           result: e.data,
@@ -12175,415 +12155,415 @@ const RASSDK = (function (t, e) {
                         },
                       };
                     })
-                  : this.dataStore.markQueryResult(e, this.getQuery(t).document, o, n, 'ignore' === s || 'all' === s);
-              }),
-              (t.prototype.queryListenerForObserver = function (t, e, r) {
-                var n = this;
+                    : this.dataStore.markQueryResult(e, this.getQuery(t).document, o, n, 'ignore' === s || 'all' === s);
+                }),
+                (t.prototype.queryListenerForObserver = function (t, e, r) {
+                  var n = this;
 
-                function i(t, e) {
-                  if (r[t])
-                    try {
-                      r[t](e);
-                    } catch (t) {}
-                }
+                  function i(t, e) {
+                    if (r[t])
+                      try {
+                        r[t](e);
+                      } catch (t) { }
+                  }
 
-                return function (r, o) {
-                  if ((n.invalidate(t, !1), r)) {
-                    var s = n.getQuery(t),
-                      a = s.observableQuery,
-                      u = s.document,
-                      c = a ? a.options.fetchPolicy : e.fetchPolicy;
-                    if ('standby' !== c) {
-                      var f = hr(r.networkStatus),
-                        l = a && a.getLastResult(),
-                        p = !(!l || l.networkStatus === r.networkStatus),
-                        h =
-                          e.returnPartialData ||
-                          (!o && r.previousVariables) ||
-                          (p && e.notifyOnNetworkStatusChange) ||
-                          'cache-only' === c ||
-                          'cache-and-network' === c;
-                      if (!f || h) {
-                        var d = br(r.graphQLErrors),
-                          b = (a && a.options.errorPolicy) || e.errorPolicy || 'none';
-                        if (('none' === b && d) || r.networkError)
-                          return i(
-                            'error',
-                            new vr({
-                              graphQLErrors: r.graphQLErrors,
-                              networkError: r.networkError,
-                            }),
-                          );
-                        try {
-                          var y = void 0,
-                            v = void 0;
-                          if (o)
-                            'no-cache' !== c &&
-                              'network-only' !== c &&
-                              n.setQuery(t, function () {
-                                return {
-                                  newData: null,
-                                };
+                  return function (r, o) {
+                    if ((n.invalidate(t, !1), r)) {
+                      var s = n.getQuery(t),
+                        a = s.observableQuery,
+                        u = s.document,
+                        c = a ? a.options.fetchPolicy : e.fetchPolicy;
+                      if ('standby' !== c) {
+                        var f = hr(r.networkStatus),
+                          l = a && a.getLastResult(),
+                          p = !(!l || l.networkStatus === r.networkStatus),
+                          h =
+                            e.returnPartialData ||
+                            (!o && r.previousVariables) ||
+                            (p && e.notifyOnNetworkStatusChange) ||
+                            'cache-only' === c ||
+                            'cache-and-network' === c;
+                        if (!f || h) {
+                          var d = br(r.graphQLErrors),
+                            b = (a && a.options.errorPolicy) || e.errorPolicy || 'none';
+                          if (('none' === b && d) || r.networkError)
+                            return i(
+                              'error',
+                              new vr({
+                                graphQLErrors: r.graphQLErrors,
+                                networkError: r.networkError,
                               }),
-                              (y = o.result),
-                              (v = !o.complete);
-                          else {
-                            var _ = a && a.getLastError(),
-                              m = 'none' !== b && (_ && _.graphQLErrors) !== r.graphQLErrors;
-                            if (l && l.data && !m) (y = l.data), (v = !1);
+                            );
+                          try {
+                            var y = void 0,
+                              v = void 0;
+                            if (o)
+                              'no-cache' !== c &&
+                                'network-only' !== c &&
+                                n.setQuery(t, function () {
+                                  return {
+                                    newData: null,
+                                  };
+                                }),
+                                (y = o.result),
+                                (v = !o.complete);
                             else {
-                              var g = n.dataStore.getCache().diff({
-                                query: u,
-                                variables: r.previousVariables || r.variables,
-                                returnPartialData: !0,
-                                optimistic: !0,
-                              });
-                              (y = g.result), (v = !g.complete);
+                              var _ = a && a.getLastError(),
+                                m = 'none' !== b && (_ && _.graphQLErrors) !== r.graphQLErrors;
+                              if (l && l.data && !m) (y = l.data), (v = !1);
+                              else {
+                                var g = n.dataStore.getCache().diff({
+                                  query: u,
+                                  variables: r.previousVariables || r.variables,
+                                  returnPartialData: !0,
+                                  optimistic: !0,
+                                });
+                                (y = g.result), (v = !g.complete);
+                              }
                             }
+                            var w = v && !(e.returnPartialData || 'cache-only' === c),
+                              I = {
+                                data: w ? l && l.data : y,
+                                loading: f,
+                                networkStatus: r.networkStatus,
+                                stale: w,
+                              };
+                            'all' === b && d && (I.errors = r.graphQLErrors), i('next', I);
+                          } catch (t) {
+                            i(
+                              'error',
+                              new vr({
+                                networkError: t,
+                              }),
+                            );
                           }
-                          var w = v && !(e.returnPartialData || 'cache-only' === c),
-                            I = {
-                              data: w ? l && l.data : y,
-                              loading: f,
-                              networkStatus: r.networkStatus,
-                              stale: w,
-                            };
-                          'all' === b && d && (I.errors = r.graphQLErrors), i('next', I);
-                        } catch (t) {
-                          i(
-                            'error',
-                            new vr({
-                              networkError: t,
-                            }),
-                          );
                         }
                       }
                     }
-                  }
-                };
-              }),
-              (t.prototype.transform = function (t) {
-                var e,
-                  r = this.transformCache;
-                if (!r.has(t)) {
-                  var n = this.dataStore.getCache(),
-                    i = n.transformDocument(t),
-                    o = ((e = n.transformForLink(i)), Ne([Le], Ee(e))),
-                    s = this.localState.clientQuery(i),
-                    a = this.localState.serverQuery(o),
-                    u = {
-                      document: i,
-                      hasClientExports: ge(i),
-                      hasForcedResolvers: this.localState.shouldForceResolvers(i),
-                      clientQuery: s,
-                      serverQuery: a,
-                      defaultVars: Fe(Oe(i)),
-                    },
-                    c = function (t) {
-                      t && !r.has(t) && r.set(t, u);
-                    };
-                  c(t), c(i), c(s), c(a);
-                }
-                return r.get(t);
-              }),
-              (t.prototype.getVariables = function (t, e) {
-                return Qt(Qt({}, this.transform(t).defaultVars), e);
-              }),
-              (t.prototype.watchQuery = function (t, e) {
-                void 0 === e && (e = !0),
-                  Yt('standby' !== t.fetchPolicy, 11),
-                  (t.variables = this.getVariables(t.query, t.variables)),
-                  void 0 === t.notifyOnNetworkStatusChange && (t.notifyOnNetworkStatusChange = !1);
-                var r = Qt({}, t);
-                return new _r({
-                  queryManager: this,
-                  options: r,
-                  shouldSubscribe: e,
-                });
-              }),
-              (t.prototype.query = function (t) {
-                var e = this;
-                return (
-                  Yt(t.query, 12),
-                  Yt('Document' === t.query.kind, 13),
-                  Yt(!t.returnPartialData, 14),
-                  Yt(!t.pollInterval, 15),
-                  new Promise(function (r, n) {
-                    var i = e.watchQuery(t, !1);
-                    e.fetchQueryRejectFns.set('query:' + i.queryId, n),
-                      i
-                        .result()
-                        .then(r, n)
-                        .then(function () {
-                          return e.fetchQueryRejectFns.delete('query:' + i.queryId);
-                        });
-                  })
-                );
-              }),
-              (t.prototype.generateQueryId = function () {
-                return String(this.idCounter++);
-              }),
-              (t.prototype.stopQueryInStore = function (t) {
-                this.stopQueryInStoreNoBroadcast(t), this.broadcastQueries();
-              }),
-              (t.prototype.stopQueryInStoreNoBroadcast = function (t) {
-                this.stopPollingQuery(t), this.queryStore.stopQuery(t), this.invalidate(t);
-              }),
-              (t.prototype.addQueryListener = function (t, e) {
-                this.setQuery(t, function (t) {
-                  return (
-                    t.listeners.add(e),
-                    {
-                      invalidated: !1,
-                    }
-                  );
-                });
-              }),
-              (t.prototype.updateQueryWatch = function (t, e, r) {
-                var n = this,
-                  i = this.getQuery(t).cancel;
-                return (
-                  i && i(),
-                  this.dataStore.getCache().watch({
-                    query: e,
-                    variables: r.variables,
-                    optimistic: !0,
-                    previousResult: function () {
-                      var e = null,
-                        r = n.getQuery(t).observableQuery;
-                      if (r) {
-                        var i = r.getLastResult();
-                        i && (e = i.data);
-                      }
-                      return e;
-                    },
-                    callback: function (e) {
-                      n.setQuery(t, function () {
-                        return {
-                          invalidated: !0,
-                          newData: e,
-                        };
-                      });
-                    },
-                  })
-                );
-              }),
-              (t.prototype.addObservableQuery = function (t, e) {
-                this.setQuery(t, function () {
-                  return {
-                    observableQuery: e,
-                  };
-                });
-              }),
-              (t.prototype.removeObservableQuery = function (t) {
-                var e = this.getQuery(t).cancel;
-                this.setQuery(t, function () {
-                  return {
-                    observableQuery: null,
                   };
                 }),
-                  e && e();
-              }),
-              (t.prototype.clearStore = function () {
-                this.fetchQueryRejectFns.forEach(function (t) {
-                  t(new Ht(16));
-                });
-                var t = [];
-                return (
-                  this.queries.forEach(function (e, r) {
-                    e.observableQuery && t.push(r);
-                  }),
-                  this.queryStore.reset(t),
-                  this.mutationStore.reset(),
-                  this.dataStore.reset()
-                );
-              }),
-              (t.prototype.resetStore = function () {
-                var t = this;
-                return this.clearStore().then(function () {
-                  return t.reFetchObservableQueries();
-                });
-              }),
-              (t.prototype.reFetchObservableQueries = function (t) {
-                var e = this;
-                void 0 === t && (t = !1);
-                var r = [];
-                return (
-                  this.queries.forEach(function (n, i) {
-                    var o = n.observableQuery;
-                    if (o) {
-                      var s = o.options.fetchPolicy;
-                      o.resetLastResults(),
-                        'cache-only' === s || (!t && 'standby' === s) || r.push(o.refetch()),
-                        e.setQuery(i, function () {
-                          return {
-                            newData: null,
-                          };
-                        }),
-                        e.invalidate(i);
-                    }
-                  }),
-                  this.broadcastQueries(),
-                  Promise.all(r)
-                );
-              }),
-              (t.prototype.observeQuery = function (t, e, r) {
-                return this.addQueryListener(t, this.queryListenerForObserver(t, e, r)), this.fetchQuery(t, e);
-              }),
-              (t.prototype.startQuery = function (t, e, r) {
-                return this.addQueryListener(t, r), this.fetchQuery(t, e).catch(function () {}), t;
-              }),
-              (t.prototype.startGraphQLSubscription = function (t) {
-                var e = this,
-                  r = t.query,
-                  n = t.fetchPolicy,
-                  i = t.variables;
-                (r = this.transform(r).document), (i = this.getVariables(r, i));
-                var o = function (t) {
-                  return e.getObservableFromLink(r, {}, t, !1).map(function (i) {
-                    if (
-                      ((n && 'no-cache' === n) || (e.dataStore.markSubscriptionResult(i, r, t), e.broadcastQueries()),
-                      Ke(i))
-                    )
-                      throw new vr({
-                        graphQLErrors: i.errors,
-                      });
-                    return i;
+                (t.prototype.transform = function (t) {
+                  var e,
+                    r = this.transformCache;
+                  if (!r.has(t)) {
+                    var n = this.dataStore.getCache(),
+                      i = n.transformDocument(t),
+                      o = ((e = n.transformForLink(i)), Ne([Le], Ee(e))),
+                      s = this.localState.clientQuery(i),
+                      a = this.localState.serverQuery(o),
+                      u = {
+                        document: i,
+                        hasClientExports: ge(i),
+                        hasForcedResolvers: this.localState.shouldForceResolvers(i),
+                        clientQuery: s,
+                        serverQuery: a,
+                        defaultVars: Fe(Oe(i)),
+                      },
+                      c = function (t) {
+                        t && !r.has(t) && r.set(t, u);
+                      };
+                    c(t), c(i), c(s), c(a);
+                  }
+                  return r.get(t);
+                }),
+                (t.prototype.getVariables = function (t, e) {
+                  return Qt(Qt({}, this.transform(t).defaultVars), e);
+                }),
+                (t.prototype.watchQuery = function (t, e) {
+                  void 0 === e && (e = !0),
+                    Yt('standby' !== t.fetchPolicy, 11),
+                    (t.variables = this.getVariables(t.query, t.variables)),
+                    void 0 === t.notifyOnNetworkStatusChange && (t.notifyOnNetworkStatusChange = !1);
+                  var r = Qt({}, t);
+                  return new _r({
+                    queryManager: this,
+                    options: r,
+                    shouldSubscribe: e,
                   });
-                };
-                if (this.transform(r).hasClientExports) {
-                  var s = this.localState.addExportedVariables(r, i).then(o);
-                  return new dr(function (t) {
-                    var e = null;
+                }),
+                (t.prototype.query = function (t) {
+                  var e = this;
+                  return (
+                    Yt(t.query, 12),
+                    Yt('Document' === t.query.kind, 13),
+                    Yt(!t.returnPartialData, 14),
+                    Yt(!t.pollInterval, 15),
+                    new Promise(function (r, n) {
+                      var i = e.watchQuery(t, !1);
+                      e.fetchQueryRejectFns.set('query:' + i.queryId, n),
+                        i
+                          .result()
+                          .then(r, n)
+                          .then(function () {
+                            return e.fetchQueryRejectFns.delete('query:' + i.queryId);
+                          });
+                    })
+                  );
+                }),
+                (t.prototype.generateQueryId = function () {
+                  return String(this.idCounter++);
+                }),
+                (t.prototype.stopQueryInStore = function (t) {
+                  this.stopQueryInStoreNoBroadcast(t), this.broadcastQueries();
+                }),
+                (t.prototype.stopQueryInStoreNoBroadcast = function (t) {
+                  this.stopPollingQuery(t), this.queryStore.stopQuery(t), this.invalidate(t);
+                }),
+                (t.prototype.addQueryListener = function (t, e) {
+                  this.setQuery(t, function (t) {
                     return (
-                      s.then(function (r) {
-                        return (e = r.subscribe(t));
-                      }, t.error),
-                      function () {
-                        return e && e.unsubscribe();
+                      t.listeners.add(e),
+                      {
+                        invalidated: !1,
                       }
                     );
                   });
-                }
-                return o(i);
-              }),
-              (t.prototype.stopQuery = function (t) {
-                this.stopQueryNoBroadcast(t), this.broadcastQueries();
-              }),
-              (t.prototype.stopQueryNoBroadcast = function (t) {
-                this.stopQueryInStoreNoBroadcast(t), this.removeQuery(t);
-              }),
-              (t.prototype.removeQuery = function (t) {
-                this.fetchQueryRejectFns.delete('query:' + t),
-                  this.fetchQueryRejectFns.delete('fetchRequest:' + t),
-                  this.getQuery(t).subscriptions.forEach(function (t) {
-                    return t.unsubscribe();
+                }),
+                (t.prototype.updateQueryWatch = function (t, e, r) {
+                  var n = this,
+                    i = this.getQuery(t).cancel;
+                  return (
+                    i && i(),
+                    this.dataStore.getCache().watch({
+                      query: e,
+                      variables: r.variables,
+                      optimistic: !0,
+                      previousResult: function () {
+                        var e = null,
+                          r = n.getQuery(t).observableQuery;
+                        if (r) {
+                          var i = r.getLastResult();
+                          i && (e = i.data);
+                        }
+                        return e;
+                      },
+                      callback: function (e) {
+                        n.setQuery(t, function () {
+                          return {
+                            invalidated: !0,
+                            newData: e,
+                          };
+                        });
+                      },
+                    })
+                  );
+                }),
+                (t.prototype.addObservableQuery = function (t, e) {
+                  this.setQuery(t, function () {
+                    return {
+                      observableQuery: e,
+                    };
+                  });
+                }),
+                (t.prototype.removeObservableQuery = function (t) {
+                  var e = this.getQuery(t).cancel;
+                  this.setQuery(t, function () {
+                    return {
+                      observableQuery: null,
+                    };
                   }),
-                  this.queries.delete(t);
-              }),
-              (t.prototype.getCurrentQueryResult = function (t, e) {
-                void 0 === e && (e = !0);
-                var r = t.options,
-                  n = r.variables,
-                  i = r.query,
-                  o = r.fetchPolicy,
-                  s = r.returnPartialData,
-                  a = t.getLastResult(),
-                  u = this.getQuery(t.queryId).newData;
-                if (u && u.complete)
-                  return {
-                    data: u.result,
-                    partial: !1,
+                    e && e();
+                }),
+                (t.prototype.clearStore = function () {
+                  this.fetchQueryRejectFns.forEach(function (t) {
+                    t(new Ht(16));
+                  });
+                  var t = [];
+                  return (
+                    this.queries.forEach(function (e, r) {
+                      e.observableQuery && t.push(r);
+                    }),
+                    this.queryStore.reset(t),
+                    this.mutationStore.reset(),
+                    this.dataStore.reset()
+                  );
+                }),
+                (t.prototype.resetStore = function () {
+                  var t = this;
+                  return this.clearStore().then(function () {
+                    return t.reFetchObservableQueries();
+                  });
+                }),
+                (t.prototype.reFetchObservableQueries = function (t) {
+                  var e = this;
+                  void 0 === t && (t = !1);
+                  var r = [];
+                  return (
+                    this.queries.forEach(function (n, i) {
+                      var o = n.observableQuery;
+                      if (o) {
+                        var s = o.options.fetchPolicy;
+                        o.resetLastResults(),
+                          'cache-only' === s || (!t && 'standby' === s) || r.push(o.refetch()),
+                          e.setQuery(i, function () {
+                            return {
+                              newData: null,
+                            };
+                          }),
+                          e.invalidate(i);
+                      }
+                    }),
+                    this.broadcastQueries(),
+                    Promise.all(r)
+                  );
+                }),
+                (t.prototype.observeQuery = function (t, e, r) {
+                  return this.addQueryListener(t, this.queryListenerForObserver(t, e, r)), this.fetchQuery(t, e);
+                }),
+                (t.prototype.startQuery = function (t, e, r) {
+                  return this.addQueryListener(t, r), this.fetchQuery(t, e).catch(function () { }), t;
+                }),
+                (t.prototype.startGraphQLSubscription = function (t) {
+                  var e = this,
+                    r = t.query,
+                    n = t.fetchPolicy,
+                    i = t.variables;
+                  (r = this.transform(r).document), (i = this.getVariables(r, i));
+                  var o = function (t) {
+                    return e.getObservableFromLink(r, {}, t, !1).map(function (i) {
+                      if (
+                        ((n && 'no-cache' === n) || (e.dataStore.markSubscriptionResult(i, r, t), e.broadcastQueries()),
+                          Ke(i))
+                      )
+                        throw new vr({
+                          graphQLErrors: i.errors,
+                        });
+                      return i;
+                    });
                   };
-                if ('no-cache' === o || 'network-only' === o)
-                  return {
-                    data: void 0,
-                    partial: !1,
-                  };
-                var c = this.dataStore.getCache().diff({
+                  if (this.transform(r).hasClientExports) {
+                    var s = this.localState.addExportedVariables(r, i).then(o);
+                    return new dr(function (t) {
+                      var e = null;
+                      return (
+                        s.then(function (r) {
+                          return (e = r.subscribe(t));
+                        }, t.error),
+                        function () {
+                          return e && e.unsubscribe();
+                        }
+                      );
+                    });
+                  }
+                  return o(i);
+                }),
+                (t.prototype.stopQuery = function (t) {
+                  this.stopQueryNoBroadcast(t), this.broadcastQueries();
+                }),
+                (t.prototype.stopQueryNoBroadcast = function (t) {
+                  this.stopQueryInStoreNoBroadcast(t), this.removeQuery(t);
+                }),
+                (t.prototype.removeQuery = function (t) {
+                  this.fetchQueryRejectFns.delete('query:' + t),
+                    this.fetchQueryRejectFns.delete('fetchRequest:' + t),
+                    this.getQuery(t).subscriptions.forEach(function (t) {
+                      return t.unsubscribe();
+                    }),
+                    this.queries.delete(t);
+                }),
+                (t.prototype.getCurrentQueryResult = function (t, e) {
+                  void 0 === e && (e = !0);
+                  var r = t.options,
+                    n = r.variables,
+                    i = r.query,
+                    o = r.fetchPolicy,
+                    s = r.returnPartialData,
+                    a = t.getLastResult(),
+                    u = this.getQuery(t.queryId).newData;
+                  if (u && u.complete)
+                    return {
+                      data: u.result,
+                      partial: !1,
+                    };
+                  if ('no-cache' === o || 'network-only' === o)
+                    return {
+                      data: void 0,
+                      partial: !1,
+                    };
+                  var c = this.dataStore.getCache().diff({
                     query: i,
                     variables: n,
                     previousResult: a ? a.data : void 0,
                     returnPartialData: !0,
                     optimistic: e,
                   }),
-                  f = c.result,
-                  l = c.complete;
-                return {
-                  data: l || s ? f : void 0,
-                  partial: !l,
-                };
-              }),
-              (t.prototype.getQueryWithPreviousResult = function (t) {
-                var e;
-                if ('string' == typeof t) {
-                  var r = this.getQuery(t).observableQuery;
-                  Yt(r, 17), (e = r);
-                } else e = t;
-                var n = e.options,
-                  i = n.variables,
-                  o = n.query;
-                return {
-                  previousResult: this.getCurrentQueryResult(e, !1).data,
-                  variables: i,
-                  document: o,
-                };
-              }),
-              (t.prototype.broadcastQueries = function () {
-                var t = this;
-                this.onBroadcast(),
-                  this.queries.forEach(function (e, r) {
-                    e.invalidated &&
-                      e.listeners.forEach(function (n) {
-                        n && n(t.queryStore.get(r), e.newData);
-                      });
-                  });
-              }),
-              (t.prototype.getLocalState = function () {
-                return this.localState;
-              }),
-              (t.prototype.getObservableFromLink = function (t, e, r, n) {
-                var i,
-                  o = this;
-                void 0 === n && (n = this.queryDeduplication);
-                var s = this.transform(t).serverQuery;
-                if (s) {
-                  var a = this.inFlightLinkObservables,
-                    u = this.link,
-                    c = {
-                      query: s,
-                      variables: r,
-                      operationName: Te(s) || void 0,
-                      context: this.prepareContext(
-                        Qt(Qt({}, e), {
-                          forceFetch: !n,
-                        }),
-                      ),
-                    };
-                  if (((e = c.context), n)) {
-                    var f = a.get(s) || new Map();
-                    a.set(s, f);
-                    var l = JSON.stringify(r);
-                    if (!(i = f.get(l))) {
-                      f.set(l, (i = Or(fr(u, c))));
-                      var p = function () {
+                    f = c.result,
+                    l = c.complete;
+                  return {
+                    data: l || s ? f : void 0,
+                    partial: !l,
+                  };
+                }),
+                (t.prototype.getQueryWithPreviousResult = function (t) {
+                  var e;
+                  if ('string' == typeof t) {
+                    var r = this.getQuery(t).observableQuery;
+                    Yt(r, 17), (e = r);
+                  } else e = t;
+                  var n = e.options,
+                    i = n.variables,
+                    o = n.query;
+                  return {
+                    previousResult: this.getCurrentQueryResult(e, !1).data,
+                    variables: i,
+                    document: o,
+                  };
+                }),
+                (t.prototype.broadcastQueries = function () {
+                  var t = this;
+                  this.onBroadcast(),
+                    this.queries.forEach(function (e, r) {
+                      e.invalidated &&
+                        e.listeners.forEach(function (n) {
+                          n && n(t.queryStore.get(r), e.newData);
+                        });
+                    });
+                }),
+                (t.prototype.getLocalState = function () {
+                  return this.localState;
+                }),
+                (t.prototype.getObservableFromLink = function (t, e, r, n) {
+                  var i,
+                    o = this;
+                  void 0 === n && (n = this.queryDeduplication);
+                  var s = this.transform(t).serverQuery;
+                  if (s) {
+                    var a = this.inFlightLinkObservables,
+                      u = this.link,
+                      c = {
+                        query: s,
+                        variables: r,
+                        operationName: Te(s) || void 0,
+                        context: this.prepareContext(
+                          Qt(Qt({}, e), {
+                            forceFetch: !n,
+                          }),
+                        ),
+                      };
+                    if (((e = c.context), n)) {
+                      var f = a.get(s) || new Map();
+                      a.set(s, f);
+                      var l = JSON.stringify(r);
+                      if (!(i = f.get(l))) {
+                        f.set(l, (i = Or(fr(u, c))));
+                        var p = function () {
                           f.delete(l), f.size || a.delete(s), h.unsubscribe();
                         },
-                        h = i.subscribe({
-                          next: p,
-                          error: p,
-                          complete: p,
-                        });
-                    }
-                  } else i = Or(fr(u, c));
-                } else
-                  (i = dr.of({
-                    data: {},
-                  })),
-                    (e = this.prepareContext(e));
-                var d = this.transform(t).clientQuery;
-                return (
-                  d &&
+                          h = i.subscribe({
+                            next: p,
+                            error: p,
+                            complete: p,
+                          });
+                      }
+                    } else i = Or(fr(u, c));
+                  } else
+                    (i = dr.of({
+                      data: {},
+                    })),
+                      (e = this.prepareContext(e));
+                  var d = this.transform(t).clientQuery;
+                  return (
+                    d &&
                     (i = (function (t, n) {
                       return new dr(function (n) {
                         var i = n.next,
@@ -12598,12 +12578,12 @@ const RASSDK = (function (t, e) {
                                   var i;
                                   n(
                                     ((i = t),
-                                    o.localState.runResolvers({
-                                      document: d,
-                                      remoteResult: i,
-                                      context: e,
-                                      variables: r,
-                                    })),
+                                      o.localState.runResolvers({
+                                        document: d,
+                                        remoteResult: i,
+                                        context: e,
+                                        variables: r,
+                                      })),
                                   );
                                 }).then(
                                   function (t) {
@@ -12627,160 +12607,160 @@ const RASSDK = (function (t, e) {
                         };
                       });
                     })(i)),
-                  i
-                );
-              }),
-              (t.prototype.fetchRequest = function (t) {
-                var e,
-                  r,
-                  n = this,
-                  i = t.requestId,
-                  o = t.queryId,
-                  s = t.document,
-                  a = t.options,
-                  u = t.fetchMoreForQueryId,
-                  c = a.variables,
-                  f = a.errorPolicy,
-                  l = void 0 === f ? 'none' : f,
-                  p = a.fetchPolicy;
-                return new Promise(function (t, f) {
-                  var h = n.getObservableFromLink(s, a.context, c),
-                    d = 'fetchRequest:' + o;
-                  n.fetchQueryRejectFns.set(d, f);
-                  var b = function () {
+                    i
+                  );
+                }),
+                (t.prototype.fetchRequest = function (t) {
+                  var e,
+                    r,
+                    n = this,
+                    i = t.requestId,
+                    o = t.queryId,
+                    s = t.document,
+                    a = t.options,
+                    u = t.fetchMoreForQueryId,
+                    c = a.variables,
+                    f = a.errorPolicy,
+                    l = void 0 === f ? 'none' : f,
+                    p = a.fetchPolicy;
+                  return new Promise(function (t, f) {
+                    var h = n.getObservableFromLink(s, a.context, c),
+                      d = 'fetchRequest:' + o;
+                    n.fetchQueryRejectFns.set(d, f);
+                    var b = function () {
                       n.fetchQueryRejectFns.delete(d),
                         n.setQuery(o, function (t) {
                           t.subscriptions.delete(y);
                         });
                     },
-                    y = h
-                      .map(function (t) {
-                        if (
-                          (i >= n.getQuery(o).lastRequestId &&
-                            (n.markQueryResult(o, t, a, u),
-                            n.queryStore.markQueryResult(o, t, u),
-                            n.invalidate(o),
-                            n.invalidate(u),
-                            n.broadcastQueries()),
-                          'none' === l && br(t.errors))
-                        )
-                          return f(
-                            new vr({
-                              graphQLErrors: t.errors,
-                            }),
-                          );
-                        if (('all' === l && (r = t.errors), u || 'no-cache' === p)) e = t.data;
-                        else {
-                          var h = n.dataStore.getCache().diff({
+                      y = h
+                        .map(function (t) {
+                          if (
+                            (i >= n.getQuery(o).lastRequestId &&
+                              (n.markQueryResult(o, t, a, u),
+                                n.queryStore.markQueryResult(o, t, u),
+                                n.invalidate(o),
+                                n.invalidate(u),
+                                n.broadcastQueries()),
+                              'none' === l && br(t.errors))
+                          )
+                            return f(
+                              new vr({
+                                graphQLErrors: t.errors,
+                              }),
+                            );
+                          if (('all' === l && (r = t.errors), u || 'no-cache' === p)) e = t.data;
+                          else {
+                            var h = n.dataStore.getCache().diff({
                               variables: c,
                               query: s,
                               optimistic: !1,
                               returnPartialData: !0,
                             }),
-                            d = h.result;
-                          (h.complete || a.returnPartialData) && (e = d);
-                        }
-                      })
-                      .subscribe({
-                        error: function (t) {
-                          b(), f(t);
-                        },
-                        complete: function () {
-                          b(),
-                            t({
-                              data: e,
-                              errors: r,
-                              loading: !1,
-                              networkStatus: lr.ready,
-                              stale: !1,
-                            });
-                        },
-                      });
-                  n.setQuery(o, function (t) {
-                    t.subscriptions.add(y);
+                              d = h.result;
+                            (h.complete || a.returnPartialData) && (e = d);
+                          }
+                        })
+                        .subscribe({
+                          error: function (t) {
+                            b(), f(t);
+                          },
+                          complete: function () {
+                            b(),
+                              t({
+                                data: e,
+                                errors: r,
+                                loading: !1,
+                                networkStatus: lr.ready,
+                                stale: !1,
+                              });
+                          },
+                        });
+                    n.setQuery(o, function (t) {
+                      t.subscriptions.add(y);
+                    });
                   });
-                });
-              }),
-              (t.prototype.getQuery = function (t) {
-                return (
-                  this.queries.get(t) || {
-                    listeners: new Set(),
-                    invalidated: !1,
-                    document: null,
-                    newData: null,
-                    lastRequestId: 1,
-                    observableQuery: null,
-                    subscriptions: new Set(),
-                  }
-                );
-              }),
-              (t.prototype.setQuery = function (t, e) {
-                var r = this.getQuery(t),
-                  n = Qt(Qt({}, r), e(r));
-                this.queries.set(t, n);
-              }),
-              (t.prototype.invalidate = function (t, e) {
-                void 0 === e && (e = !0),
-                  t &&
+                }),
+                (t.prototype.getQuery = function (t) {
+                  return (
+                    this.queries.get(t) || {
+                      listeners: new Set(),
+                      invalidated: !1,
+                      document: null,
+                      newData: null,
+                      lastRequestId: 1,
+                      observableQuery: null,
+                      subscriptions: new Set(),
+                    }
+                  );
+                }),
+                (t.prototype.setQuery = function (t, e) {
+                  var r = this.getQuery(t),
+                    n = Qt(Qt({}, r), e(r));
+                  this.queries.set(t, n);
+                }),
+                (t.prototype.invalidate = function (t, e) {
+                  void 0 === e && (e = !0),
+                    t &&
                     this.setQuery(t, function () {
                       return {
                         invalidated: e,
                       };
                     });
-              }),
-              (t.prototype.prepareContext = function (t) {
-                void 0 === t && (t = {});
-                var e = this.localState.prepareContext(t);
-                return Qt(Qt({}, e), {
-                  clientAwareness: this.clientAwareness,
-                });
-              }),
-              (t.prototype.checkInFlight = function (t) {
-                var e = this.queryStore.get(t);
-                return e && e.networkStatus !== lr.ready && e.networkStatus !== lr.error;
-              }),
-              (t.prototype.startPollingQuery = function (t, e, r) {
-                var n = this,
-                  i = t.pollInterval;
-                if ((Yt(i, 18), !this.ssrMode)) {
-                  var o = this.pollingInfoByQueryId.get(e);
-                  o || this.pollingInfoByQueryId.set(e, (o = {})),
-                    (o.interval = i),
-                    (o.options = Qt(Qt({}, t), {
-                      fetchPolicy: 'network-only',
-                    }));
-                  var s = function () {
+                }),
+                (t.prototype.prepareContext = function (t) {
+                  void 0 === t && (t = {});
+                  var e = this.localState.prepareContext(t);
+                  return Qt(Qt({}, e), {
+                    clientAwareness: this.clientAwareness,
+                  });
+                }),
+                (t.prototype.checkInFlight = function (t) {
+                  var e = this.queryStore.get(t);
+                  return e && e.networkStatus !== lr.ready && e.networkStatus !== lr.error;
+                }),
+                (t.prototype.startPollingQuery = function (t, e, r) {
+                  var n = this,
+                    i = t.pollInterval;
+                  if ((Yt(i, 18), !this.ssrMode)) {
+                    var o = this.pollingInfoByQueryId.get(e);
+                    o || this.pollingInfoByQueryId.set(e, (o = {})),
+                      (o.interval = i),
+                      (o.options = Qt(Qt({}, t), {
+                        fetchPolicy: 'network-only',
+                      }));
+                    var s = function () {
                       var t = n.pollingInfoByQueryId.get(e);
                       t && (n.checkInFlight(e) ? a() : n.fetchQuery(e, t.options, yr.poll).then(a, a));
                     },
-                    a = function () {
-                      var t = n.pollingInfoByQueryId.get(e);
-                      t && (clearTimeout(t.timeout), (t.timeout = setTimeout(s, t.interval)));
-                    };
-                  r && this.addQueryListener(e, r), a();
-                }
-                return e;
-              }),
-              (t.prototype.stopPollingQuery = function (t) {
-                this.pollingInfoByQueryId.delete(t);
-              }),
-              t
-            );
-          })(),
-          Ar = (function () {
-            function t(t) {
-              this.cache = t;
-            }
+                      a = function () {
+                        var t = n.pollingInfoByQueryId.get(e);
+                        t && (clearTimeout(t.timeout), (t.timeout = setTimeout(s, t.interval)));
+                      };
+                    r && this.addQueryListener(e, r), a();
+                  }
+                  return e;
+                }),
+                (t.prototype.stopPollingQuery = function (t) {
+                  this.pollingInfoByQueryId.delete(t);
+                }),
+                t
+              );
+            })(),
+            Ar = (function () {
+              function t(t) {
+                this.cache = t;
+              }
 
-            return (
-              (t.prototype.getCache = function () {
-                return this.cache;
-              }),
-              (t.prototype.markQueryResult = function (t, e, r, n, i) {
-                void 0 === i && (i = !1);
-                var o = !Ke(t);
-                i && Ke(t) && t.data && (o = !0),
-                  !n &&
+              return (
+                (t.prototype.getCache = function () {
+                  return this.cache;
+                }),
+                (t.prototype.markQueryResult = function (t, e, r, n, i) {
+                  void 0 === i && (i = !1);
+                  var o = !Ke(t);
+                  i && Ke(t) && t.data && (o = !0),
+                    !n &&
                     o &&
                     this.cache.write({
                       result: t.data,
@@ -12788,47 +12768,47 @@ const RASSDK = (function (t, e) {
                       query: e,
                       variables: r,
                     });
-              }),
-              (t.prototype.markSubscriptionResult = function (t, e, r) {
-                Ke(t) ||
-                  this.cache.write({
-                    result: t.data,
-                    dataId: 'ROOT_SUBSCRIPTION',
-                    query: e,
-                    variables: r,
-                  });
-              }),
-              (t.prototype.markMutationInit = function (t) {
-                var e,
-                  r = this;
-                t.optimisticResponse &&
-                  ((e =
-                    'function' == typeof t.optimisticResponse
-                      ? t.optimisticResponse(t.variables)
-                      : t.optimisticResponse),
-                  this.cache.recordOptimisticTransaction(function (n) {
-                    var i = r.cache;
-                    r.cache = n;
-                    try {
-                      r.markMutationResult({
-                        mutationId: t.mutationId,
-                        result: {
-                          data: e,
-                        },
-                        document: t.document,
-                        variables: t.variables,
-                        updateQueries: t.updateQueries,
-                        update: t.update,
-                      });
-                    } finally {
-                      r.cache = i;
-                    }
-                  }, t.mutationId));
-              }),
-              (t.prototype.markMutationResult = function (t) {
-                var e = this;
-                if (!Ke(t.result)) {
-                  var r = [
+                }),
+                (t.prototype.markSubscriptionResult = function (t, e, r) {
+                  Ke(t) ||
+                    this.cache.write({
+                      result: t.data,
+                      dataId: 'ROOT_SUBSCRIPTION',
+                      query: e,
+                      variables: r,
+                    });
+                }),
+                (t.prototype.markMutationInit = function (t) {
+                  var e,
+                    r = this;
+                  t.optimisticResponse &&
+                    ((e =
+                      'function' == typeof t.optimisticResponse
+                        ? t.optimisticResponse(t.variables)
+                        : t.optimisticResponse),
+                      this.cache.recordOptimisticTransaction(function (n) {
+                        var i = r.cache;
+                        r.cache = n;
+                        try {
+                          r.markMutationResult({
+                            mutationId: t.mutationId,
+                            result: {
+                              data: e,
+                            },
+                            document: t.document,
+                            variables: t.variables,
+                            updateQueries: t.updateQueries,
+                            update: t.update,
+                          });
+                        } finally {
+                          r.cache = i;
+                        }
+                      }, t.mutationId));
+                }),
+                (t.prototype.markMutationResult = function (t) {
+                  var e = this;
+                  if (!Ke(t.result)) {
+                    var r = [
                       {
                         result: t.result.data,
                         dataId: 'ROOT_MUTATION',
@@ -12836,535 +12816,535 @@ const RASSDK = (function (t, e) {
                         variables: t.variables,
                       },
                     ],
-                    n = t.updateQueries;
-                  n &&
-                    Object.keys(n).forEach(function (i) {
-                      var o = n[i],
-                        s = o.query,
-                        a = o.updater,
-                        u = e.cache.diff({
-                          query: s.document,
-                          variables: s.variables,
-                          returnPartialData: !0,
-                          optimistic: !1,
-                        }),
-                        c = u.result;
-                      if (u.complete) {
-                        var f = ze(function () {
-                          return a(c, {
-                            mutationResult: t.result,
-                            queryName: Te(s.document) || void 0,
-                            queryVariables: s.variables,
-                          });
-                        });
-                        f &&
-                          r.push({
-                            result: f,
-                            dataId: 'ROOT_QUERY',
+                      n = t.updateQueries;
+                    n &&
+                      Object.keys(n).forEach(function (i) {
+                        var o = n[i],
+                          s = o.query,
+                          a = o.updater,
+                          u = e.cache.diff({
                             query: s.document,
                             variables: s.variables,
+                            returnPartialData: !0,
+                            optimistic: !1,
+                          }),
+                          c = u.result;
+                        if (u.complete) {
+                          var f = ze(function () {
+                            return a(c, {
+                              mutationResult: t.result,
+                              queryName: Te(s.document) || void 0,
+                              queryVariables: s.variables,
+                            });
                           });
-                      }
-                    }),
-                    this.cache.performTransaction(function (e) {
-                      r.forEach(function (t) {
-                        return e.write(t);
-                      });
-                      var n = t.update;
-                      n &&
-                        ze(function () {
-                          return n(e, t.result);
+                          f &&
+                            r.push({
+                              result: f,
+                              dataId: 'ROOT_QUERY',
+                              query: s.document,
+                              variables: s.variables,
+                            });
+                        }
+                      }),
+                      this.cache.performTransaction(function (e) {
+                        r.forEach(function (t) {
+                          return e.write(t);
                         });
-                    });
-                }
-              }),
-              (t.prototype.markMutationComplete = function (t) {
-                var e = t.mutationId;
-                t.optimisticResponse && this.cache.removeOptimistic(e);
-              }),
-              (t.prototype.markUpdateQueryResult = function (t, e, r) {
-                this.cache.write({
-                  result: r,
-                  dataId: 'ROOT_QUERY',
-                  variables: e,
-                  query: t,
-                });
-              }),
-              (t.prototype.reset = function () {
-                return this.cache.reset();
-              }),
-              t
-            );
-          })(),
-          Rr = (function () {
-            function t(t) {
-              var e = this;
-              (this.defaultOptions = {}), (this.resetStoreCallbacks = []), (this.clearStoreCallbacks = []);
-              var r = t.cache,
-                n = t.ssrMode,
-                i = void 0 !== n && n,
-                o = t.ssrForceFetchDelay,
-                s = void 0 === o ? 0 : o,
-                a = t.connectToDevTools,
-                u = t.queryDeduplication,
-                c = void 0 === u || u,
-                f = t.defaultOptions,
-                l = t.assumeImmutableResults,
-                p = void 0 !== l && l,
-                h = t.resolvers,
-                d = t.typeDefs,
-                b = t.fragmentMatcher,
-                y = t.name,
-                v = t.version,
-                _ = t.link;
-              if ((!_ && h && (_ = cr.empty()), !_ || !r)) throw new Ht(4);
-              (this.link = _),
-                (this.cache = r),
-                (this.store = new Ar(r)),
-                (this.disableNetworkFetches = i || s > 0),
-                (this.queryDeduplication = c),
-                (this.defaultOptions = f || {}),
-                (this.typeDefs = d),
-                s &&
+                        var n = t.update;
+                        n &&
+                          ze(function () {
+                            return n(e, t.result);
+                          });
+                      });
+                  }
+                }),
+                (t.prototype.markMutationComplete = function (t) {
+                  var e = t.mutationId;
+                  t.optimisticResponse && this.cache.removeOptimistic(e);
+                }),
+                (t.prototype.markUpdateQueryResult = function (t, e, r) {
+                  this.cache.write({
+                    result: r,
+                    dataId: 'ROOT_QUERY',
+                    variables: e,
+                    query: t,
+                  });
+                }),
+                (t.prototype.reset = function () {
+                  return this.cache.reset();
+                }),
+                t
+              );
+            })(),
+            Rr = (function () {
+              function t(t) {
+                var e = this;
+                (this.defaultOptions = {}), (this.resetStoreCallbacks = []), (this.clearStoreCallbacks = []);
+                var r = t.cache,
+                  n = t.ssrMode,
+                  i = void 0 !== n && n,
+                  o = t.ssrForceFetchDelay,
+                  s = void 0 === o ? 0 : o,
+                  a = t.connectToDevTools,
+                  u = t.queryDeduplication,
+                  c = void 0 === u || u,
+                  f = t.defaultOptions,
+                  l = t.assumeImmutableResults,
+                  p = void 0 !== l && l,
+                  h = t.resolvers,
+                  d = t.typeDefs,
+                  b = t.fragmentMatcher,
+                  y = t.name,
+                  v = t.version,
+                  _ = t.link;
+                if ((!_ && h && (_ = cr.empty()), !_ || !r)) throw new Ht(4);
+                (this.link = _),
+                  (this.cache = r),
+                  (this.store = new Ar(r)),
+                  (this.disableNetworkFetches = i || s > 0),
+                  (this.queryDeduplication = c),
+                  (this.defaultOptions = f || {}),
+                  (this.typeDefs = d),
+                  s &&
                   setTimeout(function () {
                     return (e.disableNetworkFetches = !1);
                   }, s),
-                (this.watchQuery = this.watchQuery.bind(this)),
-                (this.query = this.query.bind(this)),
-                (this.mutate = this.mutate.bind(this)),
-                (this.resetStore = this.resetStore.bind(this)),
-                (this.reFetchObservableQueries = this.reFetchObservableQueries.bind(this)),
-                void 0 !== a && a && 'undefined' != typeof window && (window.__APOLLO_CLIENT__ = this),
-                (this.version = '2.6.10'),
-                (this.localState = new Er({
-                  cache: r,
-                  client: this,
-                  resolvers: h,
-                  fragmentMatcher: b,
-                })),
-                (this.queryManager = new kr({
-                  link: this.link,
-                  store: this.store,
-                  queryDeduplication: c,
-                  ssrMode: i,
-                  clientAwareness: {
-                    name: y,
-                    version: v,
-                  },
-                  localState: this.localState,
-                  assumeImmutableResults: p,
-                  onBroadcast: function () {
-                    e.devToolsHookCb &&
-                      e.devToolsHookCb({
-                        action: {},
-                        state: {
-                          queries: e.queryManager.queryStore.getStore(),
-                          mutations: e.queryManager.mutationStore.getStore(),
-                        },
-                        dataWithOptimisticResults: e.cache.extract(!0),
-                      });
-                  },
-                }));
-            }
+                  (this.watchQuery = this.watchQuery.bind(this)),
+                  (this.query = this.query.bind(this)),
+                  (this.mutate = this.mutate.bind(this)),
+                  (this.resetStore = this.resetStore.bind(this)),
+                  (this.reFetchObservableQueries = this.reFetchObservableQueries.bind(this)),
+                  void 0 !== a && a && 'undefined' != typeof window && (window.__APOLLO_CLIENT__ = this),
+                  (this.version = '2.6.10'),
+                  (this.localState = new Er({
+                    cache: r,
+                    client: this,
+                    resolvers: h,
+                    fragmentMatcher: b,
+                  })),
+                  (this.queryManager = new kr({
+                    link: this.link,
+                    store: this.store,
+                    queryDeduplication: c,
+                    ssrMode: i,
+                    clientAwareness: {
+                      name: y,
+                      version: v,
+                    },
+                    localState: this.localState,
+                    assumeImmutableResults: p,
+                    onBroadcast: function () {
+                      e.devToolsHookCb &&
+                        e.devToolsHookCb({
+                          action: {},
+                          state: {
+                            queries: e.queryManager.queryStore.getStore(),
+                            mutations: e.queryManager.mutationStore.getStore(),
+                          },
+                          dataWithOptimisticResults: e.cache.extract(!0),
+                        });
+                    },
+                  }));
+              }
 
-            return (
-              (t.prototype.stop = function () {
-                this.queryManager.stop();
-              }),
-              (t.prototype.watchQuery = function (t) {
-                return (
-                  this.defaultOptions.watchQuery && (t = Qt(Qt({}, this.defaultOptions.watchQuery), t)),
-                  !this.disableNetworkFetches ||
+              return (
+                (t.prototype.stop = function () {
+                  this.queryManager.stop();
+                }),
+                (t.prototype.watchQuery = function (t) {
+                  return (
+                    this.defaultOptions.watchQuery && (t = Qt(Qt({}, this.defaultOptions.watchQuery), t)),
+                    !this.disableNetworkFetches ||
                     ('network-only' !== t.fetchPolicy && 'cache-and-network' !== t.fetchPolicy) ||
                     (t = Qt(Qt({}, t), {
                       fetchPolicy: 'cache-first',
                     })),
-                  this.queryManager.watchQuery(t)
-                );
-              }),
-              (t.prototype.query = function (t) {
-                return (
-                  this.defaultOptions.query && (t = Qt(Qt({}, this.defaultOptions.query), t)),
-                  Yt('cache-and-network' !== t.fetchPolicy, 5),
-                  this.disableNetworkFetches &&
+                    this.queryManager.watchQuery(t)
+                  );
+                }),
+                (t.prototype.query = function (t) {
+                  return (
+                    this.defaultOptions.query && (t = Qt(Qt({}, this.defaultOptions.query), t)),
+                    Yt('cache-and-network' !== t.fetchPolicy, 5),
+                    this.disableNetworkFetches &&
                     'network-only' === t.fetchPolicy &&
                     (t = Qt(Qt({}, t), {
                       fetchPolicy: 'cache-first',
                     })),
-                  this.queryManager.query(t)
-                );
-              }),
-              (t.prototype.mutate = function (t) {
-                return (
-                  this.defaultOptions.mutate && (t = Qt(Qt({}, this.defaultOptions.mutate), t)),
-                  this.queryManager.mutate(t)
-                );
-              }),
-              (t.prototype.subscribe = function (t) {
-                return this.queryManager.startGraphQLSubscription(t);
-              }),
-              (t.prototype.readQuery = function (t, e) {
-                return void 0 === e && (e = !1), this.cache.readQuery(t, e);
-              }),
-              (t.prototype.readFragment = function (t, e) {
-                return void 0 === e && (e = !1), this.cache.readFragment(t, e);
-              }),
-              (t.prototype.writeQuery = function (t) {
-                var e = this.cache.writeQuery(t);
-                return this.queryManager.broadcastQueries(), e;
-              }),
-              (t.prototype.writeFragment = function (t) {
-                var e = this.cache.writeFragment(t);
-                return this.queryManager.broadcastQueries(), e;
-              }),
-              (t.prototype.writeData = function (t) {
-                var e = this.cache.writeData(t);
-                return this.queryManager.broadcastQueries(), e;
-              }),
-              (t.prototype.__actionHookForDevTools = function (t) {
-                this.devToolsHookCb = t;
-              }),
-              (t.prototype.__requestRaw = function (t) {
-                return fr(this.link, t);
-              }),
-              (t.prototype.initQueryManager = function () {
-                return this.queryManager;
-              }),
-              (t.prototype.resetStore = function () {
-                var t = this;
-                return Promise.resolve()
-                  .then(function () {
-                    return t.queryManager.clearStore();
-                  })
-                  .then(function () {
-                    return Promise.all(
-                      t.resetStoreCallbacks.map(function (t) {
-                        return t();
-                      }),
-                    );
-                  })
-                  .then(function () {
-                    return t.reFetchObservableQueries();
-                  });
-              }),
-              (t.prototype.clearStore = function () {
-                var t = this;
-                return Promise.resolve()
-                  .then(function () {
-                    return t.queryManager.clearStore();
-                  })
-                  .then(function () {
-                    return Promise.all(
-                      t.clearStoreCallbacks.map(function (t) {
-                        return t();
-                      }),
-                    );
-                  });
-              }),
-              (t.prototype.onResetStore = function (t) {
-                var e = this;
-                return (
-                  this.resetStoreCallbacks.push(t),
-                  function () {
-                    e.resetStoreCallbacks = e.resetStoreCallbacks.filter(function (e) {
-                      return e !== t;
+                    this.queryManager.query(t)
+                  );
+                }),
+                (t.prototype.mutate = function (t) {
+                  return (
+                    this.defaultOptions.mutate && (t = Qt(Qt({}, this.defaultOptions.mutate), t)),
+                    this.queryManager.mutate(t)
+                  );
+                }),
+                (t.prototype.subscribe = function (t) {
+                  return this.queryManager.startGraphQLSubscription(t);
+                }),
+                (t.prototype.readQuery = function (t, e) {
+                  return void 0 === e && (e = !1), this.cache.readQuery(t, e);
+                }),
+                (t.prototype.readFragment = function (t, e) {
+                  return void 0 === e && (e = !1), this.cache.readFragment(t, e);
+                }),
+                (t.prototype.writeQuery = function (t) {
+                  var e = this.cache.writeQuery(t);
+                  return this.queryManager.broadcastQueries(), e;
+                }),
+                (t.prototype.writeFragment = function (t) {
+                  var e = this.cache.writeFragment(t);
+                  return this.queryManager.broadcastQueries(), e;
+                }),
+                (t.prototype.writeData = function (t) {
+                  var e = this.cache.writeData(t);
+                  return this.queryManager.broadcastQueries(), e;
+                }),
+                (t.prototype.__actionHookForDevTools = function (t) {
+                  this.devToolsHookCb = t;
+                }),
+                (t.prototype.__requestRaw = function (t) {
+                  return fr(this.link, t);
+                }),
+                (t.prototype.initQueryManager = function () {
+                  return this.queryManager;
+                }),
+                (t.prototype.resetStore = function () {
+                  var t = this;
+                  return Promise.resolve()
+                    .then(function () {
+                      return t.queryManager.clearStore();
+                    })
+                    .then(function () {
+                      return Promise.all(
+                        t.resetStoreCallbacks.map(function (t) {
+                          return t();
+                        }),
+                      );
+                    })
+                    .then(function () {
+                      return t.reFetchObservableQueries();
                     });
-                  }
-                );
-              }),
-              (t.prototype.onClearStore = function (t) {
-                var e = this;
-                return (
-                  this.clearStoreCallbacks.push(t),
-                  function () {
-                    e.clearStoreCallbacks = e.clearStoreCallbacks.filter(function (e) {
-                      return e !== t;
+                }),
+                (t.prototype.clearStore = function () {
+                  var t = this;
+                  return Promise.resolve()
+                    .then(function () {
+                      return t.queryManager.clearStore();
+                    })
+                    .then(function () {
+                      return Promise.all(
+                        t.clearStoreCallbacks.map(function (t) {
+                          return t();
+                        }),
+                      );
                     });
-                  }
-                );
-              }),
-              (t.prototype.reFetchObservableQueries = function (t) {
-                return this.queryManager.reFetchObservableQueries(t);
-              }),
-              (t.prototype.extract = function (t) {
-                return this.cache.extract(t);
-              }),
-              (t.prototype.restore = function (t) {
-                return this.cache.restore(t);
-              }),
-              (t.prototype.addResolvers = function (t) {
-                this.localState.addResolvers(t);
-              }),
-              (t.prototype.setResolvers = function (t) {
-                this.localState.setResolvers(t);
-              }),
-              (t.prototype.getResolvers = function () {
-                return this.localState.getResolvers();
-              }),
-              (t.prototype.setLocalStateFragmentMatcher = function (t) {
-                this.localState.setFragmentMatcher(t);
-              }),
-              t
-            );
-          })();
-
-        function Fr(t) {
-          return {
-            kind: 'Document',
-            definitions: [
-              {
-                kind: 'OperationDefinition',
-                operation: 'query',
-                name: {
-                  kind: 'Name',
-                  value: 'GeneratedClientQuery',
-                },
-                selectionSet: xr(t),
-              },
-            ],
-          };
-        }
-
-        function xr(t) {
-          if ('number' == typeof t || 'boolean' == typeof t || 'string' == typeof t || null == t) return null;
-          if (Array.isArray(t)) return xr(t[0]);
-          var e = [];
-          return (
-            Object.keys(t).forEach(function (r) {
-              var n = {
-                kind: 'Field',
-                name: {
-                  kind: 'Name',
-                  value: r,
-                },
-                selectionSet: xr(t[r]) || void 0,
-              };
-              e.push(n);
-            }),
-            {
-              kind: 'SelectionSet',
-              selections: e,
-            }
-          );
-        }
-
-        var Pr,
-          Cr = {
-            kind: 'Document',
-            definitions: [
-              {
-                kind: 'OperationDefinition',
-                operation: 'query',
-                name: null,
-                variableDefinitions: null,
-                directives: [],
-                selectionSet: {
-                  kind: 'SelectionSet',
-                  selections: [
-                    {
-                      kind: 'Field',
-                      alias: null,
-                      name: {
-                        kind: 'Name',
-                        value: '__typename',
-                      },
-                      arguments: [],
-                      directives: [],
-                      selectionSet: null,
-                    },
-                  ],
-                },
-              },
-            ],
-          },
-          Vr = (function () {
-            function t() {}
-
-            return (
-              (t.prototype.transformDocument = function (t) {
-                return t;
-              }),
-              (t.prototype.transformForLink = function (t) {
-                return t;
-              }),
-              (t.prototype.readQuery = function (t, e) {
-                return (
-                  void 0 === e && (e = !1),
-                  this.read({
-                    query: t.query,
-                    variables: t.variables,
-                    optimistic: e,
-                  })
-                );
-              }),
-              (t.prototype.readFragment = function (t, e) {
-                return (
-                  void 0 === e && (e = !1),
-                  this.read({
-                    query: Ie(t.fragment, t.fragmentName),
-                    variables: t.variables,
-                    rootId: t.id,
-                    optimistic: e,
-                  })
-                );
-              }),
-              (t.prototype.writeQuery = function (t) {
-                this.write({
-                  dataId: 'ROOT_QUERY',
-                  result: t.data,
-                  query: t.query,
-                  variables: t.variables,
-                });
-              }),
-              (t.prototype.writeFragment = function (t) {
-                this.write({
-                  dataId: t.id,
-                  result: t.data,
-                  variables: t.variables,
-                  query: Ie(t.fragment, t.fragmentName),
-                });
-              }),
-              (t.prototype.writeData = function (t) {
-                var e,
-                  r,
-                  n = t.id,
-                  i = t.data;
-                if (void 0 !== n) {
-                  var o = null;
-                  try {
-                    o = this.read({
-                      rootId: n,
-                      optimistic: !1,
-                      query: Cr,
-                    });
-                  } catch (t) {}
-                  var s = (o && o.__typename) || '__ClientData',
-                    a = Object.assign(
-                      {
-                        __typename: s,
-                      },
-                      i,
-                    );
-                  this.writeFragment({
-                    id: n,
-                    fragment:
-                      ((e = a),
-                      (r = s),
-                      {
-                        kind: 'Document',
-                        definitions: [
-                          {
-                            kind: 'FragmentDefinition',
-                            typeCondition: {
-                              kind: 'NamedType',
-                              name: {
-                                kind: 'Name',
-                                value: r || '__FakeType',
-                              },
-                            },
-                            name: {
-                              kind: 'Name',
-                              value: 'GeneratedClientQuery',
-                            },
-                            selectionSet: xr(e),
-                          },
-                        ],
-                      }),
-                    data: a,
-                  });
-                } else
-                  this.writeQuery({
-                    query: Fr(i),
-                    data: i,
-                  });
-              }),
-              t
-            );
-          })();
-        Pr || (Pr = {});
-        var Br = null,
-          Nr = {},
-          Lr = 1,
-          jr = '@wry/context:Slot',
-          Mr = Array,
-          Qr =
-            Mr[jr] ||
-            (function () {
-              var t = (function () {
-                function t() {
-                  this.id = ['slot', Lr++, Date.now(), Math.random().toString(36).slice(2)].join(':');
-                }
-
-                return (
-                  (t.prototype.hasValue = function () {
-                    for (var t = Br; t; t = t.parent)
-                      if (this.id in t.slots) {
-                        var e = t.slots[this.id];
-                        if (e === Nr) break;
-                        return t !== Br && (Br.slots[this.id] = e), !0;
-                      }
-                    return Br && (Br.slots[this.id] = Nr), !1;
-                  }),
-                  (t.prototype.getValue = function () {
-                    if (this.hasValue()) return Br.slots[this.id];
-                  }),
-                  (t.prototype.withValue = function (t, e, r, n) {
-                    var i,
-                      o =
-                        (((i = {
-                          __proto__: null,
-                        })[this.id] = t),
-                        i),
-                      s = Br;
-                    Br = {
-                      parent: s,
-                      slots: o,
-                    };
-                    try {
-                      return e.apply(n, r);
-                    } finally {
-                      Br = s;
+                }),
+                (t.prototype.onResetStore = function (t) {
+                  var e = this;
+                  return (
+                    this.resetStoreCallbacks.push(t),
+                    function () {
+                      e.resetStoreCallbacks = e.resetStoreCallbacks.filter(function (e) {
+                        return e !== t;
+                      });
                     }
-                  }),
-                  (t.bind = function (t) {
-                    var e = Br;
-                    return function () {
-                      var r = Br;
-                      try {
-                        return (Br = e), t.apply(this, arguments);
-                      } finally {
-                        Br = r;
-                      }
-                    };
-                  }),
-                  (t.noContext = function (t, e, r) {
-                    if (!Br) return t.apply(r, e);
-                    var n = Br;
-                    try {
-                      return (Br = null), t.apply(r, e);
-                    } finally {
-                      Br = n;
+                  );
+                }),
+                (t.prototype.onClearStore = function (t) {
+                  var e = this;
+                  return (
+                    this.clearStoreCallbacks.push(t),
+                    function () {
+                      e.clearStoreCallbacks = e.clearStoreCallbacks.filter(function (e) {
+                        return e !== t;
+                      });
                     }
-                  }),
-                  t
-                );
-              })();
-              try {
-                Object.defineProperty(Mr, jr, {
-                  value: (Mr[jr] = t),
-                  enumerable: !1,
-                  writable: !1,
-                  configurable: !1,
-                });
-              } finally {
-                return t;
-              }
+                  );
+                }),
+                (t.prototype.reFetchObservableQueries = function (t) {
+                  return this.queryManager.reFetchObservableQueries(t);
+                }),
+                (t.prototype.extract = function (t) {
+                  return this.cache.extract(t);
+                }),
+                (t.prototype.restore = function (t) {
+                  return this.cache.restore(t);
+                }),
+                (t.prototype.addResolvers = function (t) {
+                  this.localState.addResolvers(t);
+                }),
+                (t.prototype.setResolvers = function (t) {
+                  this.localState.setResolvers(t);
+                }),
+                (t.prototype.getResolvers = function () {
+                  return this.localState.getResolvers();
+                }),
+                (t.prototype.setLocalStateFragmentMatcher = function (t) {
+                  this.localState.setFragmentMatcher(t);
+                }),
+                t
+              );
             })();
 
-        function qr() {}
+          function Fr(t) {
+            return {
+              kind: 'Document',
+              definitions: [
+                {
+                  kind: 'OperationDefinition',
+                  operation: 'query',
+                  name: {
+                    kind: 'Name',
+                    value: 'GeneratedClientQuery',
+                  },
+                  selectionSet: xr(t),
+                },
+              ],
+            };
+          }
 
-        Qr.bind, Qr.noContext;
-        var Dr = (function () {
+          function xr(t) {
+            if ('number' == typeof t || 'boolean' == typeof t || 'string' == typeof t || null == t) return null;
+            if (Array.isArray(t)) return xr(t[0]);
+            var e = [];
+            return (
+              Object.keys(t).forEach(function (r) {
+                var n = {
+                  kind: 'Field',
+                  name: {
+                    kind: 'Name',
+                    value: r,
+                  },
+                  selectionSet: xr(t[r]) || void 0,
+                };
+                e.push(n);
+              }),
+              {
+                kind: 'SelectionSet',
+                selections: e,
+              }
+            );
+          }
+
+          var Pr,
+            Cr = {
+              kind: 'Document',
+              definitions: [
+                {
+                  kind: 'OperationDefinition',
+                  operation: 'query',
+                  name: null,
+                  variableDefinitions: null,
+                  directives: [],
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        alias: null,
+                        name: {
+                          kind: 'Name',
+                          value: '__typename',
+                        },
+                        arguments: [],
+                        directives: [],
+                        selectionSet: null,
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+            Vr = (function () {
+              function t() { }
+
+              return (
+                (t.prototype.transformDocument = function (t) {
+                  return t;
+                }),
+                (t.prototype.transformForLink = function (t) {
+                  return t;
+                }),
+                (t.prototype.readQuery = function (t, e) {
+                  return (
+                    void 0 === e && (e = !1),
+                    this.read({
+                      query: t.query,
+                      variables: t.variables,
+                      optimistic: e,
+                    })
+                  );
+                }),
+                (t.prototype.readFragment = function (t, e) {
+                  return (
+                    void 0 === e && (e = !1),
+                    this.read({
+                      query: Ie(t.fragment, t.fragmentName),
+                      variables: t.variables,
+                      rootId: t.id,
+                      optimistic: e,
+                    })
+                  );
+                }),
+                (t.prototype.writeQuery = function (t) {
+                  this.write({
+                    dataId: 'ROOT_QUERY',
+                    result: t.data,
+                    query: t.query,
+                    variables: t.variables,
+                  });
+                }),
+                (t.prototype.writeFragment = function (t) {
+                  this.write({
+                    dataId: t.id,
+                    result: t.data,
+                    variables: t.variables,
+                    query: Ie(t.fragment, t.fragmentName),
+                  });
+                }),
+                (t.prototype.writeData = function (t) {
+                  var e,
+                    r,
+                    n = t.id,
+                    i = t.data;
+                  if (void 0 !== n) {
+                    var o = null;
+                    try {
+                      o = this.read({
+                        rootId: n,
+                        optimistic: !1,
+                        query: Cr,
+                      });
+                    } catch (t) { }
+                    var s = (o && o.__typename) || '__ClientData',
+                      a = Object.assign(
+                        {
+                          __typename: s,
+                        },
+                        i,
+                      );
+                    this.writeFragment({
+                      id: n,
+                      fragment:
+                        ((e = a),
+                          (r = s),
+                        {
+                          kind: 'Document',
+                          definitions: [
+                            {
+                              kind: 'FragmentDefinition',
+                              typeCondition: {
+                                kind: 'NamedType',
+                                name: {
+                                  kind: 'Name',
+                                  value: r || '__FakeType',
+                                },
+                              },
+                              name: {
+                                kind: 'Name',
+                                value: 'GeneratedClientQuery',
+                              },
+                              selectionSet: xr(e),
+                            },
+                          ],
+                        }),
+                      data: a,
+                    });
+                  } else
+                    this.writeQuery({
+                      query: Fr(i),
+                      data: i,
+                    });
+                }),
+                t
+              );
+            })();
+          Pr || (Pr = {});
+          var Br = null,
+            Nr = {},
+            Lr = 1,
+            jr = '@wry/context:Slot',
+            Mr = Array,
+            Qr =
+              Mr[jr] ||
+              (function () {
+                var t = (function () {
+                  function t() {
+                    this.id = ['slot', Lr++, Date.now(), Math.random().toString(36).slice(2)].join(':');
+                  }
+
+                  return (
+                    (t.prototype.hasValue = function () {
+                      for (var t = Br; t; t = t.parent)
+                        if (this.id in t.slots) {
+                          var e = t.slots[this.id];
+                          if (e === Nr) break;
+                          return t !== Br && (Br.slots[this.id] = e), !0;
+                        }
+                      return Br && (Br.slots[this.id] = Nr), !1;
+                    }),
+                    (t.prototype.getValue = function () {
+                      if (this.hasValue()) return Br.slots[this.id];
+                    }),
+                    (t.prototype.withValue = function (t, e, r, n) {
+                      var i,
+                        o =
+                          (((i = {
+                            __proto__: null,
+                          })[this.id] = t),
+                            i),
+                        s = Br;
+                      Br = {
+                        parent: s,
+                        slots: o,
+                      };
+                      try {
+                        return e.apply(n, r);
+                      } finally {
+                        Br = s;
+                      }
+                    }),
+                    (t.bind = function (t) {
+                      var e = Br;
+                      return function () {
+                        var r = Br;
+                        try {
+                          return (Br = e), t.apply(this, arguments);
+                        } finally {
+                          Br = r;
+                        }
+                      };
+                    }),
+                    (t.noContext = function (t, e, r) {
+                      if (!Br) return t.apply(r, e);
+                      var n = Br;
+                      try {
+                        return (Br = null), t.apply(r, e);
+                      } finally {
+                        Br = n;
+                      }
+                    }),
+                    t
+                  );
+                })();
+                try {
+                  Object.defineProperty(Mr, jr, {
+                    value: (Mr[jr] = t),
+                    enumerable: !1,
+                    writable: !1,
+                    configurable: !1,
+                  });
+                } finally {
+                  return t;
+                }
+              })();
+
+          function qr() { }
+
+          Qr.bind, Qr.noContext;
+          var Dr = (function () {
             function t(t, e) {
               void 0 === t && (t = 1 / 0),
                 void 0 === e && (e = qr),
@@ -13403,11 +13383,11 @@ const RASSDK = (function (t, e) {
                 return r
                   ? (r.value = e)
                   : ((r = {
-                      key: t,
-                      value: e,
-                      newer: null,
-                      older: this.newest,
-                    }),
+                    key: t,
+                    value: e,
+                    newer: null,
+                    older: this.newest,
+                  }),
                     this.newest && (this.newest.newer = r),
                     (this.newest = r),
                     (this.oldest = this.oldest || r),
@@ -13415,182 +13395,182 @@ const RASSDK = (function (t, e) {
                     r.value);
               }),
               (t.prototype.clean = function () {
-                for (; this.oldest && this.map.size > this.max; ) this.delete(this.oldest.key);
+                for (; this.oldest && this.map.size > this.max;) this.delete(this.oldest.key);
               }),
               (t.prototype.delete = function (t) {
                 var e = this.map.get(t);
                 return (
                   !!e &&
                   (e === this.newest && (this.newest = e.older),
-                  e === this.oldest && (this.oldest = e.newer),
-                  e.newer && (e.newer.older = e.older),
-                  e.older && (e.older.newer = e.newer),
-                  this.map.delete(t),
-                  this.dispose(e.value, t),
-                  !0)
+                    e === this.oldest && (this.oldest = e.newer),
+                    e.newer && (e.newer.older = e.older),
+                    e.older && (e.older.newer = e.newer),
+                    this.map.delete(t),
+                    this.dispose(e.value, t),
+                    !0)
                 );
               }),
               t
             );
           })(),
-          Ur = new Qr(),
-          Gr = [],
-          zr = [];
+            Ur = new Qr(),
+            Gr = [],
+            zr = [];
 
-        function Kr(t, e) {
-          if (!t) throw new Error(e || 'assertion failure');
-        }
-
-        function $r(t) {
-          switch (t.length) {
-            case 0:
-              throw new Error('unknown value');
-            case 1:
-              return t[0];
-            case 2:
-              throw t[1];
-          }
-        }
-
-        var Wr = (function () {
-          function t(e, r) {
-            (this.fn = e),
-              (this.args = r),
-              (this.parents = new Set()),
-              (this.childValues = new Map()),
-              (this.dirtyChildren = null),
-              (this.dirty = !0),
-              (this.recomputing = !1),
-              (this.value = []),
-              ++t.count;
+          function Kr(t, e) {
+            if (!t) throw new Error(e || 'assertion failure');
           }
 
-          return (
-            (t.prototype.recompute = function () {
-              if (
-                (Kr(!this.recomputing, 'already recomputing'),
-                (function (t) {
-                  var e = Ur.getValue();
-                  if (e)
-                    return (
-                      t.parents.add(e), e.childValues.has(t) || e.childValues.set(t, []), Yr(t) ? Xr(e, t) : tn(e, t), e
-                    );
-                })(this) || !rn(this))
-              )
-                return Yr(this)
-                  ? ((e = nn((t = this))),
-                    Ur.withValue(t, Hr, [t]),
+          function $r(t) {
+            switch (t.length) {
+              case 0:
+                throw new Error('unknown value');
+              case 1:
+                return t[0];
+              case 2:
+                throw t[1];
+            }
+          }
+
+          var Wr = (function () {
+            function t(e, r) {
+              (this.fn = e),
+                (this.args = r),
+                (this.parents = new Set()),
+                (this.childValues = new Map()),
+                (this.dirtyChildren = null),
+                (this.dirty = !0),
+                (this.recomputing = !1),
+                (this.value = []),
+                ++t.count;
+            }
+
+            return (
+              (t.prototype.recompute = function () {
+                if (
+                  (Kr(!this.recomputing, 'already recomputing'),
                     (function (t) {
-                      if ('function' == typeof t.subscribe)
-                        try {
-                          sn(t), (t.unsubscribe = t.subscribe.apply(null, t.args));
-                        } catch (e) {
-                          return t.setDirty(), !1;
-                        }
-                      return !0;
-                    })(t) &&
+                      var e = Ur.getValue();
+                      if (e)
+                        return (
+                          t.parents.add(e), e.childValues.has(t) || e.childValues.set(t, []), Yr(t) ? Xr(e, t) : tn(e, t), e
+                        );
+                    })(this) || !rn(this))
+                )
+                  return Yr(this)
+                    ? ((e = nn((t = this))),
+                      Ur.withValue(t, Hr, [t]),
+                      (function (t) {
+                        if ('function' == typeof t.subscribe)
+                          try {
+                            sn(t), (t.unsubscribe = t.subscribe.apply(null, t.args));
+                          } catch (e) {
+                            return t.setDirty(), !1;
+                          }
+                        return !0;
+                      })(t) &&
                       (function (t) {
                         (t.dirty = !1), Yr(t) || Zr(t);
                       })(t),
-                    e.forEach(rn),
-                    $r(t.value))
-                  : $r(this.value);
-              var t, e;
-            }),
-            (t.prototype.setDirty = function () {
-              this.dirty || ((this.dirty = !0), (this.value.length = 0), Jr(this), sn(this));
-            }),
-            (t.prototype.dispose = function () {
-              var t = this;
-              nn(this).forEach(rn),
-                sn(this),
-                this.parents.forEach(function (e) {
-                  e.setDirty(), on(e, t);
-                });
-            }),
-            (t.count = 0),
-            t
-          );
-        })();
+                      e.forEach(rn),
+                      $r(t.value))
+                    : $r(this.value);
+                var t, e;
+              }),
+              (t.prototype.setDirty = function () {
+                this.dirty || ((this.dirty = !0), (this.value.length = 0), Jr(this), sn(this));
+              }),
+              (t.prototype.dispose = function () {
+                var t = this;
+                nn(this).forEach(rn),
+                  sn(this),
+                  this.parents.forEach(function (e) {
+                    e.setDirty(), on(e, t);
+                  });
+              }),
+              (t.count = 0),
+              t
+            );
+          })();
 
-        function Hr(t) {
-          (t.recomputing = !0), (t.value.length = 0);
-          try {
-            t.value[0] = t.fn.apply(null, t.args);
-          } catch (e) {
-            t.value[1] = e;
+          function Hr(t) {
+            (t.recomputing = !0), (t.value.length = 0);
+            try {
+              t.value[0] = t.fn.apply(null, t.args);
+            } catch (e) {
+              t.value[1] = e;
+            }
+            t.recomputing = !1;
           }
-          t.recomputing = !1;
-        }
 
-        function Yr(t) {
-          return t.dirty || !(!t.dirtyChildren || !t.dirtyChildren.size);
-        }
+          function Yr(t) {
+            return t.dirty || !(!t.dirtyChildren || !t.dirtyChildren.size);
+          }
 
-        function Jr(t) {
-          t.parents.forEach(function (e) {
-            return Xr(e, t);
-          });
-        }
+          function Jr(t) {
+            t.parents.forEach(function (e) {
+              return Xr(e, t);
+            });
+          }
 
-        function Zr(t) {
-          t.parents.forEach(function (e) {
-            return tn(e, t);
-          });
-        }
+          function Zr(t) {
+            t.parents.forEach(function (e) {
+              return tn(e, t);
+            });
+          }
 
-        function Xr(t, e) {
-          if ((Kr(t.childValues.has(e)), Kr(Yr(e)), t.dirtyChildren)) {
-            if (t.dirtyChildren.has(e)) return;
-          } else t.dirtyChildren = zr.pop() || new Set();
-          t.dirtyChildren.add(e), Jr(t);
-        }
+          function Xr(t, e) {
+            if ((Kr(t.childValues.has(e)), Kr(Yr(e)), t.dirtyChildren)) {
+              if (t.dirtyChildren.has(e)) return;
+            } else t.dirtyChildren = zr.pop() || new Set();
+            t.dirtyChildren.add(e), Jr(t);
+          }
 
-        function tn(t, e) {
-          Kr(t.childValues.has(e)), Kr(!Yr(e));
-          var r,
-            n,
-            i,
-            o = t.childValues.get(e);
-          0 === o.length
-            ? t.childValues.set(e, e.value.slice(0))
-            : ((r = o), (n = e.value), ((i = r.length) > 0 && i === n.length && r[i - 1] === n[i - 1]) || t.setDirty()),
-            en(t, e),
-            Yr(t) || Zr(t);
-        }
+          function tn(t, e) {
+            Kr(t.childValues.has(e)), Kr(!Yr(e));
+            var r,
+              n,
+              i,
+              o = t.childValues.get(e);
+            0 === o.length
+              ? t.childValues.set(e, e.value.slice(0))
+              : ((r = o), (n = e.value), ((i = r.length) > 0 && i === n.length && r[i - 1] === n[i - 1]) || t.setDirty()),
+              en(t, e),
+              Yr(t) || Zr(t);
+          }
 
-        function en(t, e) {
-          var r = t.dirtyChildren;
-          r && (r.delete(e), 0 === r.size && (zr.length < 100 && zr.push(r), (t.dirtyChildren = null)));
-        }
+          function en(t, e) {
+            var r = t.dirtyChildren;
+            r && (r.delete(e), 0 === r.size && (zr.length < 100 && zr.push(r), (t.dirtyChildren = null)));
+          }
 
-        function rn(t) {
-          return 0 === t.parents.size && 'function' == typeof t.reportOrphan && !0 === t.reportOrphan();
-        }
+          function rn(t) {
+            return 0 === t.parents.size && 'function' == typeof t.reportOrphan && !0 === t.reportOrphan();
+          }
 
-        function nn(t) {
-          var e = Gr;
-          return (
-            t.childValues.size > 0 &&
+          function nn(t) {
+            var e = Gr;
+            return (
+              t.childValues.size > 0 &&
               ((e = []),
-              t.childValues.forEach(function (r, n) {
-                on(t, n), e.push(n);
-              })),
-            Kr(null === t.dirtyChildren),
-            e
-          );
-        }
+                t.childValues.forEach(function (r, n) {
+                  on(t, n), e.push(n);
+                })),
+              Kr(null === t.dirtyChildren),
+              e
+            );
+          }
 
-        function on(t, e) {
-          e.parents.delete(t), t.childValues.delete(e), en(t, e);
-        }
+          function on(t, e) {
+            e.parents.delete(t), t.childValues.delete(e), en(t, e);
+          }
 
-        function sn(t) {
-          var e = t.unsubscribe;
-          'function' == typeof e && ((t.unsubscribe = void 0), e());
-        }
+          function sn(t) {
+            var e = t.unsubscribe;
+            'function' == typeof e && ((t.unsubscribe = void 0), e());
+          }
 
-        var an = (function () {
+          var an = (function () {
             function t(t) {
               this.weakness = t;
             }
@@ -13611,7 +13591,7 @@ const RASSDK = (function (t, e) {
               }),
               (t.prototype.getChildTrie = function (e) {
                 var r =
-                    this.weakness &&
+                  this.weakness &&
                     (function (t) {
                       switch (typeof t) {
                         case 'object':
@@ -13621,79 +13601,79 @@ const RASSDK = (function (t, e) {
                       }
                       return !1;
                     })(e)
-                      ? this.weak || (this.weak = new WeakMap())
-                      : this.strong || (this.strong = new Map()),
+                    ? this.weak || (this.weak = new WeakMap())
+                    : this.strong || (this.strong = new Map()),
                   n = r.get(e);
                 return n || r.set(e, (n = new t(this.weakness))), n;
               }),
               t
             );
           })(),
-          un = new an('function' == typeof WeakMap);
+            un = new an('function' == typeof WeakMap);
 
-        function cn() {
-          for (var t = [], e = 0; e < arguments.length; e++) t[e] = arguments[e];
-          return un.lookupArray(t);
-        }
+          function cn() {
+            for (var t = [], e = 0; e < arguments.length; e++) t[e] = arguments[e];
+            return un.lookupArray(t);
+          }
 
-        var fn = new Set();
+          var fn = new Set();
 
-        function ln(t, e) {
-          void 0 === e && (e = Object.create(null));
-          var r = new Dr(e.max || Math.pow(2, 16), function (t) {
+          function ln(t, e) {
+            void 0 === e && (e = Object.create(null));
+            var r = new Dr(e.max || Math.pow(2, 16), function (t) {
               return t.dispose();
             }),
-            n = !!e.disposable,
-            i = e.makeCacheKey || cn;
+              n = !!e.disposable,
+              i = e.makeCacheKey || cn;
 
-          function o() {
-            if (!n || Ur.hasValue()) {
-              var o = i.apply(null, arguments);
-              if (void 0 === o) return t.apply(null, arguments);
-              var s = Array.prototype.slice.call(arguments),
-                a = r.get(o);
-              a
-                ? (a.args = s)
-                : ((a = new Wr(t, s)),
-                  r.set(o, a),
-                  (a.subscribe = e.subscribe),
-                  n &&
+            function o() {
+              if (!n || Ur.hasValue()) {
+                var o = i.apply(null, arguments);
+                if (void 0 === o) return t.apply(null, arguments);
+                var s = Array.prototype.slice.call(arguments),
+                  a = r.get(o);
+                a
+                  ? (a.args = s)
+                  : ((a = new Wr(t, s)),
+                    r.set(o, a),
+                    (a.subscribe = e.subscribe),
+                    n &&
                     (a.reportOrphan = function () {
                       return r.delete(o);
                     }));
-              var u = a.recompute();
-              return (
-                r.set(o, a),
-                fn.add(r),
-                Ur.hasValue() ||
+                var u = a.recompute();
+                return (
+                  r.set(o, a),
+                  fn.add(r),
+                  Ur.hasValue() ||
                   (fn.forEach(function (t) {
                     return t.clean();
                   }),
-                  fn.clear()),
-                n ? void 0 : u
-              );
+                    fn.clear()),
+                  n ? void 0 : u
+                );
+              }
             }
+
+            return (
+              (o.dirty = function () {
+                var t = i.apply(null, arguments),
+                  e = void 0 !== t && r.get(t);
+                e && e.setDirty();
+              }),
+              o
+            );
           }
 
-          return (
-            (o.dirty = function () {
-              var t = i.apply(null, arguments),
-                e = void 0 !== t && r.get(t);
-              e && e.setDirty();
-            }),
-            o
-          );
-        }
+          var pn = !1;
 
-        var pn = !1;
+          function hn() {
+            var t = !pn;
+            return !0 === Ge('test') || (pn = !0), t;
+          }
 
-        function hn() {
-          var t = !pn;
-          return !0 === Ge('test') || (pn = !0), t;
-        }
-
-        var dn = (function () {
-            function t() {}
+          var dn = (function () {
+            function t() { }
 
             return (
               (t.prototype.ensureReady = function () {
@@ -13713,320 +13693,320 @@ const RASSDK = (function (t, e) {
               t
             );
           })(),
-          bn =
-            ((function () {
+            bn =
+              ((function () {
+                function t(t) {
+                  t && t.introspectionQueryResultData
+                    ? ((this.possibleTypesMap = this.parseIntrospectionResult(t.introspectionQueryResultData)),
+                      (this.isReady = !0))
+                    : (this.isReady = !1),
+                    (this.match = this.match.bind(this));
+                }
+
+                (t.prototype.match = function (t, e, r) {
+                  Yt(this.isReady, 1);
+                  var n = r.store.get(t.id),
+                    i = 'ROOT_QUERY' === t.id;
+                  if (!n) return i;
+                  var o = n.__typename,
+                    s = void 0 === o ? i && 'Query' : o;
+                  if ((Yt(s, 2), s === e)) return !0;
+                  var a = this.possibleTypesMap[e];
+                  return !!(s && a && a.indexOf(s) > -1);
+                }),
+                  (t.prototype.parseIntrospectionResult = function (t) {
+                    var e = {};
+                    return (
+                      t.__schema.types.forEach(function (t) {
+                        ('UNION' !== t.kind && 'INTERFACE' !== t.kind) ||
+                          (e[t.name] = t.possibleTypes.map(function (t) {
+                            return t.name;
+                          }));
+                      }),
+                      e
+                    );
+                  });
+              })(),
+                Object.prototype.hasOwnProperty),
+            yn = (function () {
               function t(t) {
-                t && t.introspectionQueryResultData
-                  ? ((this.possibleTypesMap = this.parseIntrospectionResult(t.introspectionQueryResultData)),
-                    (this.isReady = !0))
-                  : (this.isReady = !1),
-                  (this.match = this.match.bind(this));
+                var e = this;
+                void 0 === t && (t = Object.create(null)),
+                  (this.data = t),
+                  (this.depend = ln(
+                    function (t) {
+                      return e.data[t];
+                    },
+                    {
+                      disposable: !0,
+                      makeCacheKey: function (t) {
+                        return t;
+                      },
+                    },
+                  ));
               }
 
-              (t.prototype.match = function (t, e, r) {
-                Yt(this.isReady, 1);
-                var n = r.store.get(t.id),
-                  i = 'ROOT_QUERY' === t.id;
-                if (!n) return i;
-                var o = n.__typename,
-                  s = void 0 === o ? i && 'Query' : o;
-                if ((Yt(s, 2), s === e)) return !0;
-                var a = this.possibleTypesMap[e];
-                return !!(s && a && a.indexOf(s) > -1);
-              }),
-                (t.prototype.parseIntrospectionResult = function (t) {
-                  var e = {};
-                  return (
-                    t.__schema.types.forEach(function (t) {
-                      ('UNION' !== t.kind && 'INTERFACE' !== t.kind) ||
-                        (e[t.name] = t.possibleTypes.map(function (t) {
-                          return t.name;
-                        }));
+              return (
+                (t.prototype.toObject = function () {
+                  return this.data;
+                }),
+                (t.prototype.get = function (t) {
+                  return this.depend(t), this.data[t];
+                }),
+                (t.prototype.set = function (t, e) {
+                  e !== this.data[t] && ((this.data[t] = e), this.depend.dirty(t));
+                }),
+                (t.prototype.delete = function (t) {
+                  bn.call(this.data, t) && (delete this.data[t], this.depend.dirty(t));
+                }),
+                (t.prototype.clear = function () {
+                  this.replace(null);
+                }),
+                (t.prototype.replace = function (t) {
+                  var e = this;
+                  t
+                    ? (Object.keys(t).forEach(function (r) {
+                      e.set(r, t[r]);
                     }),
-                    e
-                  );
-                });
-            })(),
-            Object.prototype.hasOwnProperty),
-          yn = (function () {
+                      Object.keys(this.data).forEach(function (r) {
+                        bn.call(t, r) || e.delete(r);
+                      }))
+                    : Object.keys(this.data).forEach(function (t) {
+                      e.delete(t);
+                    });
+                }),
+                t
+              );
+            })();
+
+          function vn(t) {
+            return new yn(t);
+          }
+
+          var _n = (function () {
             function t(t) {
-              var e = this;
-              void 0 === t && (t = Object.create(null)),
-                (this.data = t),
-                (this.depend = ln(
+              var e = this,
+                r = void 0 === t ? {} : t,
+                n = r.cacheKeyRoot,
+                i = void 0 === n ? new an(Qe) : n,
+                o = r.freezeResults,
+                s = void 0 !== o && o,
+                a = this,
+                u = a.executeStoreQuery,
+                c = a.executeSelectionSet,
+                f = a.executeSubSelectedArray;
+              (this.freezeResults = s),
+                (this.executeStoreQuery = ln(
                   function (t) {
-                    return e.data[t];
+                    return u.call(e, t);
                   },
                   {
-                    disposable: !0,
                     makeCacheKey: function (t) {
-                      return t;
+                      var e = t.query,
+                        r = t.rootValue,
+                        n = t.contextValue,
+                        o = t.variableValues,
+                        s = t.fragmentMatcher;
+                      if (n.store instanceof yn) return i.lookup(n.store, e, s, JSON.stringify(o), r.id);
+                    },
+                  },
+                )),
+                (this.executeSelectionSet = ln(
+                  function (t) {
+                    return c.call(e, t);
+                  },
+                  {
+                    makeCacheKey: function (t) {
+                      var e = t.selectionSet,
+                        r = t.rootValue,
+                        n = t.execContext;
+                      if (n.contextValue.store instanceof yn)
+                        return i.lookup(
+                          n.contextValue.store,
+                          e,
+                          n.fragmentMatcher,
+                          JSON.stringify(n.variableValues),
+                          r.id,
+                        );
+                    },
+                  },
+                )),
+                (this.executeSubSelectedArray = ln(
+                  function (t) {
+                    return f.call(e, t);
+                  },
+                  {
+                    makeCacheKey: function (t) {
+                      var e = t.field,
+                        r = t.array,
+                        n = t.execContext;
+                      if (n.contextValue.store instanceof yn)
+                        return i.lookup(n.contextValue.store, e, r, JSON.stringify(n.variableValues));
                     },
                   },
                 ));
             }
 
             return (
-              (t.prototype.toObject = function () {
-                return this.data;
+              (t.prototype.readQueryFromStore = function (t) {
+                return this.diffQueryAgainstStore(
+                  Qt(Qt({}, t), {
+                    returnPartialData: !1,
+                  }),
+                ).result;
               }),
-              (t.prototype.get = function (t) {
-                return this.depend(t), this.data[t];
-              }),
-              (t.prototype.set = function (t, e) {
-                e !== this.data[t] && ((this.data[t] = e), this.depend.dirty(t));
-              }),
-              (t.prototype.delete = function (t) {
-                bn.call(this.data, t) && (delete this.data[t], this.depend.dirty(t));
-              }),
-              (t.prototype.clear = function () {
-                this.replace(null);
-              }),
-              (t.prototype.replace = function (t) {
-                var e = this;
-                t
-                  ? (Object.keys(t).forEach(function (r) {
-                      e.set(r, t[r]);
-                    }),
-                    Object.keys(this.data).forEach(function (r) {
-                      bn.call(t, r) || e.delete(r);
-                    }))
-                  : Object.keys(this.data).forEach(function (t) {
-                      e.delete(t);
-                    });
-              }),
-              t
-            );
-          })();
-
-        function vn(t) {
-          return new yn(t);
-        }
-
-        var _n = (function () {
-          function t(t) {
-            var e = this,
-              r = void 0 === t ? {} : t,
-              n = r.cacheKeyRoot,
-              i = void 0 === n ? new an(Qe) : n,
-              o = r.freezeResults,
-              s = void 0 !== o && o,
-              a = this,
-              u = a.executeStoreQuery,
-              c = a.executeSelectionSet,
-              f = a.executeSubSelectedArray;
-            (this.freezeResults = s),
-              (this.executeStoreQuery = ln(
-                function (t) {
-                  return u.call(e, t);
-                },
-                {
-                  makeCacheKey: function (t) {
-                    var e = t.query,
-                      r = t.rootValue,
-                      n = t.contextValue,
-                      o = t.variableValues,
-                      s = t.fragmentMatcher;
-                    if (n.store instanceof yn) return i.lookup(n.store, e, s, JSON.stringify(o), r.id);
-                  },
-                },
-              )),
-              (this.executeSelectionSet = ln(
-                function (t) {
-                  return c.call(e, t);
-                },
-                {
-                  makeCacheKey: function (t) {
-                    var e = t.selectionSet,
-                      r = t.rootValue,
-                      n = t.execContext;
-                    if (n.contextValue.store instanceof yn)
-                      return i.lookup(
-                        n.contextValue.store,
-                        e,
-                        n.fragmentMatcher,
-                        JSON.stringify(n.variableValues),
-                        r.id,
-                      );
-                  },
-                },
-              )),
-              (this.executeSubSelectedArray = ln(
-                function (t) {
-                  return f.call(e, t);
-                },
-                {
-                  makeCacheKey: function (t) {
-                    var e = t.field,
-                      r = t.array,
-                      n = t.execContext;
-                    if (n.contextValue.store instanceof yn)
-                      return i.lookup(n.contextValue.store, e, r, JSON.stringify(n.variableValues));
-                  },
-                },
-              ));
-          }
-
-          return (
-            (t.prototype.readQueryFromStore = function (t) {
-              return this.diffQueryAgainstStore(
-                Qt(Qt({}, t), {
-                  returnPartialData: !1,
-                }),
-              ).result;
-            }),
-            (t.prototype.diffQueryAgainstStore = function (t) {
-              var e,
-                r = t.store,
-                n = t.query,
-                i = t.variables,
-                o = t.previousResult,
-                s = t.returnPartialData,
-                a = void 0 === s || s,
-                u = t.rootId,
-                c = void 0 === u ? 'ROOT_QUERY' : u,
-                f = t.fragmentMatcherFunction,
-                l = t.config;
-              i = Se({}, Fe((Yt((e = Oe(n)) && 'query' === e.operation, 6), e)), i);
-              var p = {
+              (t.prototype.diffQueryAgainstStore = function (t) {
+                var e,
+                  r = t.store,
+                  n = t.query,
+                  i = t.variables,
+                  o = t.previousResult,
+                  s = t.returnPartialData,
+                  a = void 0 === s || s,
+                  u = t.rootId,
+                  c = void 0 === u ? 'ROOT_QUERY' : u,
+                  f = t.fragmentMatcherFunction,
+                  l = t.config;
+                i = Se({}, Fe((Yt((e = Oe(n)) && 'query' === e.operation, 6), e)), i);
+                var p = {
                   store: r,
                   dataIdFromObject: l && l.dataIdFromObject,
                   cacheRedirects: (l && l.cacheRedirects) || {},
                 },
-                h = this.executeStoreQuery({
-                  query: n,
-                  rootValue: {
-                    type: 'id',
-                    id: c,
-                    generated: !0,
-                    typename: 'Query',
-                  },
-                  contextValue: p,
-                  variableValues: i,
-                  fragmentMatcher: f,
-                }),
-                d = h.missing && h.missing.length > 0;
-              return (
-                d &&
+                  h = this.executeStoreQuery({
+                    query: n,
+                    rootValue: {
+                      type: 'id',
+                      id: c,
+                      generated: !0,
+                      typename: 'Query',
+                    },
+                    contextValue: p,
+                    variableValues: i,
+                    fragmentMatcher: f,
+                  }),
+                  d = h.missing && h.missing.length > 0;
+                return (
+                  d &&
                   !a &&
                   h.missing.forEach(function (t) {
                     if (!t.tolerable) throw new Ht(8);
                   }),
-                o && oe(o, h.result) && (h.result = o),
-                {
-                  result: h.result,
-                  complete: !d,
+                  o && oe(o, h.result) && (h.result = o),
+                  {
+                    result: h.result,
+                    complete: !d,
+                  }
+                );
+              }),
+              (t.prototype.executeStoreQuery = function (t) {
+                var e = t.query,
+                  r = t.rootValue,
+                  n = t.contextValue,
+                  i = t.variableValues,
+                  o = t.fragmentMatcher,
+                  s = void 0 === o ? gn : o,
+                  a = Ae(e),
+                  u = {
+                    query: e,
+                    fragmentMap: Re(ke(e)),
+                    contextValue: n,
+                    variableValues: i,
+                    fragmentMatcher: s,
+                  };
+                return this.executeSelectionSet({
+                  selectionSet: a.selectionSet,
+                  rootValue: r,
+                  execContext: u,
+                });
+              }),
+              (t.prototype.executeSelectionSet = function (t) {
+                var e = this,
+                  r = t.selectionSet,
+                  n = t.rootValue,
+                  i = t.execContext,
+                  o = i.fragmentMap,
+                  s = i.contextValue,
+                  a = i.variableValues,
+                  u = {
+                    result: null,
+                  },
+                  c = [],
+                  f = s.store.get(n.id),
+                  l = (f && f.__typename) || ('ROOT_QUERY' === n.id && 'Query') || void 0;
+
+                function p(t) {
+                  var e;
+                  return t.missing && ((u.missing = u.missing || []), (e = u.missing).push.apply(e, t.missing)), t.result;
                 }
-              );
-            }),
-            (t.prototype.executeStoreQuery = function (t) {
-              var e = t.query,
-                r = t.rootValue,
-                n = t.contextValue,
-                i = t.variableValues,
-                o = t.fragmentMatcher,
-                s = void 0 === o ? gn : o,
-                a = Ae(e),
-                u = {
-                  query: e,
-                  fragmentMap: Re(ke(e)),
-                  contextValue: n,
-                  variableValues: i,
-                  fragmentMatcher: s,
-                };
-              return this.executeSelectionSet({
-                selectionSet: a.selectionSet,
-                rootValue: r,
-                execContext: u,
-              });
-            }),
-            (t.prototype.executeSelectionSet = function (t) {
-              var e = this,
-                r = t.selectionSet,
-                n = t.rootValue,
-                i = t.execContext,
-                o = i.fragmentMap,
-                s = i.contextValue,
-                a = i.variableValues,
-                u = {
-                  result: null,
-                },
-                c = [],
-                f = s.store.get(n.id),
-                l = (f && f.__typename) || ('ROOT_QUERY' === n.id && 'Query') || void 0;
 
-              function p(t) {
-                var e;
-                return t.missing && ((u.missing = u.missing || []), (e = u.missing).push.apply(e, t.missing)), t.result;
-              }
-
-              return (
-                r.selections.forEach(function (t) {
-                  var r;
-                  if (_e(t, a))
-                    if (he(t)) {
-                      var u = p(e.executeField(f, l, t, i));
-                      void 0 !== u && c.push((((r = {})[pe(t)] = u), r));
-                    } else {
-                      var h = void 0;
-                      if (de(t)) h = t;
-                      else if (!(h = o[t.name.value])) throw new Ht(9);
-                      var d = h.typeCondition && h.typeCondition.name.value,
-                        b = !d || i.fragmentMatcher(n, d, s);
-                      if (b) {
-                        var y = e.executeSelectionSet({
-                          selectionSet: h.selectionSet,
-                          rootValue: n,
-                          execContext: i,
-                        });
-                        'heuristic' === b &&
-                          y.missing &&
-                          (y = Qt(Qt({}, y), {
-                            missing: y.missing.map(function (t) {
-                              return Qt(Qt({}, t), {
-                                tolerable: !0,
-                              });
-                            }),
-                          })),
-                          c.push(p(y));
+                return (
+                  r.selections.forEach(function (t) {
+                    var r;
+                    if (_e(t, a))
+                      if (he(t)) {
+                        var u = p(e.executeField(f, l, t, i));
+                        void 0 !== u && c.push((((r = {})[pe(t)] = u), r));
+                      } else {
+                        var h = void 0;
+                        if (de(t)) h = t;
+                        else if (!(h = o[t.name.value])) throw new Ht(9);
+                        var d = h.typeCondition && h.typeCondition.name.value,
+                          b = !d || i.fragmentMatcher(n, d, s);
+                        if (b) {
+                          var y = e.executeSelectionSet({
+                            selectionSet: h.selectionSet,
+                            rootValue: n,
+                            execContext: i,
+                          });
+                          'heuristic' === b &&
+                            y.missing &&
+                            (y = Qt(Qt({}, y), {
+                              missing: y.missing.map(function (t) {
+                                return Qt(Qt({}, t), {
+                                  tolerable: !0,
+                                });
+                              }),
+                            })),
+                            c.push(p(y));
+                        }
+                      }
+                  }),
+                  (u.result = He(c)),
+                  this.freezeResults,
+                  u
+                );
+              }),
+              (t.prototype.executeField = function (t, e, r, n) {
+                var i = n.variableValues,
+                  o = n.contextValue,
+                  s = (function (t, e, r, n, i, o) {
+                    var s = o.directives,
+                      a = r;
+                    (n || s) && (a = fe(a, n, s));
+                    var u,
+                      c = void 0;
+                    if (t && void 0 === (c = t[a]) && i.cacheRedirects && 'string' == typeof e) {
+                      var f = i.cacheRedirects[e];
+                      if (f) {
+                        var l = f[r];
+                        l &&
+                          (c = l(t, n, {
+                            getCacheKey: function (t) {
+                              var e = i.dataIdFromObject(t);
+                              return (
+                                e &&
+                                ye({
+                                  id: e,
+                                  typename: t.__typename,
+                                })
+                              );
+                            },
+                          }));
                       }
                     }
-                }),
-                (u.result = He(c)),
-                this.freezeResults,
-                u
-              );
-            }),
-            (t.prototype.executeField = function (t, e, r, n) {
-              var i = n.variableValues,
-                o = n.contextValue,
-                s = (function (t, e, r, n, i, o) {
-                  var s = o.directives,
-                    a = r;
-                  (n || s) && (a = fe(a, n, s));
-                  var u,
-                    c = void 0;
-                  if (t && void 0 === (c = t[a]) && i.cacheRedirects && 'string' == typeof e) {
-                    var f = i.cacheRedirects[e];
-                    if (f) {
-                      var l = f[r];
-                      l &&
-                        (c = l(t, n, {
-                          getCacheKey: function (t) {
-                            var e = i.dataIdFromObject(t);
-                            return (
-                              e &&
-                              ye({
-                                id: e,
-                                typename: t.__typename,
-                              })
-                            );
-                          },
-                        }));
-                    }
-                  }
-                  return void 0 === c
-                    ? {
+                    return void 0 === c
+                      ? {
                         result: c,
                         missing: [
                           {
@@ -14036,16 +14016,16 @@ const RASSDK = (function (t, e) {
                           },
                         ],
                       }
-                    : (null != (u = c) && 'object' == typeof u && 'json' === u.type && (c = c.json),
+                      : (null != (u = c) && 'object' == typeof u && 'json' === u.type && (c = c.json),
                       {
                         result: c,
                       });
-                })(t, e, r.name.value, le(r, i), o, {
-                  resultKey: pe(r),
-                  directives: ve(r, i),
-                });
-              return Array.isArray(s.result)
-                ? this.combineExecResults(
+                  })(t, e, r.name.value, le(r, i), o, {
+                    resultKey: pe(r),
+                    directives: ve(r, i),
+                  });
+                return Array.isArray(s.result)
+                  ? this.combineExecResults(
                     s,
                     this.executeSubSelectedArray({
                       field: r,
@@ -14053,84 +14033,84 @@ const RASSDK = (function (t, e) {
                       execContext: n,
                     }),
                   )
-                : r.selectionSet
-                ? null == s.result
-                  ? s
-                  : this.combineExecResults(
-                      s,
-                      this.executeSelectionSet({
-                        selectionSet: r.selectionSet,
-                        rootValue: s.result,
-                        execContext: n,
-                      }),
-                    )
-                : (mn(r, s.result), this.freezeResults, s);
-            }),
-            (t.prototype.combineExecResults = function () {
-              for (var t, e = [], r = 0; r < arguments.length; r++) e[r] = arguments[r];
-              return (
-                e.forEach(function (e) {
-                  e.missing && (t = t || []).push.apply(t, e.missing);
-                }),
-                {
-                  result: e.pop().result,
-                  missing: t,
-                }
-              );
-            }),
-            (t.prototype.executeSubSelectedArray = function (t) {
-              var e,
-                r = this,
-                n = t.field,
-                i = t.array,
-                o = t.execContext;
-
-              function s(t) {
-                return t.missing && (e = e || []).push.apply(e, t.missing), t.result;
-              }
-
-              return (
-                (i = i.map(function (t) {
-                  return null === t
-                    ? null
-                    : Array.isArray(t)
-                    ? s(
-                        r.executeSubSelectedArray({
-                          field: n,
-                          array: t,
-                          execContext: o,
+                  : r.selectionSet
+                    ? null == s.result
+                      ? s
+                      : this.combineExecResults(
+                        s,
+                        this.executeSelectionSet({
+                          selectionSet: r.selectionSet,
+                          rootValue: s.result,
+                          execContext: n,
                         }),
                       )
-                    : n.selectionSet
-                    ? s(
-                        r.executeSelectionSet({
-                          selectionSet: n.selectionSet,
-                          rootValue: t,
-                          execContext: o,
-                        }),
-                      )
-                    : (mn(n, t), t);
-                })),
-                this.freezeResults,
-                {
-                  result: i,
-                  missing: e,
+                    : (mn(r, s.result), this.freezeResults, s);
+              }),
+              (t.prototype.combineExecResults = function () {
+                for (var t, e = [], r = 0; r < arguments.length; r++) e[r] = arguments[r];
+                return (
+                  e.forEach(function (e) {
+                    e.missing && (t = t || []).push.apply(t, e.missing);
+                  }),
+                  {
+                    result: e.pop().result,
+                    missing: t,
+                  }
+                );
+              }),
+              (t.prototype.executeSubSelectedArray = function (t) {
+                var e,
+                  r = this,
+                  n = t.field,
+                  i = t.array,
+                  o = t.execContext;
+
+                function s(t) {
+                  return t.missing && (e = e || []).push.apply(e, t.missing), t.result;
                 }
-              );
-            }),
-            t
-          );
-        })();
 
-        function mn(t, e) {
-          if (!t.selectionSet && be(e)) throw new Ht(10);
-        }
+                return (
+                  (i = i.map(function (t) {
+                    return null === t
+                      ? null
+                      : Array.isArray(t)
+                        ? s(
+                          r.executeSubSelectedArray({
+                            field: n,
+                            array: t,
+                            execContext: o,
+                          }),
+                        )
+                        : n.selectionSet
+                          ? s(
+                            r.executeSelectionSet({
+                              selectionSet: n.selectionSet,
+                              rootValue: t,
+                              execContext: o,
+                            }),
+                          )
+                          : (mn(n, t), t);
+                  })),
+                  this.freezeResults,
+                  {
+                    result: i,
+                    missing: e,
+                  }
+                );
+              }),
+              t
+            );
+          })();
 
-        function gn() {
-          return !0;
-        }
+          function mn(t, e) {
+            if (!t.selectionSet && be(e)) throw new Ht(10);
+          }
 
-        var wn = (function () {
+          function gn() {
+            return !0;
+          }
+
+          var wn = (function () {
             function t(t) {
               void 0 === t && (t = Object.create(null)), (this.data = t);
             }
@@ -14157,277 +14137,277 @@ const RASSDK = (function (t, e) {
               t
             );
           })(),
-          In = (function (t) {
-            function e() {
-              var e = (null !== t && t.apply(this, arguments)) || this;
-              return (e.type = 'WriteError'), e;
-            }
+            In = (function (t) {
+              function e() {
+                var e = (null !== t && t.apply(this, arguments)) || this;
+                return (e.type = 'WriteError'), e;
+              }
 
-            return Mt(e, t), e;
-          })(Error),
-          Sn = (function () {
-            function t() {}
+              return Mt(e, t), e;
+            })(Error),
+            Sn = (function () {
+              function t() { }
 
-            return (
-              (t.prototype.writeQueryToStore = function (t) {
-                var e = t.query,
-                  r = t.result,
-                  n = t.store,
-                  i = void 0 === n ? vn() : n,
-                  o = t.variables,
-                  s = t.dataIdFromObject,
-                  a = t.fragmentMatcherFunction;
-                return this.writeResultToStore({
-                  dataId: 'ROOT_QUERY',
-                  result: r,
-                  document: e,
-                  store: i,
-                  variables: o,
-                  dataIdFromObject: s,
-                  fragmentMatcherFunction: a,
-                });
-              }),
-              (t.prototype.writeResultToStore = function (t) {
-                var e = t.dataId,
-                  r = t.result,
-                  n = t.document,
-                  i = t.store,
-                  o = void 0 === i ? vn() : i,
-                  s = t.variables,
-                  a = t.dataIdFromObject,
-                  u = t.fragmentMatcherFunction,
-                  c = Oe(n);
-                try {
-                  return this.writeSelectionSetToStore({
+              return (
+                (t.prototype.writeQueryToStore = function (t) {
+                  var e = t.query,
+                    r = t.result,
+                    n = t.store,
+                    i = void 0 === n ? vn() : n,
+                    o = t.variables,
+                    s = t.dataIdFromObject,
+                    a = t.fragmentMatcherFunction;
+                  return this.writeResultToStore({
+                    dataId: 'ROOT_QUERY',
                     result: r,
-                    dataId: e,
-                    selectionSet: c.selectionSet,
-                    context: {
-                      store: o,
-                      processedData: {},
-                      variables: Se({}, Fe(c), s),
-                      dataIdFromObject: a,
-                      fragmentMap: Re(ke(n)),
-                      fragmentMatcherFunction: u,
-                    },
+                    document: e,
+                    store: i,
+                    variables: o,
+                    dataIdFromObject: s,
+                    fragmentMatcherFunction: a,
                   });
-                } catch (t) {
-                  throw (function (t, e) {
-                    var r = new In('Error writing result to store for query:\n ' + JSON.stringify(e));
-                    return (r.message += '\n' + t.message), (r.stack = t.stack), r;
-                  })(t, n);
-                }
-              }),
-              (t.prototype.writeSelectionSetToStore = function (t) {
-                var e = this,
-                  r = t.result,
-                  n = t.dataId,
-                  i = t.selectionSet,
-                  o = t.context,
-                  s = o.variables,
-                  a = o.store,
-                  u = o.fragmentMap;
-                return (
-                  i.selections.forEach(function (t) {
-                    var i;
-                    if (_e(t, s))
-                      if (he(t)) {
-                        var a = pe(t),
-                          c = r[a];
-                        if (void 0 !== c)
-                          e.writeFieldToStore({
-                            dataId: n,
-                            value: c,
-                            field: t,
-                            context: o,
-                          });
-                        else {
-                          var f = !1,
-                            l = !1;
-                          t.directives &&
-                            t.directives.length &&
-                            ((f = t.directives.some(function (t) {
-                              return t.name && 'defer' === t.name.value;
-                            })),
-                            (l = t.directives.some(function (t) {
-                              return t.name && 'client' === t.name.value;
-                            }))),
-                            !f && !l && o.fragmentMatcherFunction;
-                        }
-                      } else {
-                        var p = void 0;
-                        de(t) ? (p = t) : Yt((p = (u || {})[t.name.value]), 3);
-                        var h = !0;
-                        if (o.fragmentMatcherFunction && p.typeCondition) {
-                          var d = n || 'self',
-                            b = ye({
-                              id: d,
-                              typename: void 0,
-                            }),
-                            y = {
-                              store: new wn(((i = {}), (i[d] = r), i)),
-                              cacheRedirects: {},
-                            },
-                            v = o.fragmentMatcherFunction(b, p.typeCondition.name.value, y);
-                          Ge('production'), (h = !!v);
-                        }
-                        h &&
-                          e.writeSelectionSetToStore({
-                            result: r,
-                            selectionSet: p.selectionSet,
-                            dataId: n,
-                            context: o,
-                          });
-                      }
-                  }),
-                  a
-                );
-              }),
-              (t.prototype.writeFieldToStore = function (t) {
-                var e,
-                  r,
-                  n,
-                  i = t.field,
-                  o = t.value,
-                  s = t.dataId,
-                  a = t.context,
-                  u = a.variables,
-                  c = a.dataIdFromObject,
-                  f = a.store,
-                  l = (function (t, e) {
-                    var r = null;
-                    t.directives &&
-                      ((r = {}),
-                      t.directives.forEach(function (t) {
-                        (r[t.name.value] = {}),
-                          t.arguments &&
-                            t.arguments.forEach(function (n) {
-                              var i = n.name,
-                                o = n.value;
-                              return ue(r[t.name.value], i, o, e);
+                }),
+                (t.prototype.writeResultToStore = function (t) {
+                  var e = t.dataId,
+                    r = t.result,
+                    n = t.document,
+                    i = t.store,
+                    o = void 0 === i ? vn() : i,
+                    s = t.variables,
+                    a = t.dataIdFromObject,
+                    u = t.fragmentMatcherFunction,
+                    c = Oe(n);
+                  try {
+                    return this.writeSelectionSetToStore({
+                      result: r,
+                      dataId: e,
+                      selectionSet: c.selectionSet,
+                      context: {
+                        store: o,
+                        processedData: {},
+                        variables: Se({}, Fe(c), s),
+                        dataIdFromObject: a,
+                        fragmentMap: Re(ke(n)),
+                        fragmentMatcherFunction: u,
+                      },
+                    });
+                  } catch (t) {
+                    throw (function (t, e) {
+                      var r = new In('Error writing result to store for query:\n ' + JSON.stringify(e));
+                      return (r.message += '\n' + t.message), (r.stack = t.stack), r;
+                    })(t, n);
+                  }
+                }),
+                (t.prototype.writeSelectionSetToStore = function (t) {
+                  var e = this,
+                    r = t.result,
+                    n = t.dataId,
+                    i = t.selectionSet,
+                    o = t.context,
+                    s = o.variables,
+                    a = o.store,
+                    u = o.fragmentMap;
+                  return (
+                    i.selections.forEach(function (t) {
+                      var i;
+                      if (_e(t, s))
+                        if (he(t)) {
+                          var a = pe(t),
+                            c = r[a];
+                          if (void 0 !== c)
+                            e.writeFieldToStore({
+                              dataId: n,
+                              value: c,
+                              field: t,
+                              context: o,
                             });
-                      }));
-                    var n = null;
-                    return (
-                      t.arguments &&
+                          else {
+                            var f = !1,
+                              l = !1;
+                            t.directives &&
+                              t.directives.length &&
+                              ((f = t.directives.some(function (t) {
+                                return t.name && 'defer' === t.name.value;
+                              })),
+                                (l = t.directives.some(function (t) {
+                                  return t.name && 'client' === t.name.value;
+                                }))),
+                              !f && !l && o.fragmentMatcherFunction;
+                          }
+                        } else {
+                          var p = void 0;
+                          de(t) ? (p = t) : Yt((p = (u || {})[t.name.value]), 3);
+                          var h = !0;
+                          if (o.fragmentMatcherFunction && p.typeCondition) {
+                            var d = n || 'self',
+                              b = ye({
+                                id: d,
+                                typename: void 0,
+                              }),
+                              y = {
+                                store: new wn(((i = {}), (i[d] = r), i)),
+                                cacheRedirects: {},
+                              },
+                              v = o.fragmentMatcherFunction(b, p.typeCondition.name.value, y);
+                            Ge('production'), (h = !!v);
+                          }
+                          h &&
+                            e.writeSelectionSetToStore({
+                              result: r,
+                              selectionSet: p.selectionSet,
+                              dataId: n,
+                              context: o,
+                            });
+                        }
+                    }),
+                    a
+                  );
+                }),
+                (t.prototype.writeFieldToStore = function (t) {
+                  var e,
+                    r,
+                    n,
+                    i = t.field,
+                    o = t.value,
+                    s = t.dataId,
+                    a = t.context,
+                    u = a.variables,
+                    c = a.dataIdFromObject,
+                    f = a.store,
+                    l = (function (t, e) {
+                      var r = null;
+                      t.directives &&
+                        ((r = {}),
+                          t.directives.forEach(function (t) {
+                            (r[t.name.value] = {}),
+                              t.arguments &&
+                              t.arguments.forEach(function (n) {
+                                var i = n.name,
+                                  o = n.value;
+                                return ue(r[t.name.value], i, o, e);
+                              });
+                          }));
+                      var n = null;
+                      return (
+                        t.arguments &&
                         t.arguments.length &&
                         ((n = {}),
-                        t.arguments.forEach(function (t) {
-                          var r = t.name,
-                            i = t.value;
-                          return ue(n, r, i, e);
-                        })),
-                      fe(t.name.value, n, r)
-                    );
-                  })(i, u);
-                if (i.selectionSet && null !== o)
-                  if (Array.isArray(o)) {
-                    var p = s + '.' + l;
-                    r = this.processArrayValue(o, p, i.selectionSet, a);
-                  } else {
-                    var h = s + '.' + l,
-                      d = !0;
-                    if ((En(h) || (h = '$' + h), c)) {
-                      var b = c(o);
-                      Yt(!b || !En(b), 4), (b || ('number' == typeof b && 0 === b)) && ((h = b), (d = !1));
+                          t.arguments.forEach(function (t) {
+                            var r = t.name,
+                              i = t.value;
+                            return ue(n, r, i, e);
+                          })),
+                        fe(t.name.value, n, r)
+                      );
+                    })(i, u);
+                  if (i.selectionSet && null !== o)
+                    if (Array.isArray(o)) {
+                      var p = s + '.' + l;
+                      r = this.processArrayValue(o, p, i.selectionSet, a);
+                    } else {
+                      var h = s + '.' + l,
+                        d = !0;
+                      if ((En(h) || (h = '$' + h), c)) {
+                        var b = c(o);
+                        Yt(!b || !En(b), 4), (b || ('number' == typeof b && 0 === b)) && ((h = b), (d = !1));
+                      }
+                      Tn(h, i, a.processedData) ||
+                        this.writeSelectionSetToStore({
+                          dataId: h,
+                          result: o,
+                          selectionSet: i.selectionSet,
+                          context: a,
+                        });
+                      var y = o.__typename;
+                      r = ye(
+                        {
+                          id: h,
+                          typename: y,
+                        },
+                        d,
+                      );
+                      var v = (n = f.get(s)) && n[l];
+                      if (v !== r && be(v)) {
+                        var _ = void 0 !== v.typename,
+                          m = void 0 !== y,
+                          g = _ && m && v.typename !== y;
+                        Yt(!d || v.generated || g, 5),
+                          Yt(!_ || m, 6),
+                          v.generated && (g ? d || f.delete(v.id) : On(v.id, r.id, f));
+                      }
                     }
-                    Tn(h, i, a.processedData) ||
-                      this.writeSelectionSetToStore({
-                        dataId: h,
-                        result: o,
-                        selectionSet: i.selectionSet,
-                        context: a,
-                      });
-                    var y = o.__typename;
-                    r = ye(
-                      {
-                        id: h,
-                        typename: y,
-                      },
-                      d,
-                    );
-                    var v = (n = f.get(s)) && n[l];
-                    if (v !== r && be(v)) {
-                      var _ = void 0 !== v.typename,
-                        m = void 0 !== y,
-                        g = _ && m && v.typename !== y;
-                      Yt(!d || v.generated || g, 5),
-                        Yt(!_ || m, 6),
-                        v.generated && (g ? d || f.delete(v.id) : On(v.id, r.id, f));
-                    }
-                  }
-                else
-                  r =
-                    null != o && 'object' == typeof o
-                      ? {
+                  else
+                    r =
+                      null != o && 'object' == typeof o
+                        ? {
                           type: 'json',
                           json: o,
                         }
-                      : o;
-                ((n = f.get(s)) && oe(r, n[l])) || f.set(s, Qt(Qt({}, n), (((e = {})[l] = r), e)));
-              }),
-              (t.prototype.processArrayValue = function (t, e, r, n) {
-                var i = this;
-                return t.map(function (t, o) {
-                  if (null === t) return null;
-                  var s = e + '.' + o;
-                  if (Array.isArray(t)) return i.processArrayValue(t, s, r, n);
-                  var a = !0;
-                  if (n.dataIdFromObject) {
-                    var u = n.dataIdFromObject(t);
-                    u && ((s = u), (a = !1));
-                  }
-                  return (
-                    Tn(s, r, n.processedData) ||
+                        : o;
+                  ((n = f.get(s)) && oe(r, n[l])) || f.set(s, Qt(Qt({}, n), (((e = {})[l] = r), e)));
+                }),
+                (t.prototype.processArrayValue = function (t, e, r, n) {
+                  var i = this;
+                  return t.map(function (t, o) {
+                    if (null === t) return null;
+                    var s = e + '.' + o;
+                    if (Array.isArray(t)) return i.processArrayValue(t, s, r, n);
+                    var a = !0;
+                    if (n.dataIdFromObject) {
+                      var u = n.dataIdFromObject(t);
+                      u && ((s = u), (a = !1));
+                    }
+                    return (
+                      Tn(s, r, n.processedData) ||
                       i.writeSelectionSetToStore({
                         dataId: s,
                         result: t,
                         selectionSet: r,
                         context: n,
                       }),
-                    ye(
-                      {
-                        id: s,
-                        typename: t.__typename,
-                      },
-                      a,
-                    )
-                  );
-                });
-              }),
-              t
-            );
-          })();
+                      ye(
+                        {
+                          id: s,
+                          typename: t.__typename,
+                        },
+                        a,
+                      )
+                    );
+                  });
+                }),
+                t
+              );
+            })();
 
-        function En(t) {
-          return '$' === t[0];
-        }
+          function En(t) {
+            return '$' === t[0];
+          }
 
-        function On(t, e, r) {
-          if (t === e) return !1;
-          var n = r.get(t),
-            i = r.get(e),
-            o = !1;
-          Object.keys(n).forEach(function (t) {
-            var e = n[t],
-              s = i[t];
-            be(e) && En(e.id) && be(s) && !oe(e, s) && On(e.id, s.id, r) && (o = !0);
-          }),
-            r.delete(t);
-          var s = Qt(Qt({}, n), i);
-          return oe(s, i) ? o : (r.set(e, s), !0);
-        }
+          function On(t, e, r) {
+            if (t === e) return !1;
+            var n = r.get(t),
+              i = r.get(e),
+              o = !1;
+            Object.keys(n).forEach(function (t) {
+              var e = n[t],
+                s = i[t];
+              be(e) && En(e.id) && be(s) && !oe(e, s) && On(e.id, s.id, r) && (o = !0);
+            }),
+              r.delete(t);
+            var s = Qt(Qt({}, n), i);
+            return oe(s, i) ? o : (r.set(e, s), !0);
+          }
 
-        function Tn(t, e, r) {
-          if (!r) return !1;
-          if (r[t]) {
-            if (r[t].indexOf(e) >= 0) return !0;
-            r[t].push(e);
-          } else r[t] = [e];
-          return !1;
-        }
+          function Tn(t, e, r) {
+            if (!r) return !1;
+            if (r[t]) {
+              if (r[t].indexOf(e) >= 0) return !0;
+              r[t].push(e);
+            } else r[t] = [e];
+            return !1;
+          }
 
-        var kn = {
+          var kn = {
             fragmentMatcher: new dn(),
             dataIdFromObject: function (t) {
               if (t.__typename) {
@@ -14440,241 +14420,241 @@ const RASSDK = (function (t, e) {
             resultCaching: !0,
             freezeResults: !1,
           },
-          An = Object.prototype.hasOwnProperty,
-          Rn = (function (t) {
-            function e(e, r, n) {
-              var i = t.call(this, Object.create(null)) || this;
-              return (i.optimisticId = e), (i.parent = r), (i.transaction = n), i;
-            }
+            An = Object.prototype.hasOwnProperty,
+            Rn = (function (t) {
+              function e(e, r, n) {
+                var i = t.call(this, Object.create(null)) || this;
+                return (i.optimisticId = e), (i.parent = r), (i.transaction = n), i;
+              }
 
-            return (
-              Mt(e, t),
-              (e.prototype.toObject = function () {
-                return Qt(Qt({}, this.parent.toObject()), this.data);
-              }),
-              (e.prototype.get = function (t) {
-                return An.call(this.data, t) ? this.data[t] : this.parent.get(t);
-              }),
-              e
-            );
-          })(wn),
-          Fn = (function (t) {
-            function e(e) {
-              void 0 === e && (e = {});
-              var r = t.call(this) || this;
-              (r.watches = new Set()),
-                (r.typenameDocumentCache = new Map()),
-                (r.cacheKeyRoot = new an(Qe)),
-                (r.silenceBroadcast = !1),
-                (r.config = Qt(Qt({}, kn), e)),
-                r.config.customResolvers && (r.config.cacheRedirects = r.config.customResolvers),
-                r.config.cacheResolvers && (r.config.cacheRedirects = r.config.cacheResolvers),
-                (r.addTypename = !!r.config.addTypename),
-                (r.data = r.config.resultCaching ? new yn() : new wn()),
-                (r.optimisticData = r.data),
-                (r.storeWriter = new Sn()),
-                (r.storeReader = new _n({
-                  cacheKeyRoot: r.cacheKeyRoot,
-                  freezeResults: e.freezeResults,
-                }));
-              var n = r,
-                i = n.maybeBroadcastWatch;
               return (
-                (r.maybeBroadcastWatch = ln(
-                  function (t) {
-                    return i.call(r, t);
-                  },
-                  {
-                    makeCacheKey: function (t) {
-                      if (!t.optimistic && !t.previousResult)
-                        return n.data instanceof yn
-                          ? n.cacheKeyRoot.lookup(t.query, JSON.stringify(t.variables))
-                          : void 0;
-                    },
-                  },
-                )),
-                r
+                Mt(e, t),
+                (e.prototype.toObject = function () {
+                  return Qt(Qt({}, this.parent.toObject()), this.data);
+                }),
+                (e.prototype.get = function (t) {
+                  return An.call(this.data, t) ? this.data[t] : this.parent.get(t);
+                }),
+                e
               );
-            }
-
-            return (
-              Mt(e, t),
-              (e.prototype.restore = function (t) {
-                return t && this.data.replace(t), this;
-              }),
-              (e.prototype.extract = function (t) {
-                return void 0 === t && (t = !1), (t ? this.optimisticData : this.data).toObject();
-              }),
-              (e.prototype.read = function (t) {
-                if ('string' == typeof t.rootId && void 0 === this.data.get(t.rootId)) return null;
-                var e = this.config.fragmentMatcher,
-                  r = e && e.match;
+            })(wn),
+            Fn = (function (t) {
+              function e(e) {
+                void 0 === e && (e = {});
+                var r = t.call(this) || this;
+                (r.watches = new Set()),
+                  (r.typenameDocumentCache = new Map()),
+                  (r.cacheKeyRoot = new an(Qe)),
+                  (r.silenceBroadcast = !1),
+                  (r.config = Qt(Qt({}, kn), e)),
+                  r.config.customResolvers && (r.config.cacheRedirects = r.config.customResolvers),
+                  r.config.cacheResolvers && (r.config.cacheRedirects = r.config.cacheResolvers),
+                  (r.addTypename = !!r.config.addTypename),
+                  (r.data = r.config.resultCaching ? new yn() : new wn()),
+                  (r.optimisticData = r.data),
+                  (r.storeWriter = new Sn()),
+                  (r.storeReader = new _n({
+                    cacheKeyRoot: r.cacheKeyRoot,
+                    freezeResults: e.freezeResults,
+                  }));
+                var n = r,
+                  i = n.maybeBroadcastWatch;
                 return (
-                  this.storeReader.readQueryFromStore({
+                  (r.maybeBroadcastWatch = ln(
+                    function (t) {
+                      return i.call(r, t);
+                    },
+                    {
+                      makeCacheKey: function (t) {
+                        if (!t.optimistic && !t.previousResult)
+                          return n.data instanceof yn
+                            ? n.cacheKeyRoot.lookup(t.query, JSON.stringify(t.variables))
+                            : void 0;
+                      },
+                    },
+                  )),
+                  r
+                );
+              }
+
+              return (
+                Mt(e, t),
+                (e.prototype.restore = function (t) {
+                  return t && this.data.replace(t), this;
+                }),
+                (e.prototype.extract = function (t) {
+                  return void 0 === t && (t = !1), (t ? this.optimisticData : this.data).toObject();
+                }),
+                (e.prototype.read = function (t) {
+                  if ('string' == typeof t.rootId && void 0 === this.data.get(t.rootId)) return null;
+                  var e = this.config.fragmentMatcher,
+                    r = e && e.match;
+                  return (
+                    this.storeReader.readQueryFromStore({
+                      store: t.optimistic ? this.optimisticData : this.data,
+                      query: this.transformDocument(t.query),
+                      variables: t.variables,
+                      rootId: t.rootId,
+                      fragmentMatcherFunction: r,
+                      previousResult: t.previousResult,
+                      config: this.config,
+                    }) || null
+                  );
+                }),
+                (e.prototype.write = function (t) {
+                  var e = this.config.fragmentMatcher,
+                    r = e && e.match;
+                  this.storeWriter.writeResultToStore({
+                    dataId: t.dataId,
+                    result: t.result,
+                    variables: t.variables,
+                    document: this.transformDocument(t.query),
+                    store: this.data,
+                    dataIdFromObject: this.config.dataIdFromObject,
+                    fragmentMatcherFunction: r,
+                  }),
+                    this.broadcastWatches();
+                }),
+                (e.prototype.diff = function (t) {
+                  var e = this.config.fragmentMatcher,
+                    r = e && e.match;
+                  return this.storeReader.diffQueryAgainstStore({
                     store: t.optimistic ? this.optimisticData : this.data,
                     query: this.transformDocument(t.query),
                     variables: t.variables,
-                    rootId: t.rootId,
-                    fragmentMatcherFunction: r,
+                    returnPartialData: t.returnPartialData,
                     previousResult: t.previousResult,
+                    fragmentMatcherFunction: r,
                     config: this.config,
-                  }) || null
-                );
-              }),
-              (e.prototype.write = function (t) {
-                var e = this.config.fragmentMatcher,
-                  r = e && e.match;
-                this.storeWriter.writeResultToStore({
-                  dataId: t.dataId,
-                  result: t.result,
-                  variables: t.variables,
-                  document: this.transformDocument(t.query),
-                  store: this.data,
-                  dataIdFromObject: this.config.dataIdFromObject,
-                  fragmentMatcherFunction: r,
-                }),
-                  this.broadcastWatches();
-              }),
-              (e.prototype.diff = function (t) {
-                var e = this.config.fragmentMatcher,
-                  r = e && e.match;
-                return this.storeReader.diffQueryAgainstStore({
-                  store: t.optimistic ? this.optimisticData : this.data,
-                  query: this.transformDocument(t.query),
-                  variables: t.variables,
-                  returnPartialData: t.returnPartialData,
-                  previousResult: t.previousResult,
-                  fragmentMatcherFunction: r,
-                  config: this.config,
-                });
-              }),
-              (e.prototype.watch = function (t) {
-                var e = this;
-                return (
-                  this.watches.add(t),
-                  function () {
-                    e.watches.delete(t);
-                  }
-                );
-              }),
-              (e.prototype.evict = function (t) {
-                throw new Ht(7);
-              }),
-              (e.prototype.reset = function () {
-                return this.data.clear(), this.broadcastWatches(), Promise.resolve();
-              }),
-              (e.prototype.removeOptimistic = function (t) {
-                for (var e = [], r = 0, n = this.optimisticData; n instanceof Rn; )
-                  n.optimisticId === t ? ++r : e.push(n), (n = n.parent);
-                if (r > 0) {
-                  for (this.optimisticData = n; e.length > 0; ) {
-                    var i = e.pop();
-                    this.performTransaction(i.transaction, i.optimisticId);
-                  }
-                  this.broadcastWatches();
-                }
-              }),
-              (e.prototype.performTransaction = function (t, e) {
-                var r = this.data,
-                  n = this.silenceBroadcast;
-                (this.silenceBroadcast = !0),
-                  'string' == typeof e && (this.data = this.optimisticData = new Rn(e, this.optimisticData, t));
-                try {
-                  t(this);
-                } finally {
-                  (this.silenceBroadcast = n), (this.data = r);
-                }
-                this.broadcastWatches();
-              }),
-              (e.prototype.recordOptimisticTransaction = function (t, e) {
-                return this.performTransaction(t, e);
-              }),
-              (e.prototype.transformDocument = function (t) {
-                if (this.addTypename) {
-                  var e = this.typenameDocumentCache.get(t);
-                  return (
-                    e ||
-                      ((r = t),
-                      (e = (0, zt.visit)(Ee(r), {
-                        SelectionSet: {
-                          enter: function (t, e, r) {
-                            if (!r || 'OperationDefinition' !== r.kind) {
-                              var n = t.selections;
-                              if (
-                                n &&
-                                !n.some(function (t) {
-                                  return (
-                                    he(t) && ('__typename' === t.name.value || 0 === t.name.value.lastIndexOf('__', 0))
-                                  );
-                                })
-                              ) {
-                                var i = r;
-                                if (
-                                  !(
-                                    he(i) &&
-                                    i.directives &&
-                                    i.directives.some(function (t) {
-                                      return 'export' === t.name.value;
-                                    })
-                                  )
-                                )
-                                  return Qt(Qt({}, t), {
-                                    selections: Ut(n, [Pe]),
-                                  });
-                              }
-                            }
-                          },
-                        },
-                      })),
-                      this.typenameDocumentCache.set(t, e),
-                      this.typenameDocumentCache.set(e, e)),
-                    e
-                  );
-                }
-                var r;
-                return t;
-              }),
-              (e.prototype.broadcastWatches = function () {
-                var t = this;
-                this.silenceBroadcast ||
-                  this.watches.forEach(function (e) {
-                    return t.maybeBroadcastWatch(e);
                   });
-              }),
-              (e.prototype.maybeBroadcastWatch = function (t) {
-                t.callback(
-                  this.diff({
-                    query: t.query,
-                    variables: t.variables,
-                    previousResult: t.previousResult && t.previousResult(),
-                    optimistic: t.optimistic,
-                  }),
-                );
-              }),
-              e
-            );
-          })(Vr),
-          xn = r(311),
-          Pn = r.n(xn),
-          Cn = r(313);
-        const Vn = (t, e) => {
+                }),
+                (e.prototype.watch = function (t) {
+                  var e = this;
+                  return (
+                    this.watches.add(t),
+                    function () {
+                      e.watches.delete(t);
+                    }
+                  );
+                }),
+                (e.prototype.evict = function (t) {
+                  throw new Ht(7);
+                }),
+                (e.prototype.reset = function () {
+                  return this.data.clear(), this.broadcastWatches(), Promise.resolve();
+                }),
+                (e.prototype.removeOptimistic = function (t) {
+                  for (var e = [], r = 0, n = this.optimisticData; n instanceof Rn;)
+                    n.optimisticId === t ? ++r : e.push(n), (n = n.parent);
+                  if (r > 0) {
+                    for (this.optimisticData = n; e.length > 0;) {
+                      var i = e.pop();
+                      this.performTransaction(i.transaction, i.optimisticId);
+                    }
+                    this.broadcastWatches();
+                  }
+                }),
+                (e.prototype.performTransaction = function (t, e) {
+                  var r = this.data,
+                    n = this.silenceBroadcast;
+                  (this.silenceBroadcast = !0),
+                    'string' == typeof e && (this.data = this.optimisticData = new Rn(e, this.optimisticData, t));
+                  try {
+                    t(this);
+                  } finally {
+                    (this.silenceBroadcast = n), (this.data = r);
+                  }
+                  this.broadcastWatches();
+                }),
+                (e.prototype.recordOptimisticTransaction = function (t, e) {
+                  return this.performTransaction(t, e);
+                }),
+                (e.prototype.transformDocument = function (t) {
+                  if (this.addTypename) {
+                    var e = this.typenameDocumentCache.get(t);
+                    return (
+                      e ||
+                      ((r = t),
+                        (e = (0, zt.visit)(Ee(r), {
+                          SelectionSet: {
+                            enter: function (t, e, r) {
+                              if (!r || 'OperationDefinition' !== r.kind) {
+                                var n = t.selections;
+                                if (
+                                  n &&
+                                  !n.some(function (t) {
+                                    return (
+                                      he(t) && ('__typename' === t.name.value || 0 === t.name.value.lastIndexOf('__', 0))
+                                    );
+                                  })
+                                ) {
+                                  var i = r;
+                                  if (
+                                    !(
+                                      he(i) &&
+                                      i.directives &&
+                                      i.directives.some(function (t) {
+                                        return 'export' === t.name.value;
+                                      })
+                                    )
+                                  )
+                                    return Qt(Qt({}, t), {
+                                      selections: Ut(n, [Pe]),
+                                    });
+                                }
+                              }
+                            },
+                          },
+                        })),
+                        this.typenameDocumentCache.set(t, e),
+                        this.typenameDocumentCache.set(e, e)),
+                      e
+                    );
+                  }
+                  var r;
+                  return t;
+                }),
+                (e.prototype.broadcastWatches = function () {
+                  var t = this;
+                  this.silenceBroadcast ||
+                    this.watches.forEach(function (e) {
+                      return t.maybeBroadcastWatch(e);
+                    });
+                }),
+                (e.prototype.maybeBroadcastWatch = function (t) {
+                  t.callback(
+                    this.diff({
+                      query: t.query,
+                      variables: t.variables,
+                      previousResult: t.previousResult && t.previousResult(),
+                      optimistic: t.optimistic,
+                    }),
+                  );
+                }),
+                e
+              );
+            })(Vr),
+            xn = r(311),
+            Pn = r.n(xn),
+            Cn = r(313);
+          const Vn = (t, e) => {
             const r = (t => {
               const {
-                  apiKey: e,
-                  app: r,
-                  graphqlEndpoint: n,
-                  sessionId: i,
-                  timeout: o,
-                  toolsPreviewToken: s,
-                  webSocket: a,
-                } = t,
+                apiKey: e,
+                app: r,
+                graphqlEndpoint: n,
+                sessionId: i,
+                timeout: o,
+                toolsPreviewToken: s,
+                webSocket: a,
+              } = t,
                 u = (t => {
                   const e = Object.entries(t).reduce(
                     (t, [e, r]) =>
                       null != r
                         ? Object.assign(Object.assign({}, t), {
-                            [e]: r,
-                          })
+                          [e]: r,
+                        })
                         : t,
                     {},
                   );
@@ -14711,200 +14691,200 @@ const RASSDK = (function (t, e) {
                     cache: t,
                     link: e,
                   }))({
-                  cache: n,
-                  link: r,
-                }),
+                    cache: n,
+                    link: r,
+                  }),
               stop: () => r.close(!0, !0),
             };
           },
-          Bn = ({ eventId: t, eventParams: e = {}, lastReceivedVersion: r, client: n }) => {
-            const { displayId: i, unlockToken: s } = e,
-              a = n.subscribe({
-                query: Pn(),
-                variables: {
-                  eventId: t,
-                  unlockToken: s,
-                  displayId: i,
-                  lastReceivedVersion: r,
-                },
-              });
-            return new z(t =>
-              a.subscribe({
-                next: ({ data: e }) => t.next(e),
-                error: e => t.error(new o('AVPP_ERROR', e.message)),
-                complete: () => t.complete(),
-              }),
-            );
-          },
-          Nn = (t, e) => {
-            const { id: r, sectionName: n } = e;
-            return t[n] || (t[n] = []), t[n].push(r), t;
-          };
-        function Ln(t) {
-          return Array.from(
-            {
-              length: t,
+            Bn = ({ eventId: t, eventParams: e = {}, lastReceivedVersion: r, client: n }) => {
+              const { displayId: i, unlockToken: s } = e,
+                a = n.subscribe({
+                  query: Pn(),
+                  variables: {
+                    eventId: t,
+                    unlockToken: s,
+                    displayId: i,
+                    lastReceivedVersion: r,
+                  },
+                });
+              return new z(t =>
+                a.subscribe({
+                  next: ({ data: e }) => t.next(e),
+                  error: e => t.error(new o('AVPP_ERROR', e.message)),
+                  complete: () => t.complete(),
+                }),
+              );
             },
-            (t, e) => e,
-          );
-        }
+            Nn = (t, e) => {
+              const { id: r, sectionName: n } = e;
+              return t[n] || (t[n] = []), t[n].push(r), t;
+            };
+          function Ln(t) {
+            return Array.from(
+              {
+                length: t,
+              },
+              (t, e) => e,
+            );
+          }
 
-        function jn(t) {
-          return t.numSeats() - t.numGASeats();
-        }
+          function jn(t) {
+            return t.numSeats() - t.numGASeats();
+          }
 
-        var Mn = b(function (t) {
+          var Mn = b(function (t) {
             return function () {
               t(this), (this.name = 'EmptyError'), (this.message = 'no elements in sequence');
             };
           }),
-          Qn = r(80),
-          qn = r(764),
-          Dn = (function (t) {
-            function e(e, r) {
-              return t.call(this) || this;
-            }
+            Qn = r(80),
+            qn = r(764),
+            Dn = (function (t) {
+              function e(e, r) {
+                return t.call(this) || this;
+              }
 
-            return (
-              a(e, t),
-              (e.prototype.schedule = function (t, e) {
-                return void 0 === e && (e = 0), this;
-              }),
-              e
-            );
-          })(_),
-          Un = {
-            setInterval: function (t, e) {
-              for (var r = [], n = 2; n < arguments.length; n++) r[n - 2] = arguments[n];
-              var i = Un.delegate;
-              return (null == i ? void 0 : i.setInterval)
-                ? i.setInterval.apply(i, l([t, e], f(r)))
-                : setInterval.apply(void 0, l([t, e], f(r)));
+              return (
+                a(e, t),
+                (e.prototype.schedule = function (t, e) {
+                  return void 0 === e && (e = 0), this;
+                }),
+                e
+              );
+            })(_),
+            Un = {
+              setInterval: function (t, e) {
+                for (var r = [], n = 2; n < arguments.length; n++) r[n - 2] = arguments[n];
+                var i = Un.delegate;
+                return (null == i ? void 0 : i.setInterval)
+                  ? i.setInterval.apply(i, l([t, e], f(r)))
+                  : setInterval.apply(void 0, l([t, e], f(r)));
+              },
+              clearInterval: function (t) {
+                var e = Un.delegate;
+                return ((null == e ? void 0 : e.clearInterval) || clearInterval)(t);
+              },
+              delegate: void 0,
             },
-            clearInterval: function (t) {
-              var e = Un.delegate;
-              return ((null == e ? void 0 : e.clearInterval) || clearInterval)(t);
-            },
-            delegate: void 0,
-          },
-          Gn = (function (t) {
-            function e(e, r) {
-              var n = t.call(this, e, r) || this;
-              return (n.scheduler = e), (n.work = r), (n.pending = !1), n;
-            }
+            Gn = (function (t) {
+              function e(e, r) {
+                var n = t.call(this, e, r) || this;
+                return (n.scheduler = e), (n.work = r), (n.pending = !1), n;
+              }
 
-            return (
-              a(e, t),
-              (e.prototype.schedule = function (t, e) {
-                if ((void 0 === e && (e = 0), this.closed)) return this;
-                this.state = t;
-                var r = this.id,
-                  n = this.scheduler;
-                return (
-                  null != r && (this.id = this.recycleAsyncId(n, r, e)),
-                  (this.pending = !0),
-                  (this.delay = e),
-                  (this.id = this.id || this.requestAsyncId(n, this.id, e)),
-                  this
-                );
-              }),
-              (e.prototype.requestAsyncId = function (t, e, r) {
-                return void 0 === r && (r = 0), Un.setInterval(t.flush.bind(t, this), r);
-              }),
-              (e.prototype.recycleAsyncId = function (t, e, r) {
-                if ((void 0 === r && (r = 0), null != r && this.delay === r && !1 === this.pending)) return e;
-                Un.clearInterval(e);
-              }),
-              (e.prototype.execute = function (t, e) {
-                if (this.closed) return new Error('executing a cancelled action');
-                this.pending = !1;
-                var r = this._execute(t, e);
-                if (r) return r;
-                !1 === this.pending &&
-                  null != this.id &&
-                  (this.id = this.recycleAsyncId(this.scheduler, this.id, null));
-              }),
-              (e.prototype._execute = function (t, e) {
-                var r,
-                  n = !1;
-                try {
-                  this.work(t);
-                } catch (t) {
-                  (n = !0), (r = t || new Error('Scheduled action threw falsy error'));
-                }
-                if (n) return this.unsubscribe(), r;
-              }),
-              (e.prototype.unsubscribe = function () {
-                if (!this.closed) {
-                  var e = this.id,
-                    r = this.scheduler,
-                    n = r.actions;
-                  (this.work = this.state = this.scheduler = null),
-                    (this.pending = !1),
-                    v(n, this),
-                    null != e && (this.id = this.recycleAsyncId(r, e, null)),
-                    (this.delay = null),
-                    t.prototype.unsubscribe.call(this);
-                }
-              }),
-              e
-            );
-          })(Dn),
-          zn = {
-            now: function () {
-              return (zn.delegate || Date).now();
-            },
-            delegate: void 0,
-          },
-          Kn = (function () {
-            function t(e, r) {
-              void 0 === r && (r = t.now), (this.schedulerActionCtor = e), (this.now = r);
-            }
-
-            return (
-              (t.prototype.schedule = function (t, e, r) {
-                return void 0 === e && (e = 0), new this.schedulerActionCtor(this, t).schedule(r, e);
-              }),
-              (t.now = zn.now),
-              t
-            );
-          })(),
-          $n = new ((function (t) {
-            function e(e, r) {
-              void 0 === r && (r = Kn.now);
-              var n = t.call(this, e, r) || this;
-              return (n.actions = []), (n._active = !1), (n._scheduled = void 0), n;
-            }
-
-            return (
-              a(e, t),
-              (e.prototype.flush = function (t) {
-                var e = this.actions;
-                if (this._active) e.push(t);
-                else {
-                  var r;
-                  this._active = !0;
-                  do {
-                    if ((r = t.execute(t.state, t.delay))) break;
-                  } while ((t = e.shift()));
-                  if (((this._active = !1), r)) {
-                    for (; (t = e.shift()); ) t.unsubscribe();
-                    throw r;
+              return (
+                a(e, t),
+                (e.prototype.schedule = function (t, e) {
+                  if ((void 0 === e && (e = 0), this.closed)) return this;
+                  this.state = t;
+                  var r = this.id,
+                    n = this.scheduler;
+                  return (
+                    null != r && (this.id = this.recycleAsyncId(n, r, e)),
+                    (this.pending = !0),
+                    (this.delay = e),
+                    (this.id = this.id || this.requestAsyncId(n, this.id, e)),
+                    this
+                  );
+                }),
+                (e.prototype.requestAsyncId = function (t, e, r) {
+                  return void 0 === r && (r = 0), Un.setInterval(t.flush.bind(t, this), r);
+                }),
+                (e.prototype.recycleAsyncId = function (t, e, r) {
+                  if ((void 0 === r && (r = 0), null != r && this.delay === r && !1 === this.pending)) return e;
+                  Un.clearInterval(e);
+                }),
+                (e.prototype.execute = function (t, e) {
+                  if (this.closed) return new Error('executing a cancelled action');
+                  this.pending = !1;
+                  var r = this._execute(t, e);
+                  if (r) return r;
+                  !1 === this.pending &&
+                    null != this.id &&
+                    (this.id = this.recycleAsyncId(this.scheduler, this.id, null));
+                }),
+                (e.prototype._execute = function (t, e) {
+                  var r,
+                    n = !1;
+                  try {
+                    this.work(t);
+                  } catch (t) {
+                    (n = !0), (r = t || new Error('Scheduled action threw falsy error'));
                   }
-                }
-              }),
-              e
-            );
-          })(Kn))(Gn),
-          Wn = $n;
+                  if (n) return this.unsubscribe(), r;
+                }),
+                (e.prototype.unsubscribe = function () {
+                  if (!this.closed) {
+                    var e = this.id,
+                      r = this.scheduler,
+                      n = r.actions;
+                    (this.work = this.state = this.scheduler = null),
+                      (this.pending = !1),
+                      v(n, this),
+                      null != e && (this.id = this.recycleAsyncId(r, e, null)),
+                      (this.delay = null),
+                      t.prototype.unsubscribe.call(this);
+                  }
+                }),
+                e
+              );
+            })(Dn),
+            zn = {
+              now: function () {
+                return (zn.delegate || Date).now();
+              },
+              delegate: void 0,
+            },
+            Kn = (function () {
+              function t(e, r) {
+                void 0 === r && (r = t.now), (this.schedulerActionCtor = e), (this.now = r);
+              }
 
-        function Hn() {
-          return Ft(1);
-        }
+              return (
+                (t.prototype.schedule = function (t, e, r) {
+                  return void 0 === e && (e = 0), new this.schedulerActionCtor(this, t).schedule(r, e);
+                }),
+                (t.now = zn.now),
+                t
+              );
+            })(),
+            $n = new ((function (t) {
+              function e(e, r) {
+                void 0 === r && (r = Kn.now);
+                var n = t.call(this, e, r) || this;
+                return (n.actions = []), (n._active = !1), (n._scheduled = void 0), n;
+              }
 
-        function Yn(t, e) {
-          return e
-            ? function (r) {
+              return (
+                a(e, t),
+                (e.prototype.flush = function (t) {
+                  var e = this.actions;
+                  if (this._active) e.push(t);
+                  else {
+                    var r;
+                    this._active = !0;
+                    do {
+                      if ((r = t.execute(t.state, t.delay))) break;
+                    } while ((t = e.shift()));
+                    if (((this._active = !1), r)) {
+                      for (; (t = e.shift());) t.unsubscribe();
+                      throw r;
+                    }
+                  }
+                }),
+                e
+              );
+            })(Kn))(Gn),
+            Wn = $n;
+
+          function Hn() {
+            return Ft(1);
+          }
+
+          function Yn(t, e) {
+            return e
+              ? function (r) {
                 return (function () {
                   for (var t = [], e = 0; e < arguments.length; e++) t[e] = arguments[e];
                   return Hn()(dt(t, Et(t)));
@@ -14918,7 +14898,7 @@ const RASSDK = (function (t, e) {
                   r.pipe(Yn(t)),
                 );
               }
-            : Rt(function (e, r) {
+              : Rt(function (e, r) {
                 return t(e, r).pipe(
                   yt(1),
                   (function (t) {
@@ -14928,266 +14908,78 @@ const RASSDK = (function (t, e) {
                   })(e),
                 );
               });
-        }
+          }
 
-        function Jn(t) {
-          return t instanceof Date && !isNaN(t);
-        }
+          function Jn(t) {
+            return t instanceof Date && !isNaN(t);
+          }
 
-        function Zn(t, e) {
-          void 0 === e && (e = $n);
-          var r = (function (t, e, r) {
-            void 0 === t && (t = 0), void 0 === r && (r = Wn);
-            var n = -1;
-            return (
-              null != e && (It(e) ? (r = e) : (n = e)),
-              new z(function (e) {
-                var i = Jn(t) ? +t - r.now() : t;
-                i < 0 && (i = 0);
-                var o = 0;
-                return r.schedule(function () {
-                  e.closed || (e.next(o++), 0 <= n ? this.schedule(void 0, n) : e.complete());
-                }, i);
-              })
-            );
-          })(t, e);
-          return Yn(function () {
-            return r;
+          function Zn(t, e) {
+            void 0 === e && (e = $n);
+            var r = (function (t, e, r) {
+              void 0 === t && (t = 0), void 0 === r && (r = Wn);
+              var n = -1;
+              return (
+                null != e && (It(e) ? (r = e) : (n = e)),
+                new z(function (e) {
+                  var i = Jn(t) ? +t - r.now() : t;
+                  i < 0 && (i = 0);
+                  var o = 0;
+                  return r.schedule(function () {
+                    e.closed || (e.next(o++), 0 <= n ? this.schedule(void 0, n) : e.complete());
+                  }, i);
+                })
+              );
+            })(t, e);
+            return Yn(function () {
+              return r;
+            });
+          }
+
+          var Xn = b(function (t) {
+            return function (e) {
+              void 0 === e && (e = null),
+                t(this),
+                (this.message = 'Timeout has occurred'),
+                (this.name = 'TimeoutError'),
+                (this.info = e);
+            };
           });
-        }
 
-        var Xn = b(function (t) {
-          return function (e) {
-            void 0 === e && (e = null),
-              t(this),
-              (this.message = 'Timeout has occurred'),
-              (this.name = 'TimeoutError'),
-              (this.info = e);
-          };
-        });
+          function ti(t) {
+            throw new Xn(t);
+          }
 
-        function ti(t) {
-          throw new Xn(t);
-        }
-
-        const ei = (e, n) => {
-          return (
-            (i = void 0),
-            (s = void 0),
-            (u = function* () {
-              const i = r.g.fetch || e.fetch,
-                s = `${e.manifestUrl}/sdk/static/manifest/v1/${e.eventId}`;
-              try {
-                const r = new Date().getTime(),
-                  a = yield i(s, { agent: proxyAgent });
-                if (200 !== a.status) throw new o(`${t}`, `status=${a.status}`);
-                n.put('manf.fetchTime', new Date().getTime() - r);
-                const u = yield a.json(),
-                  { eventId: c } = e,
-                  f = {
-                    eventId: c,
-                    version: ri(u.updateHash, 'updateHash'),
-                    placeIds: u.placeIds || [],
-                    sections: ri(u.manifestSections, 'manifestSections'),
-                  };
-                return n.put('manf.numSeats', f.placeIds.length), n.put('manf.numSections', f.sections.length), f;
-              } catch (e) {
-                if (!(e instanceof o)) throw new o(t, e.message);
-                throw e;
-              }
-            }),
-            new ((a = void 0) || (a = Promise))(function (t, e) {
-              function r(t) {
-                try {
-                  o(u.next(t));
-                } catch (t) {
-                  e(t);
-                }
-              }
-
-              function n(t) {
-                try {
-                  o(u.throw(t));
-                } catch (t) {
-                  e(t);
-                }
-              }
-
-              function o(e) {
-                var i;
-                e.done
-                  ? t(e.value)
-                  : ((i = e.value),
-                    i instanceof a
-                      ? i
-                      : new a(function (t) {
-                          t(i);
-                        })).then(r, n);
-              }
-
-              o((u = u.apply(i, s || [])).next());
-            })
-          );
-          var i, s, a, u;
-        };
-        function ri(t, e) {
-          if (!t) throw new o('MANIFEST_PARSER_ERROR_MALFORMED_RESP', `Manifest response has ${e} null`);
-          return t;
-        }
-
-        const ni = (t, e) => ii(t, e),
-          ii = (t, e) => {
-            try {
-              if (1 === t.statusesLength()) {
-                const r = 0;
-                e.deserialize(t.statuses(r).roaringBitmapArray(), !0);
-                const n = e.toUint32Array();
-                return Array.from(n.values());
-              }
-              return [];
-            } catch (t) {
-              throw new o('ROARING_BITMAP_DESERIALIZE_ERROR', t.message);
-            }
-          },
-          oi = (r, n, s, a = 0) => {
+          const ei = (e, n) => {
             return (
-              (u = void 0),
-              (c = void 0),
-              (l = function* () {
-                const { backOffMillis: u } = r;
+              (i = void 0),
+              (s = void 0),
+              (u = function* () {
+                const i = fetch, 
+                  s = `${e.manifestUrl}/sdk/static/manifest/v1/${e.eventId}`;
                 try {
-                  const f = yield ((c = ((e, r, n = 0) => {
-                    return Tt(1).pipe(
-                      Zn(n),
-                      ((s = () => {
-                        return ((n = () => ei(e, r)),
-                        new z(function (t) {
-                          ut(n()).subscribe(t);
-                        })).pipe(
-                          (function (t, e) {
-                            var r = Jn(t)
-                                ? {
-                                    first: t,
-                                  }
-                                : 'number' == typeof t
-                                ? {
-                                    each: t,
-                                  }
-                                : t,
-                              n = r.first,
-                              i = r.each,
-                              o = r.with,
-                              s = void 0 === o ? ti : o,
-                              a = r.scheduler,
-                              u = void 0 === a ? $n : a,
-                              c = r.meta,
-                              f = void 0 === c ? null : c;
-                            if (null == n && null == i) throw new TypeError('No timeout provided.');
-                            return $(function (t, e) {
-                              var r,
-                                o,
-                                a = null,
-                                c = 0,
-                                l = function (t) {
-                                  o = ft(
-                                    e,
-                                    u,
-                                    function () {
-                                      try {
-                                        r.unsubscribe(),
-                                          ut(
-                                            s({
-                                              meta: f,
-                                              lastValue: a,
-                                              seen: c,
-                                            }),
-                                          ).subscribe(e);
-                                      } catch (t) {
-                                        e.error(t);
-                                      }
-                                    },
-                                    t,
-                                  );
-                                };
-                              (r = t.subscribe(
-                                H(
-                                  e,
-                                  function (t) {
-                                    null == o || o.unsubscribe(), c++, e.next((a = t)), i > 0 && l(i);
-                                  },
-                                  void 0,
-                                  void 0,
-                                  function () {
-                                    (null == o ? void 0 : o.closed) || null == o || o.unsubscribe(), (a = null);
-                                  },
-                                ),
-                              )),
-                                !c && l(null != n ? ('number' == typeof n ? n : +n - u.now()) : i);
-                            });
-                          })({
-                            each: e.timeout,
-                            with: () => wt(() => new o(t, i)),
-                          }),
-                        );
-                        var n;
-                      }),
-                      $(function (t, e) {
-                        var r = null,
-                          n = !1,
-                          i = function () {
-                            return n && !r && e.complete();
-                          };
-                        t.subscribe(
-                          H(
-                            e,
-                            function (t) {
-                              null == r || r.unsubscribe(),
-                                ut(s()).subscribe(
-                                  (r = H(
-                                    e,
-                                    function (t) {
-                                      return e.next(t);
-                                    },
-                                    function () {
-                                      (r = null), i();
-                                    },
-                                  )),
-                                );
-                            },
-                            function () {
-                              (n = !0), i();
-                            },
-                          ),
-                        );
-                      })),
-                    );
-                    var s;
-                  })(r, s, u * a)),
-                  new Promise(function (t, e) {
-                    var r = new j({
-                      next: function (e) {
-                        t(e), r.unsubscribe();
-                      },
-                      error: e,
-                      complete: function () {
-                        e(new Mn());
-                      },
-                    });
-                    c.subscribe(r);
-                  }));
-                  if (n !== f.version) throw new o(e, `MANIFEST_VERSION=${f.version},AVPP_VERSION=${n}`);
-                  return f;
-                } catch (t) {
-                  if (a < r.retry) return oi(r, n, s, a + 1);
-                  if (!(t instanceof o)) throw new o('MANIFEST_PARSER_ERROR', t.message);
-                  throw t;
+                  const r = new Date().getTime(),
+                    a = yield i(s);
+                  if (200 !== a.status) throw new o(`${t}`, `status=${a.status}`);
+                  n.put('manf.fetchTime', new Date().getTime() - r);
+                  const u = yield a.json(),
+                    { eventId: c } = e,
+                    f = {
+                      eventId: c,
+                      version: ri(u.updateHash, 'updateHash'),
+                      placeIds: u.placeIds || [],
+                      sections: ri(u.manifestSections, 'manifestSections'),
+                    };
+                  return n.put('manf.numSeats', f.placeIds.length), n.put('manf.numSections', f.sections.length), f;
+                } catch (e) {
+                  if (!(e instanceof o)) throw new o(t, e.message);
+                  throw e;
                 }
-                var c;
               }),
-              new ((f = void 0) || (f = Promise))(function (t, e) {
+              new ((a = void 0) || (a = Promise))(function (t, e) {
                 function r(t) {
                   try {
-                    i(l.next(t));
+                    o(u.next(t));
                   } catch (t) {
                     e(t);
                   }
@@ -15195,38 +14987,226 @@ const RASSDK = (function (t, e) {
 
                 function n(t) {
                   try {
-                    i(l.throw(t));
+                    o(u.throw(t));
                   } catch (t) {
                     e(t);
                   }
                 }
 
-                function i(e) {
+                function o(e) {
                   var i;
                   e.done
                     ? t(e.value)
                     : ((i = e.value),
-                      i instanceof f
+                      i instanceof a
                         ? i
-                        : new f(function (t) {
-                            t(i);
-                          })).then(r, n);
+                        : new a(function (t) {
+                          t(i);
+                        })).then(r, n);
                 }
 
-                i((l = l.apply(u, c || [])).next());
+                o((u = u.apply(i, s || [])).next());
               })
             );
-            var u, c, f, l;
+            var i, s, a, u;
           };
-        const si = 'RAS_LOAD_ERROR',
-          ai = (t, e, r, n, i, o = fetch) => {
-            const s = () => ({
-              app: t,
-              eventId: e,
-              sdkVersion: n,
-            });
-            let a = s();
-            const u = (t, e) => {
+          function ri(t, e) {
+            if (!t) throw new o('MANIFEST_PARSER_ERROR_MALFORMED_RESP', `Manifest response has ${e} null`);
+            return t;
+          }
+
+          const ni = (t, e) => ii(t, e),
+            ii = (t, e) => {
+              try {
+                if (1 === t.statusesLength()) {
+                  const r = 0;
+                  e.deserialize(t.statuses(r).roaringBitmapArray(), !0);
+                  const n = e.toUint32Array();
+                  return Array.from(n.values());
+                }
+                return [];
+              } catch (t) {
+                throw new o('ROARING_BITMAP_DESERIALIZE_ERROR', t.message);
+              }
+            },
+            oi = (r, n, s, a = 0) => {
+              return (
+                (u = void 0),
+                (c = void 0),
+                (l = function* () {
+                  const { backOffMillis: u } = r;
+                  try {
+                    const f = yield ((c = ((e, r, n = 0) => {
+                      return Tt(1).pipe(
+                        Zn(n),
+                        ((s = () => {
+                          return ((n = () => ei(e, r)),
+                            new z(function (t) {
+                              ut(n()).subscribe(t);
+                            })).pipe(
+                              (function (t, e) {
+                                var r = Jn(t)
+                                  ? {
+                                    first: t,
+                                  }
+                                  : 'number' == typeof t
+                                    ? {
+                                      each: t,
+                                    }
+                                    : t,
+                                  n = r.first,
+                                  i = r.each,
+                                  o = r.with,
+                                  s = void 0 === o ? ti : o,
+                                  a = r.scheduler,
+                                  u = void 0 === a ? $n : a,
+                                  c = r.meta,
+                                  f = void 0 === c ? null : c;
+                                if (null == n && null == i) throw new TypeError('No timeout provided.');
+                                return $(function (t, e) {
+                                  var r,
+                                    o,
+                                    a = null,
+                                    c = 0,
+                                    l = function (t) {
+                                      o = ft(
+                                        e,
+                                        u,
+                                        function () {
+                                          try {
+                                            r.unsubscribe(),
+                                              ut(
+                                                s({
+                                                  meta: f,
+                                                  lastValue: a,
+                                                  seen: c,
+                                                }),
+                                              ).subscribe(e);
+                                          } catch (t) {
+                                            e.error(t);
+                                          }
+                                        },
+                                        t,
+                                      );
+                                    };
+                                  (r = t.subscribe(
+                                    H(
+                                      e,
+                                      function (t) {
+                                        null == o || o.unsubscribe(), c++, e.next((a = t)), i > 0 && l(i);
+                                      },
+                                      void 0,
+                                      void 0,
+                                      function () {
+                                        (null == o ? void 0 : o.closed) || null == o || o.unsubscribe(), (a = null);
+                                      },
+                                    ),
+                                  )),
+                                    !c && l(null != n ? ('number' == typeof n ? n : +n - u.now()) : i);
+                                });
+                              })({
+                                each: e.timeout,
+                                with: () => wt(() => new o(t, i)),
+                              }),
+                            );
+                          var n;
+                        }),
+                          $(function (t, e) {
+                            var r = null,
+                              n = !1,
+                              i = function () {
+                                return n && !r && e.complete();
+                              };
+                            t.subscribe(
+                              H(
+                                e,
+                                function (t) {
+                                  null == r || r.unsubscribe(),
+                                    ut(s()).subscribe(
+                                      (r = H(
+                                        e,
+                                        function (t) {
+                                          return e.next(t);
+                                        },
+                                        function () {
+                                          (r = null), i();
+                                        },
+                                      )),
+                                    );
+                                },
+                                function () {
+                                  (n = !0), i();
+                                },
+                              ),
+                            );
+                          })),
+                      );
+                      var s;
+                    })(r, s, u * a)),
+                      new Promise(function (t, e) {
+                        var r = new j({
+                          next: function (e) {
+                            t(e), r.unsubscribe();
+                          },
+                          error: e,
+                          complete: function () {
+                            e(new Mn());
+                          },
+                        });
+                        c.subscribe(r);
+                      }));
+                    if (n !== f.version) throw new o(e, `MANIFEST_VERSION=${f.version},AVPP_VERSION=${n}`);
+                    return f;
+                  } catch (t) {
+                    if (a < r.retry) return oi(r, n, s, a + 1);
+                    if (!(t instanceof o)) throw new o('MANIFEST_PARSER_ERROR', t.message);
+                    throw t;
+                  }
+                  var c;
+                }),
+                new ((f = void 0) || (f = Promise))(function (t, e) {
+                  function r(t) {
+                    try {
+                      i(l.next(t));
+                    } catch (t) {
+                      e(t);
+                    }
+                  }
+
+                  function n(t) {
+                    try {
+                      i(l.throw(t));
+                    } catch (t) {
+                      e(t);
+                    }
+                  }
+
+                  function i(e) {
+                    var i;
+                    e.done
+                      ? t(e.value)
+                      : ((i = e.value),
+                        i instanceof f
+                          ? i
+                          : new f(function (t) {
+                            t(i);
+                          })).then(r, n);
+                  }
+
+                  i((l = l.apply(u, c || [])).next());
+                })
+              );
+              var u, c, f, l;
+            };
+          const si = 'RAS_LOAD_ERROR',
+            ai = (t, e, r, n, i, o = fetch) => {
+              const s = () => ({
+                app: t,
+                eventId: e,
+                sdkVersion: n,
+              });
+              let a = s();
+              const u = (t, e) => {
                 return (
                   (r = void 0),
                   (n = void 0),
@@ -15234,28 +15214,28 @@ const RASSDK = (function (t, e) {
                     var r;
                     i
                       ? o(
-                          'https://www.ticketmaster.com/edp/v1/log' +
-                            ((r = Object.assign(
-                              {
-                                type: t,
-                              },
-                              e,
-                            )),
-                            Object.entries(r || {}).reduce(
-                              (t, [e, r], n) => (0 === n ? `?${e}=${r}` : `${t}&${e}=${r}`),
-                              '',
-                            )),
-                        )
-                          .then()
-                          .catch(() => {})
+                        'https://www.ticketmaster.com/edp/v1/log' +
+                        ((r = Object.assign(
+                          {
+                            type: t,
+                          },
+                          e,
+                        )),
+                          Object.entries(r || {}).reduce(
+                            (t, [e, r], n) => (0 === n ? `?${e}=${r}` : `${t}&${e}=${r}`),
+                            '',
+                          )),
+                      )
+                        .then()
+                        .catch(() => { })
                       : console.log(
-                          Object.assign(
-                            {
-                              type: t,
-                            },
-                            e,
-                          ),
-                        );
+                        Object.assign(
+                          {
+                            type: t,
+                          },
+                          e,
+                        ),
+                      );
                   }),
                   new ((s = void 0) || (s = Promise))(function (t, e) {
                     function i(t) {
@@ -15282,8 +15262,8 @@ const RASSDK = (function (t, e) {
                           r instanceof s
                             ? r
                             : new s(function (t) {
-                                t(r);
-                              })).then(i, o);
+                              t(r);
+                            })).then(i, o);
                     }
 
                     u((a = a.apply(r, n || [])).next());
@@ -15291,154 +15271,149 @@ const RASSDK = (function (t, e) {
                 );
                 var r, n, s, a;
               },
-              c = () => {
-                a = s();
-              },
-              f = (t, e) => {
-                a[t] = e;
+                c = () => {
+                  a = s();
+                },
+                f = (t, e) => {
+                  a[t] = e;
+                };
+              return {
+                clear: c,
+                error: (t, e) => {
+                  c(),
+                    f('error', (null == e ? void 0 : e.message) || 'UNKNOWN'),
+                    f('reason', (null == e ? void 0 : e.stack) || 'UNKNOWN'),
+                    u(t, a);
+                },
+                getContext: () => a,
+                log: u,
+                put: f,
               };
-            return {
-              clear: c,
-              error: (t, e) => {
-                c(),
-                  f('error', (null == e ? void 0 : e.message) || 'UNKNOWN'),
-                  f('reason', (null == e ? void 0 : e.stack) || 'UNKNOWN'),
-                  u(t, a);
-              },
-              getContext: () => a,
-              log: u,
-              put: f,
             };
-          };
-        var ui = function (t, e, r, n) {
-          return new (r || (r = Promise))(function (i, o) {
-            function s(t) {
-              try {
-                u(n.next(t));
-              } catch (t) {
-                o(t);
+          var ui = function (t, e, r, n) {
+            return new (r || (r = Promise))(function (i, o) {
+              function s(t) {
+                try {
+                  u(n.next(t));
+                } catch (t) {
+                  o(t);
+                }
               }
-            }
 
-            function a(t) {
-              try {
-                u(n.throw(t));
-              } catch (t) {
-                o(t);
+              function a(t) {
+                try {
+                  u(n.throw(t));
+                } catch (t) {
+                  o(t);
+                }
               }
-            }
 
-            function u(t) {
-              var e;
-              t.done
-                ? i(t.value)
-                : ((e = t.value),
-                  e instanceof r
-                    ? e
-                    : new r(function (t) {
+              function u(t) {
+                var e;
+                t.done
+                  ? i(t.value)
+                  : ((e = t.value),
+                    e instanceof r
+                      ? e
+                      : new r(function (t) {
                         t(e);
                       })).then(s, a);
-            }
+              }
 
-            u((n = n.apply(t, e || [])).next());
-          });
-        };
-        
-        const ci = '0.8.1-Thu Sep 22 2022',
-          fi = ({
-            manifestURL: t,
-            avscURL: r,
-            avppURL: n,
-            apiKey: i,
-            app: s,
-            sessionId: a,
-            avppTimeout: u = 4e4,
-            manfRestCallRetry: c = 3,
-            avscRestCallRetry: p = 3,
-            remoteLogging: h = !1,
-            restTimeout: d = 1e4,
-            roaringWasm: b,
-            webSocket: y,
-            fetch: v,
-            toolsPreviewToken: _,
-          }, localEnv) =>
-            ui(void 0, void 0, void 0, function* () {
-              fetch = localEnv.fetch;
-              // window = localEnv.window;
-              // document = localEnv.document;
-              proxyAgent = localEnv.proxyAgent;
+              u((n = n.apply(t, e || [])).next());
+            });
+          };
 
-              let r;
-              if (b) r = b;
-              else
-                try {
-                  r = yield ((p = void 0),
-                  (m = void 0),
-                  (g = void 0),
-                  (w = function* () {
-                    return new Promise((t, e) => {
-                      Lt((r, n) => {
-                        n ? e(n) : t(r());
-                      });
-                    });
-                  }),
-                  new (g || (g = Promise))(function (t, e) {
-                    function r(t) {
-                      try {
-                        i(w.next(t));
-                      } catch (t) {
-                        e(t);
-                      }
-                    }
+          const ci = '0.8.1-Thu Sep 22 2022',
+            fi = ({
+              manifestURL: t,
+              avscURL: r,
+              avppURL: n,
+              apiKey: i,
+              app: s,
+              sessionId: a,
+              avppTimeout: u = 4e4,
+              manfRestCallRetry: c = 3,
+              avscRestCallRetry: p = 3,
+              remoteLogging: h = !1,
+              restTimeout: d = 1e4,
+              roaringWasm: b,
+              webSocket: y,
+              fetch: v,
+              toolsPreviewToken: _,
+            }) =>
+              ui(void 0, void 0, void 0, function* () {
+                let r;
+                if (b) r = b;
+                else
+                  try {
+                    r = yield ((p = void 0),
+                      (m = void 0),
+                      (g = void 0),
+                      (w = function* () {
+                        return new Promise((t, e) => {
+                          Lt((r, n) => {
+                            n ? e(n) : t(r());
+                          });
+                        });
+                      }),
+                      new (g || (g = Promise))(function (t, e) {
+                        function r(t) {
+                          try {
+                            i(w.next(t));
+                          } catch (t) {
+                            e(t);
+                          }
+                        }
 
-                    function n(t) {
-                      try {
-                        i(w.throw(t));
-                      } catch (t) {
-                        e(t);
-                      }
-                    }
+                        function n(t) {
+                          try {
+                            i(w.throw(t));
+                          } catch (t) {
+                            e(t);
+                          }
+                        }
 
-                    function i(e) {
-                      var i;
-                      e.done
-                        ? t(e.value)
-                        : ((i = e.value),
-                          i instanceof g
-                            ? i
-                            : new g(function (t) {
-                                t(i);
-                              })).then(r, n);
-                    }
+                        function i(e) {
+                          var i;
+                          e.done
+                            ? t(e.value)
+                            : ((i = e.value),
+                              i instanceof g
+                                ? i
+                                : new g(function (t) {
+                                  t(i);
+                                })).then(r, n);
+                        }
 
-                    i((w = w.apply(p, m || [])).next());
-                  }));
-                } catch (t) {
-                  throw (ai(s, 'N/A', 0, ci, h, v).error(si, t), t);
-                }
-              var p, m, g, w;
-              if (!r || !r.deserialize) throw new Error('Wasm failed to initialize');
-              const I = (t => {
+                        i((w = w.apply(p, m || [])).next());
+                      }));
+                  } catch (t) {
+                    throw (ai(s, 'N/A', 0, ci, h, v).error(si, t), t);
+                  }
+                var p, m, g, w;
+                if (!r || !r.deserialize) throw new Error('Wasm failed to initialize');
+                const I = (t => {
                   const e = (() => {
-                      const t = {};
-                      return {
-                        getEntries: () => Object.entries(t),
-                        clearFromStore: e => delete t[e],
-                        getState: e => t[e] || {},
-                        setState: (
-                          e,
-                          { eventParams: r, lastReceivedVersion: n, subscriber: i, subscription: o, eventId: s },
-                        ) => {
-                          t[e] = {
-                            eventId: s,
-                            eventParams: r,
-                            lastReceivedVersion: n,
-                            subscriber: i,
-                            subscription: o,
-                          };
-                        },
-                      };
-                    })(),
+                    const t = {};
+                    return {
+                      getEntries: () => Object.entries(t),
+                      clearFromStore: e => delete t[e],
+                      getState: e => t[e] || {},
+                      setState: (
+                        e,
+                        { eventParams: r, lastReceivedVersion: n, subscriber: i, subscription: o, eventId: s },
+                      ) => {
+                        t[e] = {
+                          eventId: s,
+                          eventParams: r,
+                          lastReceivedVersion: n,
+                          subscriber: i,
+                          subscription: o,
+                        };
+                      },
+                    };
+                  })(),
                     r = Vn(t, () => {
                       e.getEntries().forEach(
                         ([t, { eventParams: r, lastReceivedVersion: i, subscriber: o, eventId: s }]) => {
@@ -15512,142 +15487,142 @@ const RASSDK = (function (t, e) {
                   webSocket: y,
                   toolsPreviewToken: _,
                 }),
-                S = {
-                  manifestUrl: t,
-                  retry: c,
-                  timeout: d,
-                  backOffMillis: 500,
-                  fetch: v,
-                },
-                E = {},
-                O = (() => {
-                  const t = {};
-                  return {
-                    getEntries: () => Object.entries(t),
-                    clear: e => delete t[e],
-                    get: e => t[e],
-                    set: (
-                      e,
-                      {
-                        eventParams: r,
-                        latestEventAvailability: n,
-                        logValues: i,
-                        eventId: o,
-                        subscription: s,
-                        observable: a,
+                  S = {
+                    manifestUrl: t,
+                    retry: c,
+                    timeout: d,
+                    backOffMillis: 500,
+                    fetch: v,
+                  },
+                  E = {},
+                  O = (() => {
+                    const t = {};
+                    return {
+                      getEntries: () => Object.entries(t),
+                      clear: e => delete t[e],
+                      get: e => t[e],
+                      set: (
+                        e,
+                        {
+                          eventParams: r,
+                          latestEventAvailability: n,
+                          logValues: i,
+                          eventId: o,
+                          subscription: s,
+                          observable: a,
+                        },
+                      ) => {
+                        t[e] = {
+                          eventId: o,
+                          eventParams: r,
+                          latestEventAvailability: n,
+                          logValues: i,
+                          subscription: s,
+                          observable: a,
+                        };
                       },
-                    ) => {
-                      t[e] = {
-                        eventId: o,
-                        eventParams: r,
-                        latestEventAvailability: n,
-                        logValues: i,
-                        subscription: s,
-                        observable: a,
-                      };
-                    },
-                  };
-                })(),
-                T = (t, e, n, i) => {
-                  const o = new z(r => {
-                    const o = I.getRealtimeUpdates(t, i);
-                    let s = new Date().getTime();
-                    const a = o.subscribe({
-                      next: t => {
-                        try {
-                          s && n.put('avpp.fetchTime', new Date().getTime() - s), (s = void 0), r.next(t);
-                        } catch (t) {
-                          r.error(t);
-                        }
-                      },
-                      error: t => r.error(t),
-                    });
-                    I.setSubscriptionData(e, {
-                      eventId: t,
-                      subscription: a,
-                      subscriber: r,
-                      eventParams: i,
-                    });
-                  }).pipe(
-                    W(() => {
-                      I.stopSubscription(e), I.closeIfStoreEmpty(), O.clear(e);
-                    }),
-                  );
-                  return new z(i => {
-                    const s = o.subscribe({
-                      next: o =>
-                        ui(void 0, void 0, void 0, function* () {
+                    };
+                  })(),
+                  T = (t, e, n, i) => {
+                    const o = new z(r => {
+                      const o = I.getRealtimeUpdates(t, i);
+                      let s = new Date().getTime();
+                      const a = o.subscribe({
+                        next: t => {
                           try {
-                            const u =
-                              ((a = o.availability.buffer),
-                              (s = Uint8Array.from(qn.lW.from(a, 'base64'))),
-                              Qn.a8.ticketmaster.supermap.avsc.v1.Availability.getRootAsAvailability(
-                                new Qn.qm.ByteBuffer(s),
-                              ));
-                            n.put('avpp.numGASeats', u.numGASeats()),
-                              n.put('avpp.numSeats', u.numSeats() - u.numGASeats()),
-                              I.setSubscriptionData(e, {
-                                eventId: t,
-                                lastReceivedVersion: u.version(),
-                              }),
-                              yield (e =>
-                                ui(void 0, void 0, void 0, function* () {
-                                  const { manifest: r } = E[t] || {},
-                                    { version: i } = r || {};
-                                  if (i !== e.manifestVersion()) {
-                                    const r = yield oi(
-                                      Object.assign(Object.assign({}, S), {
-                                        eventId: t,
-                                      }),
-                                      e.manifestVersion(),
-                                      n,
-                                    );
-                                    E[t] = {
-                                      manifest: pi(r, e),
-                                    };
-                                  }
-                                }))(u);
-                            const c = new Date().getTime(),
-                              { openIndices: f, availability: l } = ((t, e) => ({
-                                availability: t,
-                                openIndices: ni(t, e),
-                              }))(u, r);
-                            n.put('avpp.parseTime', new Date().getTime() - c),
-                              i.next({
-                                manifest: E[t] ? E[t].manifest : null,
-                                openIndices: f,
-                                availability: l,
-                              });
+                            s && n.put('avpp.fetchTime', new Date().getTime() - s), (s = void 0), r.next(t);
                           } catch (t) {
-                            i.error(t);
+                            r.error(t);
                           }
-                          var s, a;
-                        }),
-                      error: t => i.error(t),
-                      complete: () => i.complete(),
-                    });
-                    O.set(
-                      e,
-                      Object.assign(Object.assign({}, O.get(e)), {
-                        subscription: s,
+                        },
+                        error: t => r.error(t),
+                      });
+                      I.setSubscriptionData(e, {
+                        eventId: t,
+                        subscription: a,
+                        subscriber: r,
+                        eventParams: i,
+                      });
+                    }).pipe(
+                      W(() => {
+                        I.stopSubscription(e), I.closeIfStoreEmpty(), O.clear(e);
                       }),
                     );
-                  });
-                },
-                k = (t, r, n, i) => {
-                  try {
-                    const s = T(t, r, n, i).pipe(
-                      J(({ availability: t, openIndices: e }) => {
-                        const r = null == t ? void 0 : t.sections();
-                        n.put('avpp.numSections', r.numSections()),
-                          n.put('avpp.numGASections', r.numGASections()),
-                          n.put('avpp.numAvailableSeats', e.length);
-                      }),
-                      Z(t => {
-                        const n = (t => {
-                          const { availability: r, openIndices: n, manifest: i } = t,
-                            s = i
-                              ? (t => {
+                    return new z(i => {
+                      const s = o.subscribe({
+                        next: o =>
+                          ui(void 0, void 0, void 0, function* () {
+                            try {
+                              const u =
+                                ((a = o.availability.buffer),
+                                  (s = Uint8Array.from(qn.lW.from(a, 'base64'))),
+                                  Qn.a8.ticketmaster.supermap.avsc.v1.Availability.getRootAsAvailability(
+                                    new Qn.qm.ByteBuffer(s),
+                                  ));
+                              n.put('avpp.numGASeats', u.numGASeats()),
+                                n.put('avpp.numSeats', u.numSeats() - u.numGASeats()),
+                                I.setSubscriptionData(e, {
+                                  eventId: t,
+                                  lastReceivedVersion: u.version(),
+                                }),
+                                yield (e =>
+                                  ui(void 0, void 0, void 0, function* () {
+                                    const { manifest: r } = E[t] || {},
+                                      { version: i } = r || {};
+                                    if (i !== e.manifestVersion()) {
+                                      const r = yield oi(
+                                        Object.assign(Object.assign({}, S), {
+                                          eventId: t,
+                                        }),
+                                        e.manifestVersion(),
+                                        n,
+                                      );
+                                      E[t] = {
+                                        manifest: pi(r, e),
+                                      };
+                                    }
+                                  }))(u);
+                              const c = new Date().getTime(),
+                                { openIndices: f, availability: l } = ((t, e) => ({
+                                  availability: t,
+                                  openIndices: ni(t, e),
+                                }))(u, r);
+                              n.put('avpp.parseTime', new Date().getTime() - c),
+                                i.next({
+                                  manifest: E[t] ? E[t].manifest : null,
+                                  openIndices: f,
+                                  availability: l,
+                                });
+                            } catch (t) {
+                              i.error(t);
+                            }
+                            var s, a;
+                          }),
+                        error: t => i.error(t),
+                        complete: () => i.complete(),
+                      });
+                      O.set(
+                        e,
+                        Object.assign(Object.assign({}, O.get(e)), {
+                          subscription: s,
+                        }),
+                      );
+                    });
+                  },
+                  k = (t, r, n, i) => {
+                    try {
+                      const s = T(t, r, n, i).pipe(
+                        J(({ availability: t, openIndices: e }) => {
+                          const r = null == t ? void 0 : t.sections();
+                          n.put('avpp.numSections', r.numSections()),
+                            n.put('avpp.numGASections', r.numGASections()),
+                            n.put('avpp.numAvailableSeats', e.length);
+                        }),
+                        Z(t => {
+                          const n = (t => {
+                            const { availability: r, openIndices: n, manifest: i } = t,
+                              s = i
+                                ? (t => {
                                   try {
                                     const e = t.sections.filter(t => !t.isGA);
                                     if (0 === e.length) return [];
@@ -15663,88 +15638,88 @@ const RASSDK = (function (t, e) {
                                     throw new o('EVENT_AVAILABILITY_SECTION_PARSE_FAILURE', t.message);
                                   }
                                 })(i)
-                              : [],
-                            a = new Set(n);
-                          return {
-                            getUnavailablePlaceIdsBySection: () =>
-                              Ln(jn(r))
-                                .filter((t, e) => !a.has(e))
-                                .map(t => ({
-                                  sectionName: s[t],
-                                  id: i.placeIds[t],
-                                }))
-                                .reduce(Nn, {}),
-                            getUnavailablePlaceIds: () =>
-                              Ln(jn(r))
-                                .filter((t, e) => !a.has(e))
-                                .map(t => i.placeIds[t]),
-                            getAvailablePlaceIdsBySection: () =>
-                              n
-                                .map(t =>
-                                  ((t, { placeIds: e }, r) => ({
-                                    id: e[t],
-                                    sectionName: r[t],
-                                  }))(t, i, s),
-                                )
-                                .reduce(Nn, {}),
-                            getAvailablePlaceIds: () => n.map(t => ((t, { placeIds: e }) => e[t])(t, i)),
-                            isPlaceAvailable: t => i.placeIds.some((e, r) => t === e && a.has(r)),
-                            getManifestVersion: () => {
-                              if (r.manifestVersion() === i.version) return i.version;
-                              throw new o(e, `Manifest Version ${i.version}, AVPP version ${r.manifestVersion()}`);
-                            },
-                          };
-                        })(t);
-                        return (
-                          O.set(
-                            r,
-                            Object.assign(Object.assign({}, O.get(r)), {
-                              latestEventAvailability: n,
-                            }),
-                          ),
-                          n
-                        );
-                      }),
-                      (function (t) {
-                        void 0 === t && (t = {});
-                        var e = t.connector,
-                          r =
-                            void 0 === e
-                              ? function () {
+                                : [],
+                              a = new Set(n);
+                            return {
+                              getUnavailablePlaceIdsBySection: () =>
+                                Ln(jn(r))
+                                  .filter((t, e) => !a.has(e))
+                                  .map(t => ({
+                                    sectionName: s[t],
+                                    id: i.placeIds[t],
+                                  }))
+                                  .reduce(Nn, {}),
+                              getUnavailablePlaceIds: () =>
+                                Ln(jn(r))
+                                  .filter((t, e) => !a.has(e))
+                                  .map(t => i.placeIds[t]),
+                              getAvailablePlaceIdsBySection: () =>
+                                n
+                                  .map(t =>
+                                    ((t, { placeIds: e }, r) => ({
+                                      id: e[t],
+                                      sectionName: r[t],
+                                    }))(t, i, s),
+                                  )
+                                  .reduce(Nn, {}),
+                              getAvailablePlaceIds: () => n.map(t => ((t, { placeIds: e }) => e[t])(t, i)),
+                              isPlaceAvailable: t => i.placeIds.some((e, r) => t === e && a.has(r)),
+                              getManifestVersion: () => {
+                                if (r.manifestVersion() === i.version) return i.version;
+                                throw new o(e, `Manifest Version ${i.version}, AVPP version ${r.manifestVersion()}`);
+                              },
+                            };
+                          })(t);
+                          return (
+                            O.set(
+                              r,
+                              Object.assign(Object.assign({}, O.get(r)), {
+                                latestEventAvailability: n,
+                              }),
+                            ),
+                            n
+                          );
+                        }),
+                        (function (t) {
+                          void 0 === t && (t = {});
+                          var e = t.connector,
+                            r =
+                              void 0 === e
+                                ? function () {
                                   return new _t();
                                 }
-                              : e,
-                          n = t.resetOnError,
-                          i = void 0 === n || n,
-                          o = t.resetOnComplete,
-                          s = void 0 === o || o,
-                          a = t.resetOnRefCountZero,
-                          u = void 0 === a || a;
-                        return function (t) {
-                          var e = null,
-                            n = null,
-                            o = null,
-                            a = 0,
-                            c = !1,
-                            f = !1,
-                            l = function () {
-                              null == n || n.unsubscribe(), (n = null);
-                            },
-                            p = function () {
-                              l(), (e = o = null), (c = f = !1);
-                            },
-                            h = function () {
-                              var t = e;
-                              p(), null == t || t.unsubscribe();
-                            };
-                          return $(function (t, d) {
-                            a++, f || c || l();
-                            var b = (o = null != o ? o : r());
-                            d.add(function () {
-                              0 != --a || f || c || (n = gt(h, u));
-                            }),
-                              b.subscribe(d),
-                              e ||
+                                : e,
+                            n = t.resetOnError,
+                            i = void 0 === n || n,
+                            o = t.resetOnComplete,
+                            s = void 0 === o || o,
+                            a = t.resetOnRefCountZero,
+                            u = void 0 === a || a;
+                          return function (t) {
+                            var e = null,
+                              n = null,
+                              o = null,
+                              a = 0,
+                              c = !1,
+                              f = !1,
+                              l = function () {
+                                null == n || n.unsubscribe(), (n = null);
+                              },
+                              p = function () {
+                                l(), (e = o = null), (c = f = !1);
+                              },
+                              h = function () {
+                                var t = e;
+                                p(), null == t || t.unsubscribe();
+                              };
+                            return $(function (t, d) {
+                              a++, f || c || l();
+                              var b = (o = null != o ? o : r());
+                              d.add(function () {
+                                0 != --a || f || c || (n = gt(h, u));
+                              }),
+                                b.subscribe(d),
+                                e ||
                                 ((e = new j({
                                   next: function (t) {
                                     return b.next(t);
@@ -15756,83 +15731,84 @@ const RASSDK = (function (t, e) {
                                     (c = !0), l(), (n = gt(p, s)), b.complete();
                                   },
                                 })),
-                                dt(t).subscribe(e));
-                          })(t);
-                        };
-                      })(),
-                    );
-                    return (
-                      O.set(
-                        r,
-                        Object.assign(Object.assign({}, O.get(r)), {
-                          eventParams: i,
-                          observable: s,
-                          subscription: null,
-                        }),
-                      ),
-                      s.pipe(
-                        W(() => {
-                          O.get(r).subscription.unsubscribe();
-                        }),
-                      )
-                    );
-                  } catch (t) {
-                    return wt(() => t);
-                  }
-                };
-              return Promise.resolve({
-                getBuildVersion: () => ci,
-                observeEventAvailability: (t, e) => {
-                  const r = li(t, e),
-                    n = ai(s, t, 0, ci, h, v);
-                  let i = !0;
-                  return ((t, e, r, n) => {
-                    const i = O.get(r);
-                    if (i) {
-                      const { observable: t, latestEventAvailability: e } = i;
-                      return Tt(e).pipe(
-                        (function () {
-                          for (var t = [], e = 0; e < arguments.length; e++) t[e] = arguments[e];
-                          return xt.apply(void 0, l([], f(t)));
-                        })(t),
+                                  dt(t).subscribe(e));
+                            })(t);
+                          };
+                        })(),
                       );
+                      return (
+                        O.set(
+                          r,
+                          Object.assign(Object.assign({}, O.get(r)), {
+                            eventParams: i,
+                            observable: s,
+                            subscription: null,
+                          }),
+                        ),
+                        s.pipe(
+                          W(() => {
+                            O.get(r).subscription.unsubscribe();
+                          }),
+                        )
+                      );
+                    } catch (t) {
+                      return wt(() => t);
                     }
-                    return k(t, r, n, e);
-                  })(t, e, r, n).pipe(
-                    Pt(t => (n.error(si, t), wt(() => t))),
-                    J(() => {
-                      i && n.log('RAS_LOAD_EVENT', n.getContext()), (i = !1);
-                    }),
-                  );
-                },
-              });
-            }),
-          li = (t, e = {}) => (Object.keys(e).length ? `${t}_${JSON.stringify(e)}` : `${t}`),
-          pi = (t, e) => {
-            const r = e.numSeats() - e.numGASeats(),
-              n = t.placeIds;
-            let i = 0;
-            const s = t.sections.map(t =>
-              i < r
-                ? ((i += t.numSeats), t)
-                : Object.assign(Object.assign({}, t), {
+                  };
+                return Promise.resolve({
+                  getBuildVersion: () => ci,
+                  observeEventAvailability: (t, e) => {
+                    const r = li(t, e),
+                      n = ai(s, t, 0, ci, h, v);
+                    let i = !0;
+                    return ((t, e, r, n) => {
+                      const i = O.get(r);
+                      if (i) {
+                        const { observable: t, latestEventAvailability: e } = i;
+                        return Tt(e).pipe(
+                          (function () {
+                            for (var t = [], e = 0; e < arguments.length; e++) t[e] = arguments[e];
+                            return xt.apply(void 0, l([], f(t)));
+                          })(t),
+                        );
+                      }
+                      return k(t, r, n, e);
+                    })(t, e, r, n).pipe(
+                      Pt(t => (n.error(si, t), wt(() => t))),
+                      J(() => {
+                        i && n.log('RAS_LOAD_EVENT', n.getContext()), (i = !1);
+                      }),
+                    );
+                  },
+                });
+              }),
+            li = (t, e = {}) => (Object.keys(e).length ? `${t}_${JSON.stringify(e)}` : `${t}`),
+            pi = (t, e) => {
+              const r = e.numSeats() - e.numGASeats(),
+                n = t.placeIds;
+              let i = 0;
+              const s = t.sections.map(t =>
+                i < r
+                  ? ((i += t.numSeats), t)
+                  : Object.assign(Object.assign({}, t), {
                     isGA: !0,
                   }),
-            );
-            if (i !== r || r !== n.length)
-              throw new o(
-                'NON_GA_SEATS_MISMATCH',
-                `MANIFEST_totalNonGASeatsFromSections=${i},\n       MANIFEST_totalNonGASeatsFromPlaceIds=${n.length},\n       AVPP_totalNonGASeats=${r}`,
               );
-            return Object.assign(Object.assign({}, t), {
-              placeIds: n,
-              sections: s,
-            });
-          };
-      })(),
-      n.default
-    );
-  })(),
-);
+              if (i !== r || r !== n.length)
+                throw new o(
+                  'NON_GA_SEATS_MISMATCH',
+                  `MANIFEST_totalNonGASeatsFromSections=${i},\n       MANIFEST_totalNonGASeatsFromPlaceIds=${n.length},\n       AVPP_totalNonGASeats=${r}`,
+                );
+              return Object.assign(Object.assign({}, t), {
+                placeIds: n,
+                sections: s,
+              });
+            };
+        })(),
+        n.default
+      );
+    }),
+  )()(settings);
+};
 
 module.exports = initRasSDK;
