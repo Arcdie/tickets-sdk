@@ -1,5 +1,5 @@
 require('./libs/setEnvironment');
-require('browser-env')();
+// require('browser-env')();
 
 const { getProxyAgent } = require('./libs/proxyAgent');
 

@@ -1,15 +1,39 @@
+const { JSDOM } = require('jsdom');
 const WebSocketByProxy = require('./libs/ws'); // for debugging, replace with require('ws');
 
-// for debugging
 const nativeFetch = fetch;
-fetch = (...args) => {
-  console.log('fetch', args);
 
-  // if (args[1]) {
-  //   args[1].agent = proxyAgent;
-  // }
+const initJSDOM = () => {
+  return new JSDOM('', {
+    features: {
+      FetchExternalResources: false,
+      ProcessExternalResources: false
+    }
+  });
+};
 
-  return nativeFetch(...args);
+const initRasSDK = (settings, proxyAgent) => {
+  const fetch = (...args) => {
+    if (!args[1]) {
+      args[1] = {};
+    }
+
+    args[1].agent = proxyAgent;
+    console.log('fetch', args);
+    return nativeFetch(...args);
+  };
+
+  const {
+    window,
+    document,
+  } = initJSDOM();
+
+  return RASSDK(settings, {
+    fetch,
+    window,
+    document,
+    proxyAgent,
+  });
 };
 
 /*! For license information please see ras-sdk-v0.js.LICENSE.txt */
@@ -26,7 +50,7 @@ const RASSDK = (function (t, e) {
   return RASSDK;
 })(this, () =>
   (() => {
-    let proxyAgent;
+    let window, document, fetch, proxyAgent;
 
     var t = {
         113: (t, e) => {
@@ -2977,7 +3001,6 @@ const RASSDK = (function (t, e) {
                             t(M());
                           })
                         : fetch(L, {
-                            agent: proxyAgent,
                             credentials: 'same-origin',
                         })
                             .then(function (t) {
@@ -3022,7 +3045,6 @@ const RASSDK = (function (t, e) {
                       )
                         return n(e);
                       fetch(L, {
-                        agent: proxyAgent,
                         credentials: 'same-origin',
                       }).then(function (t) {
                         return WebAssembly.instantiateStreaming(t, i).then(e, function (t) {
@@ -6406,7 +6428,7 @@ const RASSDK = (function (t, e) {
                     e = this;
                   (this.client = new ((t = this.wsImpl).bind.apply(
                     t,
-                    s([void 0, this.url, this.wsProtocols, proxyAgent], this.wsOptionArguments),
+                    s([void 0, this.url, this.wsProtocols, { agent: proxyAgent }], this.wsOptionArguments),
                   ))()),
                     this.checkMaxConnectTimeout(),
                     (this.client.onopen = function () {
@@ -15223,7 +15245,6 @@ const RASSDK = (function (t, e) {
                               (t, [e, r], n) => (0 === n ? `?${e}=${r}` : `${t}&${e}=${r}`),
                               '',
                             )),
-                            { agent: proxyAgent }
                         )
                           .then()
                           .catch(() => {})
@@ -15340,9 +15361,12 @@ const RASSDK = (function (t, e) {
             webSocket: y,
             fetch: v,
             toolsPreviewToken: _,
-          }, proxy) =>
+          }, localEnv) =>
             ui(void 0, void 0, void 0, function* () {
-              proxyAgent = proxy;
+              fetch = localEnv.fetch;
+              // window = localEnv.window;
+              // document = localEnv.document;
+              proxyAgent = localEnv.proxyAgent;
 
               let r;
               if (b) r = b;
@@ -15811,4 +15835,4 @@ const RASSDK = (function (t, e) {
   })(),
 );
 
-module.exports = async (settings, proxyAgent) => RASSDK(settings, proxyAgent);
+module.exports = initRasSDK;

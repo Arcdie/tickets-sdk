@@ -1,8 +1,8 @@
 const WebSocket = require('ws');
 
 module.exports = class WebSocketByProxy extends WebSocket {
-  constructor(...args) {
-    super(args);
-    console.log('constructor called');
+  constructor(url, protocol, settings) {
+    console.log('Websocket constructor called');
+    super(url, protocol, settings);
   }
 };
