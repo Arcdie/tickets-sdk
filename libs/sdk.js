@@ -1,6 +1,5 @@
 const crypto = require('crypto');
 const XMLHttpRequest = require('xhr2');
-const CustomWebSocket = require('./ws');
 const { expandWindow } = require('./jsdom');
 
 /* for debugging
@@ -16,6 +15,7 @@ const initSdk = ({
   window,
   document,
   proxyAgent,
+  CustomWebSocket,
 }) => {
   window = expandWindow(window, fetch);
   global.WebSocket = window.WebSocket = window.MozWebSocket = CustomWebSocket;
