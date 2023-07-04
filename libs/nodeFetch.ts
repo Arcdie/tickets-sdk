@@ -1,5 +1,6 @@
 import { Agent } from 'http';
 import { RequestInit, HeadersInit } from 'node-fetch';
+
 const importDynamic = new Function('modulePath', 'return import(modulePath)');
 
 const nodeFetch = async (...args: any[]) => {

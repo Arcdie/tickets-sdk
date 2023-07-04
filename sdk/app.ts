@@ -3,13 +3,14 @@ import { setEnvironment } from '../libs/dotenv';
 setEnvironment();
 
 import initSdk from '../libs/sdk';
+import { CustomWebSocket } from '../libs/ws';
 import { fetchLocal } from '../libs/nodeFetch';
 import { getProxyAgent } from '../libs/proxyAgent';
 import { initJSDOM, setCookies, getUserAgent } from '../libs/jsdom';
 
 const eventId = '0F005E5CD4FC2F47';
 const url = 'concerts.livenation.com/event';
-const cookies = 'reese84=3:syBvDipvTE5LRiLtnXHc6g==:zIaUQlJW9MqjOBcoMbz2a9fpdxN4EIKxL6agVINT35Y0yz4MnxfRMfPFDkmzatjghEK5Abw6YfKN6VG20CkpRoZ7mSQajqDmU7oRbEL0UPizC7X4accNTmexEXsp0BiloSf8GmCkB9UhjZEBXPL+txeGQPQYVaCuBUdOJPiUY5TwNTUTY/1j5Vz0URlJtiwgfpzsGKz6x+QDN/44WqTA2yJBJqDUfMZI4rZhf0O/c6SEZyPdF0k23hNyEcKCj402/fBQDmwod9CiM1XTTKU8ELVrFI9KLtWmiVX2bEn3PRiAmbUFZhfW89cnJY15h91Q2bgUwPl+93RO/4Wp8W7Gg0rfykmjBcsL5EE3sNCnz+hphWXzdQt4dKumm9SkKPnd4oDnO19x8WFsQ4GELso5FJO+cEOu1EF+qla23F1JZf264mLwi2OONJWgnYERcgVRODoZMcm7qTcjpyCubwj+F90JceQugSEPAzqqtU6UFoKWnM4z7Remn+xIZiPan3cllkpY3VpU9ti0HRkWOkzdYblx1nm1iX5Mwf42ISYfdV7qIAQj9Alk2FCzXkK2ZhcZ:SMNR+QAntwLbBeXGjtbGYiVaKbbrr+r9Yr9rFGVkH9Q=';
+const cookies = 'reese84=3:3gBnJMc5Sd4NEKNnXmjVBQ==:7hnCRibfM1+NySM8BhepcsPsg9RRGdFnYzWgGdgHe72aBrhaTRWmH2wB2qjTvwNBViJkRKTQIVISUye95cwrd+VDxXyIszGW2McjELeoXoaULrlOPAo713VzMzkoHis/X5W/rOabJkjtSoBUGtloRIhTyLZwHxaHgdkADzSQoKq83bXXxCnYQr/Na4/99z9I4On+lVQU2IMwchyqEhqtYPSjRx3OD8yz8lyaNW0jw45gJ+3dWtadKNaoYDlZjgUNNA1H1G728WFD/cQTqY9dMPSYlc/uUhR2J9mBdmxcYHATjcbc4pWN7jLszWSe5hf0h/1PsbKs/rF4T9qRq+aTLVclpgOyao1uINy2zRPnHIjS5JPlrQsLtgsQozoUlZZuUnFjExhMwL2aBiLiHVeh04afn0N1EnF5gSnsEjobL8tHAiAHsyofBnQXH6ufCMxLinhhgBr2zm60e665kiE8Rw==:y95u6i/svS5of3LpjHealx9WJIXZIFhTUCYX/trKUJ4=';
 
 (async () => {
   const userAgent = getUserAgent();
@@ -33,6 +34,7 @@ const cookies = 'reese84=3:syBvDipvTE5LRiLtnXHc6g==:zIaUQlJW9MqjOBcoMbz2a9fpdxN4
     window,
     document,
     proxyAgent,
+    CustomWebSocket,
   });
 
   const instance = await sdk.default.init({ eventId });

@@ -3,6 +3,7 @@ import { setEnvironment } from '../libs/dotenv';
 setEnvironment();
 
 import initRasSDK from '../libs/rasSdk';
+import { CustomWebSocket } from '../libs/ws';
 import { fetchLocal } from '../libs/nodeFetch';
 import { getProxyAgent } from '../libs/proxyAgent';
 import { initJSDOM, getUserAgent } from '../libs/jsdom';
@@ -40,6 +41,7 @@ const subsOnce = async (eventId: string) => {
     proxyAgent,
     window,
     document: window.document,
+    CustomWebSocket,
   });
 
   const asd = created.observeEventAvailability(eventId, {});
