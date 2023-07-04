@@ -9,7 +9,7 @@ import {
 export const getUserAgent = () =>
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36';
 
-export const initJSDOM = ({ url }: ConstructorOptions) => {
+export const initJSDOM = ({ url }: ConstructorOptions = {}) => {
   const resources = new ResourceLoader({
     userAgent: getUserAgent(),
   });

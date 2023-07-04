@@ -1,4 +1,5 @@
-const CustomWebSocket = require('./libs/ws'); // for debugging, replace with require('ws');
+const CustomWebSocket = require('./ws');
+const { expandWindow } = require('./jsdom');
 
 /* for debugging
 const nativeFetch = fetch;
@@ -14,6 +15,7 @@ const initRasSDK = (settings, {
   document,
   proxyAgent,
 }) => {
+  window = expandWindow(window, fetch);
   global.WebSocket = window.WebSocket = window.MozWebSocket = CustomWebSocket;
 
   /*! For license information please see ras-sdk-v0.js.LICENSE.txt */

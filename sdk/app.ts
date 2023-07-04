@@ -9,7 +9,7 @@ import { initJSDOM, setCookies, getUserAgent } from '../libs/jsdom';
 
 const eventId = '0F005E5CD4FC2F47';
 const url = 'concerts.livenation.com/event';
-const cookies = 'reese84=3:FUi3q8E1g7Q59+87ZMOOnA==:0XHbyfAGgKqjJEjz0YcRcgScRfMmj0optgN04O8Mc1q1kO8RkBOJIwOF++2o4NLKvGlWt/0lrSUdUdfpl38ztfxqvfGhcA1rK5flKKJOqfEtgmzytZprctjYg3EAz7HBiMFq4gj+5SoNXjQN++iMEGeNyOiVAGjGdRrNqNrbR2hWOv3Hno1Chk5YHDOSb7dp6P/KKVMn7g0wBcq87+cw/LujmFQnffa06hXAG23C5rEol6pP4fAvmm/XEjiM0++LKVdJIf35Si4CIwOujuDLD8LLk2mfesS9jB7f8fr62HOwMx8vX2ks30YfbEdlIZcGU8tY3vi+5PcmXtCBJ7nhtbEqssZWQWFnc2n8K00joVK/xdBWkeOFxwbOZXB7CjAgEHgBCNNRfy06ZAtyMn3sr7mbbrX2YqsXq7WF4VyfJlJX9GG8kf3zMmckMCp1nIRKKo9ibI1ugpDlAI7BORRi6A==:nHSTohVBal3uRfgDwiHgRZk8Lsd6OB/3O3/Qs9bFwQw=';
+const cookies = 'reese84=3:syBvDipvTE5LRiLtnXHc6g==:zIaUQlJW9MqjOBcoMbz2a9fpdxN4EIKxL6agVINT35Y0yz4MnxfRMfPFDkmzatjghEK5Abw6YfKN6VG20CkpRoZ7mSQajqDmU7oRbEL0UPizC7X4accNTmexEXsp0BiloSf8GmCkB9UhjZEBXPL+txeGQPQYVaCuBUdOJPiUY5TwNTUTY/1j5Vz0URlJtiwgfpzsGKz6x+QDN/44WqTA2yJBJqDUfMZI4rZhf0O/c6SEZyPdF0k23hNyEcKCj402/fBQDmwod9CiM1XTTKU8ELVrFI9KLtWmiVX2bEn3PRiAmbUFZhfW89cnJY15h91Q2bgUwPl+93RO/4Wp8W7Gg0rfykmjBcsL5EE3sNCnz+hphWXzdQt4dKumm9SkKPnd4oDnO19x8WFsQ4GELso5FJO+cEOu1EF+qla23F1JZf264mLwi2OONJWgnYERcgVRODoZMcm7qTcjpyCubwj+F90JceQugSEPAzqqtU6UFoKWnM4z7Remn+xIZiPan3cllkpY3VpU9ti0HRkWOkzdYblx1nm1iX5Mwf42ISYfdV7qIAQj9Alk2FCzXkK2ZhcZ:SMNR+QAntwLbBeXGjtbGYiVaKbbrr+r9Yr9rFGVkH9Q=';
 
 (async () => {
   const userAgent = getUserAgent();
@@ -21,6 +21,7 @@ const cookies = 'reese84=3:FUi3q8E1g7Q59+87ZMOOnA==:0XHbyfAGgKqjJEjz0YcRcgScRfMm
 
   const { document } = window;
   setCookies(document, cookies);
+
   const fetch = fetchLocal({
     userAgent,
     proxyAgent,
