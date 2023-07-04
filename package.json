@@ -3,25 +3,24 @@
   "version": "1.0.0",
   "main": "./src/app.mjs",
   "scripts": {
-    "start": "node ./src/app"
+    "start:sdk": "ts-node ./sdk/app",
+    "start:ras": "ts-node ./rasSdk/app"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "browser-env": "^3.3.0",
-    "cookies-js": "^1.2.3",
     "crypto": "^1.0.1",
     "dotenv": "^16.3.1",
     "https-proxy-agent": "^7.0.0",
-    "isomorphic-fetch": "^3.0.0",
     "jsdom": "^22.1.0",
-    "lightstep-tracer": "^0.35.0-no-protobuf",
-    "node-fetch": "^2.6.12",
-    "opentracing": "^0.14.7",
-    "regenerator-runtime": "^0.13.11",
-    "uuid": "^9.0.0",
-    "whatwg-fetch": "^3.6.2",
+    "node-fetch": "^3.3.1",
     "ws": "^8.13.0",
     "xhr2": "^0.2.1"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^21.1.1",
+    "@types/ws": "^8.5.5",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.9.5"
   }
 }

@@ -1,6 +1,7 @@
-const xhr2 = require('xhr2');
 const crypto = require('crypto');
-const CustomWebSocket = require('../ras/libs/ws');
+const XMLHttpRequest = require('xhr2');
+const CustomWebSocket = require('./ws');
+const { expandWindow } = require('./jsdom');
 
 /* for debugging
 const nativeFetch = fetch;
@@ -10,22 +11,14 @@ fetch = (...args) => {
 };
 // */
 
-const initSDK = ({
+const initSdk = ({
   fetch,
   window,
   document,
   proxyAgent,
 }) => {
-  window.fetch = fetch;
-  window.crypto = crypto;
-  global.XMLHttpRequest = xhr2;
+  window = expandWindow(window, fetch);
   global.WebSocket = window.WebSocket = window.MozWebSocket = CustomWebSocket;
-
-  Object.defineProperty(window, 'matchMedia', {
-    writable: true,
-    value: () => {},
-  });
-
   const self = window;
 
   /*! For license information please see sdk.js.LICENSE.txt */
@@ -8803,4 +8796,4 @@ const initSDK = ({
   )()));
 };
 
-module.exports = initSDK;
+module.exports = initSdk;

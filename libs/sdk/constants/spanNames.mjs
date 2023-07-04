@@ -1,9 +1,0 @@
-import { RESERVE, RESERVE_COMPLETE, RESERVE_STATUS } from './requestNames.mjs';
-
-export const RESERVE_PARENT_SPAN = RESERVE_COMPLETE;
-export const RESERVE_MUTATION = 'reserveMutation';
-
-export const REQUEST_SPAN_MAPPING = {
-  [RESERVE]: RESERVE_MUTATION,
-  [RESERVE_STATUS]: RESERVE_STATUS,
-}

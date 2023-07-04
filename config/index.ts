@@ -1,4 +1,4 @@
-const config = {
+export default {
   proxy: {
     port: process.env.PROXY_PORT,
     ip: process.env.PROXY_IP,
@@ -6,5 +6,3 @@ const config = {
     password: process.env.PROXY_PASSWORD,
   },
 };
-
-export default config;
