@@ -1,5 +1,4 @@
-/node_modules/
-sdk-module/node_modules/
+**/node_modules/
 /.git/
 /**/package-lock.json
 /**/Thumbs.db
