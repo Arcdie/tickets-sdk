@@ -24,7 +24,15 @@ export const fetchWrapper = ({ proxyAgent, userAgent, cookies }: TFetchLocalPara
 
     options.agent = proxyAgent;
     options.headers['user-agent'] = userAgent;
-    return (await nodeFetch(url, options)).json();
+
+    const result = await nodeFetch(url, options);
+
+    if (result.status !== 200) {
+      console.log(url, result);
+      throw new Error(result.status);
+    }
+
+    return result.json();
   };
 
 export const fetchLocal = ({ proxyAgent, userAgent, cookies }: TFetchLocalParams) =>
