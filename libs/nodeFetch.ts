@@ -12,6 +12,21 @@ type TFetchLocalParams = { proxyAgent: Agent, userAgent: string; cookies?: strin
 type TRequestInitHeaders = HeadersInit & { 'user-agent'?: string; cookie?: string };
 type TExtendedRequestInit = RequestInit & { credentials?: string; headers?: TRequestInitHeaders };
 
+export const fetchWrapper = ({ proxyAgent, userAgent, cookies }: TFetchLocalParams) =>
+  async (url: string, options: TExtendedRequestInit = {}) => {
+    if (!options.headers) {
+      options.headers = {};
+    }
+
+    if (cookies) {
+      options.headers.cookie = cookies;
+    }
+
+    options.agent = proxyAgent;
+    options.headers['user-agent'] = userAgent;
+    return (await nodeFetch(url, options)).json();
+  };
+
 export const fetchLocal = ({ proxyAgent, userAgent, cookies }: TFetchLocalParams) =>
   (url: string, options: TExtendedRequestInit = {}) => {
     if (!options.headers) {

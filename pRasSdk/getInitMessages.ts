@@ -1,4 +1,4 @@
-export const getInitMessages = (eventId: string): any[] => [{
+export default (eventId: string): any[] => [{
   payload: {},
   type : 'connection_init',
 }, {
