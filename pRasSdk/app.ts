@@ -3,6 +3,7 @@ import { setEnvironment } from '../libs/dotenv';
 setEnvironment();
 
 import { getConnection } from '../libs/ws';
+import { getProxyAgent } from '../libs/proxyAgent';
 import getInitMessages from './getInitMessages';
 
 const appId = 'PRD2663_EDPAPP';
@@ -13,7 +14,7 @@ const requestUrl = `marketplace.prod.pub-tmaws.io/avpp/v2/graphql?app=${appId}&s
 
 const setConnection = () => {
   // connection lives 12 minutes
-  const wss = getConnection(requestUrl);
+  const wss = getConnection(requestUrl, getProxyAgent());
 
   wss.on('error', err => console.log('ws.error', err));
 
