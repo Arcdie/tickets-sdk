@@ -7,10 +7,10 @@ fetch = (...args) => {
 // */
 
 const initRasSDK = (settings, {
-  fetch,
+  // fetch,
   window,
   document,
-  proxyAgent,
+  // proxyAgent,
   CustomWebSocket,
 }) => {
   global.WebSocket = window.WebSocket = window.MozWebSocket = CustomWebSocket;
@@ -2894,10 +2894,14 @@ const initRasSDK = (settings, {
 
                   (b = r.wasmMemory
                     ? r.wasmMemory
-                    : new WebAssembly.Memory({
-                      initial: E / 65536,
-                      maximum: 32768,
-                    })) && (y = b.buffer),
+                    : (() => {
+                      const m = new WebAssembly.Memory({
+                        initial: E / 65536,
+                        maximum: 32768,
+                      });
+
+                      return m;
+                    })()) && (y = b.buffer),
                     (E = y.byteLength),
                     S(y),
                     (_[1e3] = 5247088);
@@ -2989,6 +2993,7 @@ const initRasSDK = (settings, {
                             })
                       )
                         .then(function (t) {
+                          console.log('here1');
                           return WebAssembly.instantiate(t, i);
                         })
                         .then(t, function (t) {
@@ -3025,6 +3030,7 @@ const initRasSDK = (settings, {
                           credentials: 'same-origin',
                         }).then(function (t) {
                           return WebAssembly.instantiateStreaming(t, i).then(e, function (t) {
+                            console.log('here2');
                             return (
                               l('wasm streaming compile failed: ' + t),
                               l('falling back to ArrayBuffer instantiation'),
@@ -6407,7 +6413,7 @@ const initRasSDK = (settings, {
                     e = this;
                   (this.client = new ((t = this.wsImpl).bind.apply(
                     t,
-                    s([void 0, this.url, this.wsProtocols, { agent: proxyAgent }], this.wsOptionArguments),
+                    s([void 0, this.url, this.wsProtocols], this.wsOptionArguments),
                   ))()),
                     this.checkMaxConnectTimeout(),
                     (this.client.onopen = function () {
@@ -9166,10 +9172,12 @@ const initRasSDK = (settings, {
           class Nt {
             constructor() {
               (this.noExitRuntime = !0),
-                (this.wasmMemory = new WebAssembly.Memory({
-                  initial: 256,
-                  maximum: 256,
-                }));
+                (this.wasmMemory = (() => {
+                  const m = new WebAssembly.Memory({
+                    initial: 256,
+                    maximum: 256,
+                  });
+                })());
             }
 
             locateFile(t) {
@@ -9343,7 +9351,9 @@ const initRasSDK = (settings, {
                         const t = Q(this),
                           e = i(t) >>> 0,
                           r = new q(e);
-                        return e > 0 && d(t, r.byteOffset), r;
+
+                        const myr = e > 0 && d(t, r.byteOffset);
+                        return myr;
                       }
 
                       toArray() {

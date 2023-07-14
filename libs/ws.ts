@@ -11,4 +11,4 @@ export class CustomWebSocket extends WebSocket {
 };
 
 export const getConnection = (url: string, agent: HttpsProxyAgent<string>) =>
-  new CustomWebSocket(`wss://${url}`, 'graphql-ws', { agent });
+  new CustomWebSocket(`wss://${url}`, 'graphql-ws');
