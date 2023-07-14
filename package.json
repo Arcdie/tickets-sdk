@@ -6,7 +6,7 @@
     "start:psdk": "ts-node ./pSdk/app",
     "start:pRas": "ts-node ./pRasSdk/app",
     "start:sdk": "ts-node ./sdk/app",
-    "start:ras": "ts-node ./rasSdk/app"
+    "start:rasSdk": "ts-node ./rasSdk/app"
   },
   "author": "",
   "license": "ISC",
