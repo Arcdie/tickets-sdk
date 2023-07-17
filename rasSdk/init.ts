@@ -22,10 +22,7 @@ const findOutWhatReleasedAndWhatRemoved = (oldSet: Set<unknown>, newSet: Set<unk
   return { released, removed };
 };
 
-const init = ({
-  eventId,
-  sessionId,
-}: IInitParams) => new Promise(async (res, rej) => {
+const init = async ({ eventId, sessionId }: IInitParams) => {
   let oldSet = new Set();
   const { window } = initJSDOM();
   const proxyAgent = getProxyAgent();
@@ -65,12 +62,13 @@ const init = ({
       }
 
       oldSet = newSet;
-      return res(e);
+
+      parentPort?.postMessage({
+        eventId,
+        availablePlaceIds: e,
+      });
     },
   });
-});
+};
 
-(async () => {
-  parentPort?.postMessage(await init(workerData));
-})();
-
+init(workerData);
