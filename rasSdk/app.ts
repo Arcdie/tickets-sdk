@@ -21,8 +21,8 @@ const handleEvent = (eventId: string) => new Promise((res, rej) => {
 });
 
 (async () => {
-  for await (let eventId of events) {
+  await Promise.all(events.map(async eventId => {
     const result = await handleEvent(eventId);
     console.log(`eventId: ${eventId}`, result);
-  }
+  }));
 })().catch(e => console.error(e));
