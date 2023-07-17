@@ -6,7 +6,8 @@
     "start:psdk": "ts-node ./pSdk/app",
     "start:pRas": "ts-node ./pRasSdk/app",
     "start:sdk": "ts-node ./sdk/app",
-    "start:ras": "ts-node ./rasSdk/app"
+    "start:ras": "npm run build && node ./dist/rasSdk/app",
+    "build": "rimraf dist && tsc -p tsconfig.json && cp .env ./dist/.env"
   },
   "author": "",
   "license": "ISC",
@@ -25,6 +26,7 @@
     "@types/node-fetch": "^2.6.4",
     "@types/uuid": "^9.0.2",
     "@types/ws": "^8.5.5",
+    "rimraf": "^5.0.1",
     "ts-node": "^10.9.1",
     "typescript": "^4.9.5"
   }
