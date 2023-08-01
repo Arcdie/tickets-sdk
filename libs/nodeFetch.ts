@@ -22,7 +22,7 @@ export const fetchWrapper = ({ proxyAgent, userAgent, cookies }: TFetchLocalPara
       options.headers.cookie = cookies;
     }
 
-    options.agent = proxyAgent;
+    // options.agent = proxyAgent;
     options.headers['user-agent'] = userAgent;
 
     const result = await nodeFetch(url, options);
@@ -49,7 +49,7 @@ export const fetchLocal = ({ proxyAgent, userAgent, cookies }: TFetchLocalParams
       options.headers.cookie = cookies;
     }
 
-    options.agent = proxyAgent;
+    // options.agent = proxyAgent;
     options.headers['user-agent'] = userAgent;
 
     console.log('fetchLocal', url, options);

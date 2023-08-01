@@ -6,7 +6,8 @@
     "start:psdk": "ts-node ./pSdk/app",
     "start:pRas": "ts-node ./pRasSdk/app",
     "start:sdk": "ts-node ./sdk/app",
-    "start:ras": "npm run build && node ./dist/rasSdk/app",
+    "start:ras": "ts-node ./rasSdk/app",
+    "start:rasNew": "npm run build && node ./dist/rasSdk/app",
     "build": "rimraf dist && tsc -p tsconfig.json && cp .env ./dist/.env"
   },
   "author": "",

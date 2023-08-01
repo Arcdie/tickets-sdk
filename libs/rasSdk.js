@@ -6407,7 +6407,7 @@ const initRasSDK = (settings, {
                     e = this;
                   (this.client = new ((t = this.wsImpl).bind.apply(
                     t,
-                    s([void 0, this.url, this.wsProtocols, { agent: proxyAgent }], this.wsOptionArguments),
+                    s([void 0, this.url, this.wsProtocols], this.wsOptionArguments),
                   ))()),
                     this.checkMaxConnectTimeout(),
                     (this.client.onopen = function () {
