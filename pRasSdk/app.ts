@@ -3,12 +3,13 @@ import { setEnvironment } from '../libs/dotenv';
 setEnvironment();
 
 import { getConnection } from '../libs/ws';
+import { getAvailablePlaceIds } from './wasm';
 import { getProxyAgent } from '../libs/proxyAgent';
 import getInitMessages from './getInitMessages';
 
 const appId = 'PRD2663_EDPAPP';
-const eventId = '05005D7EF30764C5';
-const sessionId = '3%3AJdoF8poGBQqCnTJZBh1b6Q%3D%3D%3AaUmHG8AAfbihYAv5aGdblrTJEZ%2F0NsePpFL02sqZ%2FxVvS15V%2FW66EySzVOiaiVZrOv0soD0U1qW7%2FnbmlcySnULIewVnG4tGdN6ZMBlm%2BDkF8Eqf8XA0FX1a7SqokxTmxgDUJrUkBiZteWPLJh8mwdLe83oXnP2RuSHGpbWK1b95VaBIzgY7lZILOC88myC1wXQtZvXTG0ZQgCIppRwfZQ%2Bi9ipYTk%2FbZWxrSWnt56kTLotdwYVSyPVWBY%2F7%2BnroqYi3VP%2B0IpgaoLBqKfogDTr3vUeGJO8W2EXDm9DEGnlkrMLSg73BfRJftMgmqdzjVXtyI9aAdDQqcYSHP6Cb1W%2F%2BBeCjtgGev%2FRONS%2FtIcyedKYOzAyVbXSVoQRkMKIOGSQZqGvwwQCWRa00aA93bMPnpO9tnRWFJAF8okXr6%2FrEQg0QjFG%2BNtV5QsYjupm1RMoGrBhQbC%2FO1zg3FJZv0w%3D%3D%3ARfsIJNz%2BYYmqRUjgqy%2BpF8OMNrQk4zkXUuFkruFnxGg%3D';
+const eventId = '00005E508E691825';
+const sessionId = '3:IxXEo8Pfipkb0hJJrLIbpg==:+yINVfXgMatGrUijxQ346pUXwfdDgL6/gU7Z30Cq3U2hT4YSJJUFIMiSOsG1JzHYlIiHlAfb5PuMzSafWtOsuXyBaQyzrEmi5WLivVtq5U543dG2BgsMSkao3PvqUA8HhRLF2/NYJgHtyV9CQTVDVlpuGsmRUyXL7DtjqoG3aW7p/ZKD0hK/z0wVQVIyeUOpQUwdHA3+O3+nm5LInfpZON1Kg41NcG2027e/jA6AoHfAWWol4pcU5+5mVsdC8gQoWo3tko6RMfbSdHHQwY/x1MFbQ0vsys/G9YVwT0kZb5y77BUPhuZF6T++D0QxY3foURf+1R+mg/pyhD0kOtnEAZYIU/jajaVC2trDQFMwlKn6JRKcQ44kF+8rJ4mvBiZ8yKvgvvIWJJUsLguVEc8uXOhlBW6DTjnrdxSgWDp2QFG541KxZ2gR0cZ0bIzjscnyRpDmOSBRpGr3HOBrxBl+3Q==:SFAIJmzWERkV4J3nQKipGiAmMlnvuWiU1KaEypBhKsg=';
 
 const requestUrl = `marketplace.prod.pub-tmaws.io/avpp/v2/graphql?app=${appId}&sessionId=${sessionId}`;
 
@@ -18,9 +19,14 @@ const setConnection = () => {
 
   wss.on('error', err => console.log('ws.error', err));
 
-  wss.on('message', bufferData => {
+  wss.on('message', async bufferData => {
     const message = JSON.parse(bufferData.toString());
     console.log('ws.message', JSON.stringify(message, null, 2));
+
+    if (message.payload && message.payload.data && message.payload.data.availability) {
+      const placeIds = await getAvailablePlaceIds(eventId, message.payload.data.availability.buffer);
+      console.log('placeIds', placeIds);
+    }
   });
 
   wss.on('open', () => {

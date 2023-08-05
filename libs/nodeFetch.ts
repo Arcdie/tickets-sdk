@@ -49,7 +49,7 @@ export const fetchLocal = ({ proxyAgent, userAgent, cookies }: TFetchLocalParams
       options.headers.cookie = cookies;
     }
 
-    options.agent = proxyAgent;
+    // options.agent = proxyAgent;
     options.headers['user-agent'] = userAgent;
 
     console.log('fetchLocal', url, options);

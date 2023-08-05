@@ -1,12 +1,14 @@
-const content = 'IAAAABwARAA8ADgAMAAoACAAGABAAAwAFAAQAAgABAAcAAAAxAAAAKQGAAA4AAAAXAAAAIAAAAByAQAAAAAAACe1iFOJAQAApaCy+YgBAABSHEqahgEAAHQOAAAkEwAAOAcAACAAAAA0MTMwZTQ2OWZkM2EzODg4Y2YwYTEzZDlhY2E1OTczNwAAAAAgAAAANTI0MGZlZDYyNzkxMDVmZTFkZTE3ZjZhYmM4YWFjMmMAAAAAIAAAAGU1OWUwOTc5OGI1MmNlNzU0MDU2ODdiZDg2MTQ5NGNmAAAOABgABAAIAAwAEAAUAA4AAAAOAAAACAAAAPQDAADsAAAABAAAAA4AAADUAAAAxAAAALQAAACkAAAAlAAAAIQAAAB0AAAAZAAAAFQAAABEAAAANAAAACQAAAAUAAAABAAAAJ76//8EAAAAAAAAAKr6//8EAAAAAAAAALb6//8EAAAAAAAAAML6//8EAAAAAAAAAM76//8EAAAAAAAAANr6//8EAAAAAAAAAOb6//8EAAAAAAAAAPL6//8EAAAAAAAAAP76//8EAAAAAAAAAAr7//8EAAAAAAAAABb7//8EAAAAAAAAACL7//8EAAAAAAAAAC77//8EAAAAAAAAADr7//8EAAAAAAAAAA4AAADEAgAAhAIAACQCAACkAQAAVAEAABQBAAAEAQAA9AAAAOQAAADUAAAAlAAAAFQAAAAUAAAABAAAAIL7//8EAAAAAAAAAI77//8EAAAAAQAAAAQAAABo+///HAAAAAQAAAABAAAABAAAAHz7//8BAAAALAEAAAQAAABPUEVOAAAAAMr7//8EAAAAAQAAAAQAAACk+///HAAAAAQAAAABAAAABAAAALj7//8BAAAAzwEAAAQAAABPUEVOAAAAAAb8//8EAAAAAQAAAAQAAADg+///HAAAAAQAAAABAAAABAAAAPT7//8BAAAADwEAAAQAAABPUEVOAAAAAEL8//8EAAAAAAAAAE78//8EAAAAAAAAAFr8//8EAAAAAAAAAGb8//8EAAAAAAAAAHL8//8EAAAAAQAAAAQAAABM/P//HAAAAAQAAAABAAAABAAAAGD8//8AAAAAXgAAAAQAAABPUEVOAAAAAK78//8EAAAAAQAAAAQAAACI/P//LAAAAAQAAAACAAAAFAAAAAQAAACg/P//EwAAAAQAAACs/P//AAAAAEUAAAAEAAAAT1BFTgAAAAD6/P//BAAAAAEAAAAEAAAA1Pz//1wAAAAEAAAABQAAADgAAAAcAAAADAAAADgAAAAcAAAA+Pz//w0AAAAIAAAABP3//woAAAAKAAAAEP3//xMAAAAjAAAAHP3//wAAAAADAAAAKP3//xAAAAASAAAABAAAAE9QRU4AAAAAdv3//wQAAAABAAAABAAAAFD9//88AAAABAAAAAMAAAAYAAAAIAAAAAQAAABs/f//EwAAAA4AAAB4/f//AAAAAAIAAACE/f//EAAAAAMAAAAEAAAAT1BFTgAAAADS/f//BAAAAAEAAAAEAAAArP3//xwAAAAEAAAAAQAAAAQAAADA/f//AgAAACAAAAAEAAAAT1BFTgAAAAAO/v//BAAAAAEAAAAEAAAA6P3//xwAAAAEAAAAAQAAAAQAAAD8/f//AgAAAAEAAAAEAAAAT1BFTgAAAAAOAAAAuAEAAIgBAABcAQAAMAEAAAQBAADYAAAAyAAAALgAAACoAAAAmAAAAGwAAABAAAAAFAAAAAQAAACG/v//BAAAAAAAAACS/v//BAAAAAEAAAAEAAAAbP7//wgAAAAsAQAABAAAAE9QRU4AAAAAuv7//wQAAAABAAAABAAAAJT+//8IAAAAzwEAAAQAAABPUEVOAAAAAOL+//8EAAAAAQAAAAQAAAC8/v//CAAAAA8BAAAEAAAAT1BFTgAAAAAK////BAAAAAAAAAAW////BAAAAAAAAAAi////BAAAAAAAAAAu////BAAAAAAAAAA6////BAAAAAEAAAAEAAAAFP///wgAAABeAAAABAAAAE9QRU4AAAAAYv///wQAAAABAAAABAAAADz///8IAAAASQAAAAQAAABPUEVOAAAAAIr///8EAAAAAQAAAAQAAABk////CAAAAEoAAAAEAAAAT1BFTgAAAACy////BAAAAAEAAAAEAAAAjP///wgAAAATAAAABAAAAE9QRU4AAAAA2v///wQAAAABAAAABAAAALT///8IAAAAIAAAAAQAAABPUEVOAAAGAAgABAAGAAAABAAAAAEAAAAEAAAA4P///wgAAAABAAAABAAAAE9QRU4AAAAAAQAAAAwAAAAIAAwABAAIAAgAAACsAAAABAAAAJ8AAAA7MAAAAQAAJAElADUAAACUAAEAogADAKgABwC0ABEA1AAAANkAAADlAAAAVAEBALQBAQC4AQsAxgEHANUBAADdAQQALgILAEMCCQBRAgAAZgIBAJoCDwCtAhQAxgIDANICAwD6Ag8AKAMIADMDDgBkAxUAswMAAMgDBQDhAwAA8AMMAAoEEQA+BAcASAQLAFgEGwCgBAAApQQDAKsEAgAABAAAAE9QRU4AAAAAEAAAADBGMDA1RTVDRDRGQzJGNDcAAAAA';
+const content = 'IAAAABwASABAADwAMAAoACAAGABEAAwAFAAQAAgABAAcAAAAyAAAAJgGAAA8AAAAYAAAAIQAAAByAQAAAAAAAH2a6MWJAQAApaCy+YgBAABSHEqahgEAAAAAAAB0DgAAJBMAAAwHAAAgAAAAYTZjZmQ3MTgxYTUwOTQ0OTU3ODA0NGUyMTMyMzg2NDAAAAAAIAAAADUyNDBmZWQ2Mjc5MTA1ZmUxZGUxN2Y2YWJjOGFhYzJjAAAAACAAAABlNTllMDk3OThiNTJjZTc1NDA1Njg3YmQ4NjE0OTRjZgAADgAYAAQACAAMABAAFAAOAAAADgAAAAgAAADkAwAA7AAAAAQAAAAOAAAA1AAAAMQAAAC0AAAApAAAAJQAAACEAAAAdAAAAGQAAABUAAAARAAAADQAAAAkAAAAFAAAAAQAAACu+v//BAAAAAAAAAC6+v//BAAAAAAAAADG+v//BAAAAAAAAADS+v//BAAAAAAAAADe+v//BAAAAAAAAADq+v//BAAAAAAAAAD2+v//BAAAAAAAAAAC+///BAAAAAAAAAAO+///BAAAAAAAAAAa+///BAAAAAAAAAAm+///BAAAAAAAAAAy+///BAAAAAAAAAA++///BAAAAAAAAABK+///BAAAAAAAAAAOAAAAtAIAAHQCAAAkAgAApAEAAFQBAAAUAQAABAEAAPQAAADkAAAA1AAAAJQAAABUAAAAFAAAAAQAAACS+///BAAAAAAAAACe+///BAAAAAEAAAAEAAAAePv//xwAAAAEAAAAAQAAAAQAAACM+///AQAAACwBAAAEAAAAT1BFTgAAAADa+///BAAAAAEAAAAEAAAAtPv//xwAAAAEAAAAAQAAAAQAAADI+///AQAAAM8BAAAEAAAAT1BFTgAAAAAW/P//BAAAAAEAAAAEAAAA8Pv//xwAAAAEAAAAAQAAAAQAAAAE/P//AQAAAEoAAAAEAAAAT1BFTgAAAABS/P//BAAAAAAAAABe/P//BAAAAAAAAABq/P//BAAAAAAAAAB2/P//BAAAAAAAAACC/P//BAAAAAEAAAAEAAAAXPz//xwAAAAEAAAAAQAAAAQAAABw/P//AAAAAEoAAAAEAAAAT1BFTgAAAAC+/P//BAAAAAEAAAAEAAAAmPz//ywAAAAEAAAAAgAAABQAAAAEAAAAsPz//xMAAAAEAAAAvPz//wAAAAAqAAAABAAAAE9QRU4AAAAACv3//wQAAAABAAAABAAAAOT8//9cAAAABAAAAAUAAAA4AAAAHAAAAAwAAAA4AAAAHAAAAAj9//8NAAAACAAAABT9//8KAAAACgAAACD9//8TAAAAHwAAACz9//8AAAAAAgAAADj9//8QAAAADgAAAAQAAABPUEVOAAAAAIb9//8EAAAAAQAAAAQAAABg/f//LAAAAAQAAAACAAAAFAAAAAQAAAB4/f//EwAAAAwAAACE/f//EAAAAAMAAAAEAAAAT1BFTgAAAADS/f//BAAAAAEAAAAEAAAArP3//xwAAAAEAAAAAQAAAAQAAADA/f//AgAAAAEAAAAEAAAAT1BFTgAAAAAO/v//BAAAAAEAAAAEAAAA6P3//xwAAAAEAAAAAQAAAAQAAAD8/f//AgAAAAEAAAAEAAAAT1BFTgAAAAAOAAAAuAEAAIgBAABcAQAAMAEAAAQBAADYAAAAyAAAALgAAACoAAAAmAAAAGwAAABAAAAAFAAAAAQAAACG/v//BAAAAAAAAACS/v//BAAAAAEAAAAEAAAAbP7//wgAAAAsAQAABAAAAE9QRU4AAAAAuv7//wQAAAABAAAABAAAAJT+//8IAAAAzwEAAAQAAABPUEVOAAAAAOL+//8EAAAAAQAAAAQAAAC8/v//CAAAAEoAAAAEAAAAT1BFTgAAAAAK////BAAAAAAAAAAW////BAAAAAAAAAAi////BAAAAAAAAAAu////BAAAAAAAAAA6////BAAAAAEAAAAEAAAAFP///wgAAABKAAAABAAAAE9QRU4AAAAAYv///wQAAAABAAAABAAAADz///8IAAAALgAAAAQAAABPUEVOAAAAAIr///8EAAAAAQAAAAQAAABk////CAAAAEEAAAAEAAAAT1BFTgAAAACy////BAAAAAEAAAAEAAAAjP///wgAAAAPAAAABAAAAE9QRU4AAAAA2v///wQAAAABAAAABAAAALT///8IAAAAAQAAAAQAAABPUEVOAAAGAAgABAAGAAAABAAAAAEAAAAEAAAA4P///wgAAAABAAAABAAAAE9QRU4AAAAAAQAAAAwAAAAIAAwABAAIAAgAAACQAAAABAAAAIMAAAA7MAAAAQAAyQAeADUAAAClAAAA1AAAANkAAADlAAAAuAELAMYBBwDVAQAA3wECADACCQBDAgkAZgIBAJwCDQCvAhIAxgIDAP8CAAAuAwIAMwMMAGQDFQCzAwAAywMAAOEDAAD0AwgADwQKAEAEBQBIBAsAWgQZAKAEAAClBAMAqwQCAAAEAAAAT1BFTgAAAAAQAAAAMEYwMDVFNUNENEZDMkY0NwAAAAA=';
 
-const { readFileSync } = require('fs');
+const fs = require('fs');
 
-const fileBuffer = readFileSync('./sdk_v3.wasm');
+const fileBuffer = fs.readFileSync('./sdk_original.wasm');
+const manifest = JSON.parse(fs.readFileSync('./manifest.json'));
+// const resultBuffer = Object.values(JSON.parse(fs.readFileSync('../resultBuffer.json')));
 
 const memory = new WebAssembly.Memory({
-  initial: 16777216 / 65536,
-  maximum: 32768,
+  initial: 256,
+  maximum: 256,
 });
 
 const table = new WebAssembly.Table({
@@ -15,18 +17,31 @@ const table = new WebAssembly.Table({
   element: 'anyfunc',
 });
 
+const v = new Uint8Array(memory.buffer);
+
+function Q() {
+  return v.length;
+}
+
 const settings = {
-  memory: memory,
+  // memory: memory,
   env: {
-    b: function (t, e, r, n) {},
-    // __memory_base: 1024,
-    // __table_base: 0,
-    f: () => 0,
+    b: function (t, e, r, n) {
+      console.log('b');
+    },
+    __memory_base: 1024,
+    __table_base: 0,
+    f: () => {
+      console.log('f');
+      return Q();
+    },
     g: function (t, e, r) {
+      console.log('g');
       // v.copyWithin(t, e, e + r);
     },
     e: function (t) {
-      /*
+      console.log('e');
+
       t >>>= 0;
       var e = Q();
       if (2147483648 < t) return !1;
@@ -45,16 +60,15 @@ const settings = {
         if (i) return !0;
       }
       return !1;
-      */
     },
     d: function (t, e) {
-      // return 32 == (t = q(t)) && (t += q(e)), (d = 0), 0 | t;
+      console.log('d');
     },
     a: function () {
-      // return d;
+      console.log('a');
     },
     c: function (t) {
-      // d = t;
+      console.log('c');
     },
     table: table,
     memory: memory,
@@ -63,7 +77,7 @@ const settings = {
     NaN: NaN,
     Infinity: Infinity,
   },
-  'global.Math': Math,
+  // 'global.Math': Math,
   asm2wasm: {
     'f64-rem': function (t, e) {
       return t % e;
@@ -95,11 +109,10 @@ const vectorLen = (buffer, value) =>
 const indirect = (buffer, value) =>
   value + readInt32(buffer, value);
 
-const asTypedArray = (buffer, byteOffset, length) =>
-  new Uint8Array(buffer, byteOffset, length);
+const getContentBuffer = () => new Uint8Array(Buffer.from(content, 'base64'));
 
-const getBuffer = () => {
-  const buffer = new Uint8Array(Buffer.from(content, 'base64'));
+const getBitmapArray = () => {
+  const buffer = getContentBuffer();
   let position = readInt32(buffer, 0);
 
   let o = offset(buffer, position, 24);
@@ -117,15 +130,101 @@ const getBuffer = () => {
   );
 };
 
-(async () => {
+const getAvailableSeats = async () => {
   const wasm = await WebAssembly.instantiate(fileBuffer, settings);
 
-  const buffer = getBuffer();
-  const int8View = new Uint8Array(wasm.instance.exports.memory.buffer);
-  int8View.set(buffer, 5247168, 159);
+  const buffer = getBitmapArray();
+  const lBitmapArray = buffer.length; // 131
 
-  const func = wasm.instance.exports.R;
-  func(5247096, 5247520);
+  const int32 = new Int32Array(memory.buffer);
 
-  console.log(asTypedArray(wasm.instance.exports.memory.buffer, 0, 293));
-})();
+  // console.log('buffer', buffer);
+
+  int32[1e3] = 5247088;
+  
+  // console.log('i', wasm.instance.exports.i(0)); // 24
+
+  const resultRoaringBitmapCreateJs = wasm.instance.exports.s(0);
+  console.log('s', resultRoaringBitmapCreateJs); // 5247096
+
+  const resultMalloc = wasm.instance.exports.j(lBitmapArray);
+  console.log('j', resultMalloc); // 5247168
+
+  const uint8 = new Uint8Array(memory.buffer);
+  uint8.set(buffer, resultMalloc);
+
+  const resultRoaringBitmapPortableDeserializeJs = wasm.instance.exports.K(
+    resultRoaringBitmapCreateJs,
+    resultMalloc,
+    lBitmapArray,
+  );
+  console.log('K', resultRoaringBitmapPortableDeserializeJs); // 0
+
+  const resultFree = wasm.instance.exports.h(resultMalloc);
+  console.log('h', resultFree); // undefined
+
+  const resultRoaringBitmapGetCardinality = wasm.instance.exports.w(resultRoaringBitmapCreateJs);
+  console.log('w', resultRoaringBitmapGetCardinality); // 202
+
+  const resultMalloc2 = wasm.instance.exports.j(4 * resultRoaringBitmapGetCardinality);
+  console.log('j', resultMalloc2); // 5247464
+
+  const resultRoaringBitmapToUint32Array = wasm.instance.exports.R(resultRoaringBitmapCreateJs, resultMalloc2);
+  console.log('R', resultRoaringBitmapToUint32Array); // undefined
+
+  const uint32 = new Uint32Array(resultRoaringBitmapGetCardinality);
+  uint32.set(new Uint32Array(memory.buffer, resultMalloc2, resultRoaringBitmapGetCardinality));
+
+  const resultFree2 = wasm.instance.exports.h(resultMalloc2);
+  console.log('h', resultFree2);
+
+  console.log('uint32', uint32);
+
+  /*
+  const resultBuffer2 = Object.values(int32.filter(e => e));
+  for (let i = 0; i < resultBuffer.length; i += 1) {
+    if (resultBuffer[i] !== resultBuffer2[i]) {
+      console.log(i, resultBuffer[i], resultBuffer2[i]);
+    }
+  }
+  // */
+
+  return uint32;
+};
+
+const tmp = async () => {
+  const contentBuffer = getContentBuffer();
+  const availableSeats = await getAvailableSeats();
+
+  let o = offset(contentBuffer, 32, 26);
+  let position = indirect(contentBuffer, 32 + o);
+
+  o = offset(contentBuffer, position, 4);
+  const numSections = o ? readInt32(contentBuffer, position + o) : 0;
+
+  o = offset(contentBuffer, position, 6);
+  const numGASections = o ? readInt32(contentBuffer, position + o) : 0;
+
+  const numAvailableSeats = availableSeats.length;
+
+  const e = manifest.manifestSections.filter(t => t.ga);
+  if (!e.length) return [];
+
+  let r = 0;
+  let n = e[0].numSeats;
+
+  const arr = Array.from(
+    { length: manifest.placeIds.length },
+    (t, i) => (0 !== i && i === n && (n += e[++r].numSeats), e[r].name),
+  );
+
+  const a = new Set(availableSeats);
+  
+  return Array.from(availableSeats).map(e => manifest.placeIds[e]);
+};
+
+tmp()
+  .then(res => {
+    console.log('res', res);
+  });
+// getAvailableSeats();

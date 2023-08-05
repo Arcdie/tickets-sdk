@@ -1,10 +1,14 @@
-/* for debugging
+const fs = require('fs');
+
+// /* for debugging
 const nativeFetch = fetch;
 fetch = (...args) => {
   console.log('fetchGlobal', args);
   return nativeFetch(...args);
 };
 // */
+
+let globalT;
 
 const initRasSDK = (settings, {
   // fetch,
@@ -2892,16 +2896,12 @@ const initRasSDK = (settings, {
                     }
                   }
 
-                  (b = r.wasmMemory
+                  (b = globalT = r.wasmMemory
                     ? r.wasmMemory
-                    : (() => {
-                      const m = new WebAssembly.Memory({
-                        initial: E / 65536,
-                        maximum: 32768,
-                      });
-
-                      return m;
-                    })()) && (y = b.buffer),
+                    : new WebAssembly.Memory({
+                      initial: E / 65536,
+                      maximum: 32768,
+                    })) && (y = b.buffer),
                     (E = y.byteLength),
                     S(y),
                     (_[1e3] = 5247088);
@@ -2993,7 +2993,6 @@ const initRasSDK = (settings, {
                             })
                       )
                         .then(function (t) {
-                          console.log('here1');
                           return WebAssembly.instantiate(t, i);
                         })
                         .then(t, function (t) {
@@ -3030,7 +3029,6 @@ const initRasSDK = (settings, {
                           credentials: 'same-origin',
                         }).then(function (t) {
                           return WebAssembly.instantiateStreaming(t, i).then(e, function (t) {
-                            console.log('here2');
                             return (
                               l('wasm streaming compile failed: ' + t),
                               l('falling back to ArrayBuffer instantiation'),
@@ -3122,13 +3120,13 @@ const initRasSDK = (settings, {
                   if (
                     (r.asm({}, U, y),
                       (r._free = function () {
-                        return (r._free = r.asm.h).apply(null, arguments);
+                        return (r._free = r.asm.h).apply(null, arguments); // 5(5247168):undefined
                       }),
                       (r._get_sizeof_roaring_bitmap_t = function () {
-                        return (r._get_sizeof_roaring_bitmap_t = r.asm.i).apply(null, arguments);
+                        return (r._get_sizeof_roaring_bitmap_t = r.asm.i).apply(null, arguments); // 1(0):24
                       }),
                       (r._malloc = function () {
-                        return (r._malloc = r.asm.j).apply(null, arguments);
+                        return (r._malloc = r.asm.j).apply(null, arguments); // 3(131):5247168
                       }),
                       (r._roaring_bitmap_add = function () {
                         return (r._roaring_bitmap_add = r.asm.k).apply(null, arguments);
@@ -3155,7 +3153,7 @@ const initRasSDK = (settings, {
                         return (r._roaring_bitmap_contains = r.asm.r).apply(null, arguments);
                       }),
                       (r._roaring_bitmap_create_js = function () {
-                        return (r._roaring_bitmap_create_js = r.asm.s).apply(null, arguments);
+                        return (r._roaring_bitmap_create_js = r.asm.s).apply(null, arguments); // 2(0):5247096
                       }),
                       (r._roaring_bitmap_equals = function () {
                         return (r._roaring_bitmap_equals = r.asm.t).apply(null, arguments);
@@ -3167,7 +3165,7 @@ const initRasSDK = (settings, {
                         return (r._roaring_bitmap_free = r.asm.v).apply(null, arguments);
                       }),
                       (r._roaring_bitmap_get_cardinality = function () {
-                        return (r._roaring_bitmap_get_cardinality = r.asm.w).apply(null, arguments);
+                        return (r._roaring_bitmap_get_cardinality = r.asm.w).apply(null, arguments); // 6(5247096):202
                       }),
                       (r._roaring_bitmap_intersect = function () {
                         return (r._roaring_bitmap_intersect = r.asm.x).apply(null, arguments);
@@ -3209,7 +3207,7 @@ const initRasSDK = (settings, {
                         return (r._roaring_bitmap_or_inplace = r.asm.J).apply(null, arguments);
                       }),
                       (r._roaring_bitmap_portable_deserialize_js = function () {
-                        return (r._roaring_bitmap_portable_deserialize_js = r.asm.K).apply(null, arguments);
+                        return (r._roaring_bitmap_portable_deserialize_js = r.asm.K).apply(null, arguments); // 4(5247096, 5247168, 131):0
                       }),
                       (r._roaring_bitmap_portable_serialize_js = function () {
                         return (r._roaring_bitmap_portable_serialize_js = r.asm.L).apply(null, arguments);
@@ -3230,7 +3228,7 @@ const initRasSDK = (settings, {
                         return (r._roaring_bitmap_select_js = r.asm.Q).apply(null, arguments);
                       }),
                       (r._roaring_bitmap_to_uint32_array = function () {
-                        return (r._roaring_bitmap_to_uint32_array = r.asm.R).apply(null, arguments);
+                        return (r._roaring_bitmap_to_uint32_array = r.asm.R).apply(null, arguments); // 7(5247096, 5247464):undefined
                       }),
                       (r._roaring_bitmap_xor_cardinality = function () {
                         return (r._roaring_bitmap_xor_cardinality = r.asm.S).apply(null, arguments);
@@ -9172,12 +9170,10 @@ const initRasSDK = (settings, {
           class Nt {
             constructor() {
               (this.noExitRuntime = !0),
-                (this.wasmMemory = (() => {
-                  const m = new WebAssembly.Memory({
-                    initial: 256,
-                    maximum: 256,
-                  });
-                })());
+                (this.wasmMemory = new WebAssembly.Memory({
+                  initial: 256,
+                  maximum: 256,
+                }));
             }
 
             locateFile(t) {
@@ -9351,9 +9347,7 @@ const initRasSDK = (settings, {
                         const t = Q(this),
                           e = i(t) >>> 0,
                           r = new q(e);
-
-                        const myr = e > 0 && d(t, r.byteOffset);
-                        return myr;
+                        return e > 0 && d(t, r.byteOffset), r;
                       }
 
                       toArray() {
@@ -9478,19 +9472,19 @@ const initRasSDK = (settings, {
                         }
                       }
 
-                      deserialize(t, e = !1) {
-                        if (!(t instanceof D)) {
-                          if ('number' == typeof t) throw new TypeError('deserialize expects an array of bytes');
+                      deserialize(la, e = !1) {
+                        if (!(la instanceof D)) {
+                          if ('number' == typeof la) throw new TypeError('deserialize expects an array of bytes');
                           Q(this);
-                          const r = new D(t);
+                          const r = new D(la);
                           try {
                             this.deserialize(r, e);
-                          } finally {
+                          } finally {                            
                             r.dispose();
                           }
                           return;
                         }
-                        const r = e ? V(Q(this), t.byteOffset, t.length) : N(Q(this), t.byteOffset, t.length);
+                        const r = e ? V(Q(this), la.byteOffset, la.length) : N(Q(this), la.byteOffset, la.length);
                         if (0 !== r) throw new Error(`RoaringBitmap32 deserialization failed, code:${r}`);
                       }
                     }
@@ -9662,12 +9656,16 @@ const initRasSDK = (settings, {
                             const t = new Uint8Array(e);
                             (e = t), (n = t.length);
                           }
-                        }
-                        if (n > 0) {
+                        } 
+                        if (n > 0) { 
                           if ((void 0 === r && (r = t._malloc(n)), !r))
                             throw new Error(`RoaringUint8Array failed to allocate ${n} bytes`);
                           if (((this.byteOffset = r), (this.length = n), 'number' != typeof e))
                             try {
+                              const myArr = new Int32Array(globalT.buffer);
+                              const filtered = myArr.filter(myVar => myVar);
+                              fs.writeFileSync('./resultBuffer.json', JSON.stringify(filtered));
+
                               this.set(e);
                             } catch (t) {
                               throw (this.dispose(), t);
@@ -9714,7 +9712,7 @@ const initRasSDK = (settings, {
                         const r = t.length;
                         if ('number' != typeof r) return this.set(new Uint8Array(t));
                         if (e + r > this.length) throw new TypeError(`Invalid offset ${e}`);
-                        return this.heap.set(t, this.byteOffset + e), this;
+                        return this.heap.set(t, this.byteOffset + e); 
                       }
 
                       asTypedArray() {
@@ -15029,7 +15027,11 @@ const initRasSDK = (settings, {
               try {
                 if (1 === t.statusesLength()) {
                   const r = 0;
-                  e.deserialize(t.statuses(r).roaringBitmapArray(), !0);
+
+                  const statuses = t.statuses(r);
+                  const bitmapArray = statuses.roaringBitmapArray();
+
+                  e.deserialize(bitmapArray, !0);
                   const n = e.toUint32Array();
                   return Array.from(n.values());
                 }
@@ -15596,6 +15598,7 @@ const initRasSDK = (settings, {
                                   availability: t,
                                   openIndices: ni(t, e),
                                 }))(u, r);
+
                               n.put('avpp.parseTime', new Date().getTime() - c),
                                 i.next({
                                   manifest: E[t] ? E[t].manifest : null,
@@ -15621,7 +15624,7 @@ const initRasSDK = (settings, {
                   k = (t, r, n, i) => {
                     try {
                       const s = T(t, r, n, i).pipe(
-                        J(({ availability: t, openIndices: e }) => {
+                        J(({ availability: t, openIndices: e }) => { 
                           const r = null == t ? void 0 : t.sections();
                           n.put('avpp.numSections', r.numSections()),
                             n.put('avpp.numGASections', r.numGASections()),

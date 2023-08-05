@@ -1,7 +1,7 @@
 const { readFileSync } = require('fs');
 
-const fileBuffer = readFileSync('./counter.wasm');
-const memory = new WebAssembly.Memory({ initial: 256, maximum: 256, });
+const fileBuffer = readFileSync('./counter2.wasm');
+const memory = new WebAssembly.Memory({ initial: 528 / 65536 });
 const table = new WebAssembly.Table({ initial: 0, element: 'anyfunc' });
 
 (async () => {
@@ -11,13 +11,15 @@ const table = new WebAssembly.Table({ initial: 0, element: 'anyfunc' });
   const { _Z5countv: count } = wasm.instance.exports;
   console.log(count());
   
-  int32View[3] += 9;
 
-  console.log(count());
 
-  int32View.set([1, 1, 1, 4]);
+  // int32View[3] += 9;
 
-  console.log(count());
+  // console.log(count());
 
-  const index = int32View.findIndex(e => e);
+  // int32View.set([1, 1, 1, 4]);
+
+  // console.log(count());
+
+  // const index = int32View.findIndex(e => e);
 })();

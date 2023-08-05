@@ -4,7 +4,7 @@
   "main": "./src/app.mjs",
   "scripts": {
     "start:psdk": "ts-node ./pSdk/app",
-    "start:pRas": "ts-node ./pRasSdk/app",
+    "start:pRasSdk": "ts-node ./pRasSdk/app",
     "start:sdk": "ts-node ./sdk/app",
     "start:rasSdk": "ts-node ./rasSdk/app"
   },
