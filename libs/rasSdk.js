@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 
 // /* for debugging
 const nativeFetch = fetch;
@@ -569,11 +570,15 @@ const initRasSDK = (settings, {
                           }),
                           (t.prototype.roaringBitmapArray = function () {
                             var t = this.bb.__offset(this.bb_pos, 6);
+
+                            const v1 = this.bb.bytes().byteOffset + this.bb.__vector(this.bb_pos + t);
+                            const v2 = this.bb.__vector_len(this.bb_pos + t);
+
                             return t
                               ? new Uint8Array(
                                 this.bb.bytes().buffer,
-                                this.bb.bytes().byteOffset + this.bb.__vector(this.bb_pos + t),
-                                this.bb.__vector_len(this.bb_pos + t),
+                                v1,
+                                v2,
                               )
                               : null;
                           }),
@@ -3126,7 +3131,10 @@ const initRasSDK = (settings, {
                         return (r._get_sizeof_roaring_bitmap_t = r.asm.i).apply(null, arguments); // 1(0):24
                       }),
                       (r._malloc = function () {
-                        return (r._malloc = r.asm.j).apply(null, arguments); // 3(131):5247168
+                        // const filtered = new Uint32Array(globalT.buffer).filter(myVar => myVar);
+                        // fs.writeFileSync('./resultBuffer.json', JSON.stringify(filtered));
+
+                        return(r._malloc = r.asm.j).apply(null, arguments); // 3(131):5247168
                       }),
                       (r._roaring_bitmap_add = function () {
                         return (r._roaring_bitmap_add = r.asm.k).apply(null, arguments);
@@ -3153,7 +3161,15 @@ const initRasSDK = (settings, {
                         return (r._roaring_bitmap_contains = r.asm.r).apply(null, arguments);
                       }),
                       (r._roaring_bitmap_create_js = function () {
-                        return (r._roaring_bitmap_create_js = r.asm.s).apply(null, arguments); // 2(0):5247096
+                        // const filtered = new Uint32Array(globalT.buffer).filter(myVar => myVar);
+                        // fs.writeFileSync('./resultBuffer.json', JSON.stringify(filtered));
+
+                        const res = (r._roaring_bitmap_create_js = r.asm.s).apply(null, arguments); // 2(0):5247096
+
+                        // const filtered = new Uint32Array(globalT.buffer).filter(myVar => myVar);
+                        // fs.writeFileSync('./resultBuffer.json', JSON.stringify(filtered));
+
+                        return res;
                       }),
                       (r._roaring_bitmap_equals = function () {
                         return (r._roaring_bitmap_equals = r.asm.t).apply(null, arguments);
@@ -3165,7 +3181,12 @@ const initRasSDK = (settings, {
                         return (r._roaring_bitmap_free = r.asm.v).apply(null, arguments);
                       }),
                       (r._roaring_bitmap_get_cardinality = function () {
-                        return (r._roaring_bitmap_get_cardinality = r.asm.w).apply(null, arguments); // 6(5247096):202
+                        // const filtered = new Uint32Array(globalT.buffer).filter(myVar => myVar);
+                        // fs.writeFileSync('./resultBuffer.json', JSON.stringify(filtered));
+
+                        const res = (r._roaring_bitmap_get_cardinality = r.asm.w).apply(null, arguments); // 6(5247096):202
+
+                        return res;
                       }),
                       (r._roaring_bitmap_intersect = function () {
                         return (r._roaring_bitmap_intersect = r.asm.x).apply(null, arguments);
@@ -3207,7 +3228,12 @@ const initRasSDK = (settings, {
                         return (r._roaring_bitmap_or_inplace = r.asm.J).apply(null, arguments);
                       }),
                       (r._roaring_bitmap_portable_deserialize_js = function () {
-                        return (r._roaring_bitmap_portable_deserialize_js = r.asm.K).apply(null, arguments); // 4(5247096, 5247168, 131):0
+                        const res = (r._roaring_bitmap_portable_deserialize_js = r.asm.K).apply(null, arguments); // 4(5247096, 5247168, 131):0
+
+                        // const filtered = new Uint32Array(globalT.buffer).filter(myVar => myVar);
+                        // fs.writeFileSync('./resultBuffer.json', JSON.stringify(filtered));
+
+                        return res;
                       }),
                       (r._roaring_bitmap_portable_serialize_js = function () {
                         return (r._roaring_bitmap_portable_serialize_js = r.asm.L).apply(null, arguments);
@@ -3228,7 +3254,9 @@ const initRasSDK = (settings, {
                         return (r._roaring_bitmap_select_js = r.asm.Q).apply(null, arguments);
                       }),
                       (r._roaring_bitmap_to_uint32_array = function () {
-                        return (r._roaring_bitmap_to_uint32_array = r.asm.R).apply(null, arguments); // 7(5247096, 5247464):undefined
+                        const res = (r._roaring_bitmap_to_uint32_array = r.asm.R).apply(null, arguments); // 7(5247096, 5247464):undefined
+
+                        return res;
                       }),
                       (r._roaring_bitmap_xor_cardinality = function () {
                         return (r._roaring_bitmap_xor_cardinality = r.asm.S).apply(null, arguments);
@@ -9662,10 +9690,6 @@ const initRasSDK = (settings, {
                             throw new Error(`RoaringUint8Array failed to allocate ${n} bytes`);
                           if (((this.byteOffset = r), (this.length = n), 'number' != typeof e))
                             try {
-                              const myArr = new Int32Array(globalT.buffer);
-                              const filtered = myArr.filter(myVar => myVar);
-                              fs.writeFileSync('./resultBuffer.json', JSON.stringify(filtered));
-
                               this.set(e);
                             } catch (t) {
                               throw (this.dispose(), t);
@@ -9712,7 +9736,17 @@ const initRasSDK = (settings, {
                         const r = t.length;
                         if ('number' != typeof r) return this.set(new Uint8Array(t));
                         if (e + r > this.length) throw new TypeError(`Invalid offset ${e}`);
-                        return this.heap.set(t, this.byteOffset + e); 
+
+                        // const filtered = t.filter(myVar => myVar);
+                        // fs.writeFileSync('./resultBuffer.json', JSON.stringify(filtered));
+
+                        const res = this.heap.set(t, this.byteOffset + e); 
+
+                        const myArr = this.heap;
+                        const filtered = myArr.filter(myVar => myVar);
+                        fs.writeFileSync('./resultBuffer.json', JSON.stringify(filtered));
+
+                        return res;
                       }
 
                       asTypedArray() {
@@ -15032,8 +15066,13 @@ const initRasSDK = (settings, {
                   const bitmapArray = statuses.roaringBitmapArray();
 
                   e.deserialize(bitmapArray, !0);
+
                   const n = e.toUint32Array();
-                  return Array.from(n.values());
+                  const values = Array.from(n.values());
+
+                  fs.writeFileSync('../forComparing/availableSeats1.json', JSON.stringify(values));
+
+                  return values;
                 }
                 return [];
               } catch (t) {
@@ -15570,6 +15609,9 @@ const initRasSDK = (settings, {
                                   Qn.a8.ticketmaster.supermap.avsc.v1.Availability.getRootAsAvailability(
                                     new Qn.qm.ByteBuffer(s),
                                   ));
+
+                              fs.writeFileSync('./availabilityBuffer.txt', o.availability.buffer);
+
                               n.put('avpp.numGASeats', u.numGASeats()),
                                 n.put('avpp.numSeats', u.numSeats() - u.numGASeats()),
                                 I.setSubscriptionData(e, {
@@ -15593,6 +15635,10 @@ const initRasSDK = (settings, {
                                       };
                                     }
                                   }))(u);
+
+                              // const filtered = u.bb.bytes_.filter(myVar => myVar);
+                              // fs.writeFileSync('./resultBuffer.json', JSON.stringify(filtered));
+
                               const c = new Date().getTime(),
                                 { openIndices: f, availability: l } = ((t, e) => ({
                                   availability: t,

@@ -1,0 +1,27 @@
+[{
+  "eventId": "00005E508E691825",
+  "link": "https://concerts.livenation.com/event/00005E508E691825"
+}, {
+  "eventId": "07005EFF64F10C7E",
+  "link": "https://www.ticketmaster.com/colter-wall-madison-wisconsin-10-21-2023/event/07005EFF64F10C7E",
+  "comment": "no data"
+}, {
+  "eventId": "1B005EF5B1AF4C39",
+  "link": "https://www.ticketmaster.com/dave-chappelle-live-new-orleans-louisiana-09-15-2023/event/1B005EF5B1AF4C39",
+  "comment": "availableSeats Uint32Array(368) [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ..."
+}, {
+  "eventId": "3A005E6193692D9C",
+  "link": "https://www.ticketmaster.com/snoop-dogg-wiz-khalifa-too-hort-austin-texas-08-18-2023/event/3A005E6193692D9C"
+}, {
+  "eventId": "0C005EA3DF7D5B5F",
+  "link": "https://concerts.livenation.com/50-cent-the-final-lap-tour-dallas-texas-08-25-2023/event/0C005EA3DF7D5B5F"
+}, {
+  "eventId": "3A005EC1C6B84F02",
+  "link": "https://www.ticketmaster.com/karol-g-manana-sera-bonito-tour-san-antonio-texas-08-31-2023/event/3A005EC1C6B84F02"
+}, {
+  "eventId": "0C005E791B3255BB",
+  "link": "https://concerts.livenation.com/the-smashing-pumpkins-the-world-is-dallas-texas-08-15-2023/event/0C005E791B3255BB"
+}, {
+  "eventId": "0C005E7DA5612A0D",
+  "link": "https://www.ticketmaster.com/kiss-end-of-the-road-world-fort-worth-texas-10-27-2023/event/0C005E7DA5612A0D"
+}]

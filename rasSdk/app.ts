@@ -1,3 +1,4 @@
+import fs from 'fs';
 import { setEnvironment } from '../libs/dotenv';
 
 setEnvironment();
@@ -8,7 +9,7 @@ import { fetchLocal } from '../libs/nodeFetch';
 import { getProxyAgent } from '../libs/proxyAgent';
 import { initJSDOM, getUserAgent } from '../libs/jsdom';
 
-const eventIds = ['00005E508E691825'];
+const eventIds = ['0C005E7DA5612A0D'];
 const sessionId = '3:IxXEo8Pfipkb0hJJrLIbpg==:+yINVfXgMatGrUijxQ346pUXwfdDgL6/gU7Z30Cq3U2hT4YSJJUFIMiSOsG1JzHYlIiHlAfb5PuMzSafWtOsuXyBaQyzrEmi5WLivVtq5U543dG2BgsMSkao3PvqUA8HhRLF2/NYJgHtyV9CQTVDVlpuGsmRUyXL7DtjqoG3aW7p/ZKD0hK/z0wVQVIyeUOpQUwdHA3+O3+nm5LInfpZON1Kg41NcG2027e/jA6AoHfAWWol4pcU5+5mVsdC8gQoWo3tko6RMfbSdHHQwY/x1MFbQ0vsys/G9YVwT0kZb5y77BUPhuZF6T++D0QxY3foURf+1R+mg/pyhD0kOtnEAZYIU/jajaVC2trDQFMwlKn6JRKcQ44kF+8rJ4mvBiZ8yKvgvvIWJJUsLguVEc8uXOhlBW6DTjnrdxSgWDp2QFG541KxZ2gR0cZ0bIzjscnyRpDmOSBRpGr3HOBrxBl+3Q==:SFAIJmzWERkV4J3nQKipGiAmMlnvuWiU1KaEypBhKsg=';
 
 const go = async (eventId: string) => {
@@ -40,6 +41,7 @@ const go = async (eventId: string) => {
   observer.subscribe({
     next: (t: any) => {
       const e = t.getAvailablePlaceIds();
+      fs.writeFileSync('../forComparing/availablePlaceIds1.json', JSON.stringify(e));
       console.log(eventId, e);
     },
   });
